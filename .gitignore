@@ -1,0 +1,7 @@
+# Ignorar imágenes de espectrogramas generadas
+/datasetPrueba/**/*.png
+/datasetPrueba/**/*.jpg
+/datasetPrueba/**/*.jpeg
+
+# Opcional: ignorar archivos WAV generados
+/datasetPrueba/**/*.wav
