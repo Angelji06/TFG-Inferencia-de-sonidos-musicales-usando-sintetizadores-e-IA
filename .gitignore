@@ -1,3 +1,4 @@
 /venv
 /Datasets/*
-/kk
+/scripts/__pycache__/
+\kk
