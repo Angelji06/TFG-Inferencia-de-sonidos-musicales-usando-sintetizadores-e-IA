@@ -6,6 +6,10 @@ import librosa.display
 import shutil
 import time
 
+# ===========================================================================================================
+#  Script para convertir los archivos .wav del dataset en .png de espectrogramas y guardarlos en disco.
+# ===========================================================================================================
+
 # --- Funciones auxiliares ---
 
 def apply_fade(signal, sr, fade_time=0.05):

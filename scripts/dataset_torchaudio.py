@@ -1,8 +1,12 @@
 import os
 import torch
+import torchaudio
 from torch.utils.data import Dataset
 import pandas as pd
 
+# =============================================================================================================
+#  Clase que convierte la carpeta llena de tensores .pt en un objeto que hereda de la clase Dataset de PyTorch
+# =============================================================================================================
 
 class SpectrogramTensorDataset(Dataset):
     """Dataset para tensores .pt de espectrogramas generados con torchaudio.
@@ -13,16 +17,15 @@ class SpectrogramTensorDataset(Dataset):
     Devuelve (tensor, target) donde tensor es FloatTensor (1,H,W) y target es FloatTensor([carrier, ratio, index]).
     """
 
-    def __init__(self, tensors_dir, labels_csv=None, transform=None, target_transform=None):
+    def __init__(self, tensors_dir, transform=None, target_transform=None):
         self.tensors_dir = tensors_dir
         self.transform = transform
         self.target_transform = target_transform
 
-        # localizar CSV por defecto
-        if labels_csv is None:
-            labels_csv = os.path.join(os.path.dirname(os.path.dirname(tensors_dir)), 'datasetFMwav', 'labels.csv')
-
+        # localizar CSV y leerlo
+        labels_csv = os.path.join(os.path.dirname(tensors_dir), 'datasetFMwav', 'labels.csv')
         df = pd.read_csv(labels_csv)
+
         # Crear mapping filename w/o extension -> (carrier, ratio, index)
         self.labels = {}
         for _, row in df.iterrows():
@@ -64,11 +67,42 @@ class SpectrogramTensorDataset(Dataset):
         return x, y
 
 
+def waveform_to_spectrogram_tensor(waveform, sample_rate):
+    """
+    Convierte un waveform en un espectrograma compatible con el modelo.
+    Usa la misma configuración que los espectrogramas .pt del dataset.
+    """
+    # Convertir a mono si tiene más de un canal
+    if waveform.shape[0] > 1:
+        waveform = waveform.mean(dim=0, keepdim=True)
+
+    # Crear transformador de espectrograma (ajusta parámetros si tu dataset usa otros)
+    transform = torchaudio.transforms.Spectrogram(
+        n_fft=1024,
+        win_length=None,
+        hop_length=512,
+        power=2.0
+    )
+
+    # Aplicar transformación
+    spectrogram = transform(waveform)
+
+    # Normalizar (ns si hace falta)
+    spectrogram = (spectrogram - spectrogram.mean()) / (spectrogram.std() + 1e-6)
+
+    # Asegurar tipo y forma
+    spectrogram = spectrogram.float()
+    if spectrogram.dim() == 2:
+        spectrogram = spectrogram.unsqueeze(0)
+
+    return spectrogram
+
 if __name__ == '__main__':
     # prueba rápida
     ds = SpectrogramTensorDataset(
         tensors_dir=os.path.join(os.path.dirname(__file__), '..', 'Datasets', 'datasetFMespec_torchaudio')
     )
+    
     print('len dataset', len(ds))
     x,y = ds[0]
     print('sample x', type(x), x.shape, 'y', y)

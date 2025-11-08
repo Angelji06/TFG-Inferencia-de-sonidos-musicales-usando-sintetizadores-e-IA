@@ -1,6 +1,6 @@
 #
 # Requiere tener instalado ffmpeg: https://www.gyan.dev/ffmpeg/builds/
-# Para que torchaudio funcione se requiere unas versiones concretas de torch y torchudio, para que sean compatibles
+# Para que torchaudio funcione se requiere unas versiones concretas de torch y torchudio, para que sean compatibles entre si
 # Yo (David) estoy usando python 3.11.9 y he instalado:  
 #        pip install torch==2.3.1 torchaudio==2.3.1 torchvision==0.18.1 --index-url https://download.pytorch.org/whl/cpu
 #        pip install torchcodec
@@ -14,8 +14,11 @@ import numpy as np
 import torch
 import torchaudio
 
-# --- Funciones auxiliares ---
+# ===========================================================================================================
+#  Script para convertir los archivos .wav del dataset en tensores de espectrogramas y guardarlos en disco.
+# ===========================================================================================================
 
+# --- Funciones auxiliares ---
 def apply_fade(signal, sr, fade_time=0.05):
     """Aplica fade in/out al audio para suavizar transitorios."""
     fade_samples = int(sr * fade_time)

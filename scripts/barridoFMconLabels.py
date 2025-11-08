@@ -7,9 +7,9 @@ import csv
 import glob
 import shutil
 
-# -----------------------------------------------------------------------
-#  SINTETIZADOR FM - GENERACIÓN DE DATASET EN .WAV CON .CSV DE ETIQUETAS
-# -----------------------------------------------------------------------
+# ===============================================================================================================
+#  Script que genera un dataset de sonidos FM (.wav) mediante un barrido, ademas guarda las etiquetas en un CSV.
+# ===============================================================================================================
 
 # Crea la carpeta de salida
 DATASETWAV_DIR = "datasetFMwav"

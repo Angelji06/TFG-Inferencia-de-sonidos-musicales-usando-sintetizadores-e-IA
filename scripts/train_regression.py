@@ -1,7 +1,3 @@
-"""Entrenamiento sencillo de una CNN para regresión de (carrier, ratio, index).
-
-Uso: ejecutar este script desde la carpeta raíz del repo. Ajusta hiperparámetros al gusto.
-"""
 import os
 import torch
 import torch.nn as nn
@@ -9,6 +5,10 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, random_split
 from scripts.dataset_torchaudio import SpectrogramTensorDataset
 
+# =============================================================================================================
+#  Clase que realiza un entrenamiento sencillo de una CNN para regresión de (carrier, ratio, index).
+#  Conviene ajustar hiperparámetros.
+# =============================================================================================================
 
 class SmallCNNRegressor(nn.Module):
     def __init__(self, in_channels=1, out_dim=3):

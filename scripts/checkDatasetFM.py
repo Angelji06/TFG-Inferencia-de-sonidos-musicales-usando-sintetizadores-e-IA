@@ -1,8 +1,8 @@
 import pandas as pd
 
-# -----------------------------------------------------------------------
-#  SCRIPT PARA COMPROBAR ELEMENTOS QUE FALTAN EN EL DATASETFM
-# -----------------------------------------------------------------------
+# ====================================================================
+#  Script para comprobar si hay archivos .wav faltantes en el dataset
+# ====================================================================
 
 # Ruta al CSV
 csv_path = 'C:/Users/dvcen/Documents/GitHub/TFG-Inferencia-de-sonidos-musicales-usando-sintetizadores-e-IA/Datasets/datasetwav/labels.csv'
