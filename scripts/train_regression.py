@@ -6,8 +6,8 @@ from torch.utils.data import DataLoader, random_split
 from scripts.dataset_torchaudio import SpectrogramTensorDataset
 
 # =============================================================================================================
-#  Clase que realiza un entrenamiento sencillo de una CNN para regresión de (carrier, ratio, index).
-#  Conviene ajustar hiperparámetros.
+#  Clase que realiza un entrenamiento sencillo de una CNN para regresión de (carrier, ratio, index). Conviene ajustar hiperparámetros.
+#  En el notebook solo se usa la estructura de la clase, no el resto de funciones (era una prueba, las dejo por si acaso)
 # =============================================================================================================
 
 class SmallCNNRegressor(nn.Module):
