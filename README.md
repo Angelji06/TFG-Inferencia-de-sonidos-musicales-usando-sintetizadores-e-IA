@@ -63,7 +63,8 @@ Avance hacia la **síntesis paramétrica**, no solo identificación.
 
 ### Dataset
 - Tamaño mediano (≈ 15.000 muestras)  
-- Generado mediante barrido de parámetros en un **sintetizador FM de pyo**  
+- Generado mediante barrido de parámetros en un **sintetizador FM de pyo**
+- Ahora con .csv con las etiquetas de los valores carrier, ratio e index de cada muestra
 - Convertido a tensores de espectrogramas con **torchaudio**
 
 ### Entrenamiento
