@@ -1,60 +1,82 @@
-**Autores**: David Cendejas Rodríguez y Ángel Jiménez Izquierdo
+# Inferencia de sonidos musicales usando sintetizadores e IA
 
-**Tutores**: Miguel Gómez-Zamalloa Gil y Jaime Sánchez Hernández
+**Autores:** David Cendejas Rodríguez y Ángel Jiménez Izquierdo  
+**Tutores:** Miguel Gómez-Zamalloa Gil y Jaime Sánchez Hernández  
 
-Entrenamiento de un modelo de Red Neuronal para el procesamiento, identificación y reproducción de un timbre dado una muestra.
+Este proyecto (aun en desarrollo) explora diferentes aproximaciones al **procesamiento, identificación y reproducción de un timbre** a partir de una muestra de audio. Para ello, se han desarrollado varios prototipos incrementales, cada uno aplicando mejoras en dataset, arquitectura y metodología.
 
-**Prototipo 1** (PrototipoIA1.ipynb)
+---
+## Prototipo 1 — Clasificación básica  
 
-Primera toma de contacto con el aprendizaje automático y el audio.
+**Notebook:** `PrototipoIA1.ipynb`
 
-    Dataset: 
-        Pequeño (50 elementos)
-        Muestras .wav de 1seg
-        Generado mediante una lista de frecuencias aleatorias y los tipos de onda clásicos (sine, square, sawtooth, triangle y noise), usando numpy.
+Primera aproximación al aprendizaje automático aplicado al audio.
 
-    Entrenamiento: 
-        Usando tensorflow.
-        Mediante una extracción de carácterísticas simple usando MFCC, para después asociarlas a su respectiva forma de onda (etiqueta).
+### Dataset
+- Tamaño reducido (≈ 50 muestras)  
+- Archivos `.wav` de 1 segundo  
+- Generados sintéticamente con:
+  - Frecuencias aleatorias  
+  - Formas de onda: *sine, square, sawtooth, triangle, noise*  
+- Construidos usando **NumPy**
 
-    Modelo: 
-        Clasificación
-        Poco preciso
-        No convolucional
-        Arquitectura casi arbitraria.
+### Entrenamiento
+- Implementación con **TensorFlow**  
+- Extracción de características mediante **MFCC**  
+- Asociación de MFCC → tipo de onda (clasificación)
 
-**Prototipo 2** (PrototipoIA2.ipynb)
+### Modelo
+- Tipo: **Clasificación**  
+- No convolucional  
+- Arquitectura simple y poco optimizada  
+- **Precisión baja**
 
-Optimizaciones sobre el primer prototipo.
+---
 
-    Dataset: 
-        Mismo que el prototipo 1, pero transformado en espectrogramas (.png) usando librosa
-        Menos gasto en cómputo y almacenamiento, permite entrenar con modelos de imagen.
+## Prototipo 2 — Clasificación con CNN preentrenada  
+**Notebook:** `PrototipoIA2.ipynb`
 
-    Entrenamiento:
-        Usando un modelo de imagen preentrenado de fastAI (resnet34) y especializado con nuestro dataset usando los DataBlocks.
+Optimización del primer prototipo introduciendo modelos convolucionales y mejor tratamiento del dataset.
 
-    Modelo: 
-        Clasificación
-        Bastante preciso (si se introduzca una onda pura y en el pequeño margen de frecuencias entrenado)
-        Convolucional
-        Arquitectura ajena 
+### Dataset
+- Basado en el Prototipo 1  
+- Convertido a **espectrogramas `.png`** usando *librosa*  
+- Menor coste computacional y de almacenamiento  
+- Permite usar modelos de visión
 
-**Prototipo 3** (PrototipoIA4_Regresion.ipynb)
+### Entrenamiento
+- Uso de **ResNet34 preentrenada** vía fastAI  
+- Adaptación del modelo mediante **DataBlocks**
 
-    Dataset:
-        Mediano (15k elementos)
-        Se generan los wavs mediante un barrido de un sintetizador FM de pyo.
-        Se convierten en tensores de espectrogramas via torchaudio.
+### Modelo
+- Tipo: **Clasificación**  
+- Convolucional  
+- Arquitectura externa (ResNet34)  
+- **Buena precisión**, especialmente en ondas puras dentro del rango entrenado
 
-    Entrenamiento:
-        Usando pytorch y una clase llamada SpectrogramTensorDataset que hereda de la clase Dataset de pytorch.
-        Se usa una clase llamada SmallCNNRegressor para definir la arquitectura.
-        Bucle de entrenamiento de 5 etapas, función de pérdida: MSELoss
+---
 
-    Modelo:
-        Regresivo
-        Convolucional
-        Poco preciso
-        Arquitectura arbitraria
+## Prototipo 3 — Regresión con CNN propia  
+**Notebook:** `PrototipoIA4_Regresion.ipynb`
 
+Avance hacia la **síntesis paramétrica**, no solo identificación.
+
+### Dataset
+- Tamaño mediano (≈ 15.000 muestras)  
+- Generado mediante barrido de parámetros en un **sintetizador FM de pyo**  
+- Convertido a tensores de espectrogramas con **torchaudio**
+
+### Entrenamiento
+- Implementado en **PyTorch**  
+- Dataset definido en `SpectrogramTensorDataset`  
+- Arquitectura definida en `SmallCNNRegressor`  
+- Entrenamiento en **5 etapas**  
+- Función de pérdida: **MSELoss**
+
+### Modelo
+- Tipo: **Regresión**  
+- Convolucional  
+- Arquitectura propia  
+- **Precisión limitada**, aún por optimizar
+
+---
