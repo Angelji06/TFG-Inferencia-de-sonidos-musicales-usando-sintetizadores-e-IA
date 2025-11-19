@@ -5,7 +5,7 @@ import pandas as pd
 # ====================================================================
 
 # Ruta al CSV
-csv_path = 'C:/Users/dvcen/Documents/GitHub/TFG-Inferencia-de-sonidos-musicales-usando-sintetizadores-e-IA/Datasets/datasetwav/labels.csv'
+csv_path = 'C:/Users/dvcen/Documents/GitHub/TFG-Inferencia-de-sonidos-musicales-usando-sintetizadores-e-IA/Datasets/datasetFMwav/labels.csv'
 
 # Cargar el CSV
 df = pd.read_csv(csv_path)
