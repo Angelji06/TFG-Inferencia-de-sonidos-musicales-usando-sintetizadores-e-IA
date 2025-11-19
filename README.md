@@ -54,5 +54,7 @@ Optimizaciones sobre el primer prototipo.
 
     Modelo:
         Regresivo
+        Convolucional
         Poco preciso
+        Arquitectura arbitraria
 
