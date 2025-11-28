@@ -3,11 +3,14 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
 import threading
-import logicaParaGUI as LG  
+import logicaParaGUI as LG 
+import librosa
 
 model = None  # Variable global para guardar el modelo entrenado
 current_wav = None
 last_pred = None
+wav_cargado = None
+sample_rate = 44100
 
 def entrenar_o_cargar_modelo():
     global model
@@ -25,7 +28,7 @@ def entrenar_o_cargar_modelo():
     threading.Thread(target=train_thread).start()
 
 def cargar_wav_y_predecir():
-    global model, current_wav, last_pred
+    global model, current_wav, last_pred, wav_cargado, sample_rate
 
     if model is None:
         messagebox.showerror("Error", "Primero entrena el modelo.")
@@ -39,6 +42,7 @@ def cargar_wav_y_predecir():
         pred = LG.predict_wav(model, wav_path)
         last_pred = pred  # Guardamos la predicción para poder reproducirla
         lbl_result.config(text=f"Predicción: {pred}")
+        wav_cargado, sample_rate = librosa.load(current_wav, sr=None)
 
 
 # --- Interfaz ---
@@ -68,5 +72,11 @@ btn_play_original.pack(pady=5)
 
 btn_play_pred = tk.Button(root, text="Escuchar predicción FM", command=lambda: LG.reproducir_prediccion(last_pred))
 btn_play_pred.pack(pady=5)
+
+btn_watch_spec_original = tk.Button(root, text="Ver espectrograma original", command=lambda: LG.mostrar_espectrograma(wav_cargado, sample_rate))
+btn_watch_spec_original.pack(pady=5)
+
+btn_watch_spec_prediccion = tk.Button(root, text="Ver espectrograma prediccion", command=lambda: LG.mostrar_espectrograma_prediccion(last_pred))
+btn_watch_spec_prediccion.pack(pady=5)
 
 root.mainloop()
