@@ -12,6 +12,18 @@ import pandas as pd
 import numpy as np
 import simpleaudio as sa
 import torchaudio
+import librosa
+import librosa.display
+
+
+def apply_fade(signal, sr, fade_time=0.05):
+    """Aplica fade in/out al audio para suavizar transitorios."""
+    fade_samples = int(sr * fade_time)
+    fade_in = np.linspace(0, 1, fade_samples)
+    fade_out = np.linspace(1, 0, fade_samples)
+    signal[:fade_samples] *= fade_in
+    signal[-fade_samples:] *= fade_out
+    return signal
 
 def fm_synthesize(carrier, ratio, index, duration=0.5, sr=44100):
     t = np.linspace(0, duration, int(sr * duration), endpoint=False)
@@ -34,9 +46,37 @@ def reproducir_prediccion(params):
     waveform, sr = fm_synthesize(carrier, ratio, index, duration=1.0)
     play_audio(waveform, sr)
 
+<<<<<<< HEAD
 from Clases.SpectrogramTensorDataset4 import SpectrogramTensorDataset
+=======
+def mostrar_espectrograma_prediccion(pred):
+    carrier, ratio, index = pred
+    waveform, sr = fm_synthesize(carrier, ratio, index, duration=0.5)
+    mostrar_espectrograma(waveform, sr)
+
+def mostrar_espectrograma(wav, sample_rate):
+    stft = librosa.stft(wav)
+    spectrogram = np.abs(stft)
+    spectrogram_db = librosa.amplitude_to_db(spectrogram)
+
+    fig, ax = plt.subplots(figsize=(10, 4))
+    librosa.display.specshow(
+        spectrogram_db,
+        y_axis='log',
+        x_axis='time',
+        sr=sample_rate,
+        cmap='inferno',
+        ax=ax
+    )
+    ax.axis('off')
+    plt.show() # Muestra el espectrograma 
+
+
+
+
+from scripts.dataset_torchaudio import SpectrogramTensorDataset
+>>>>>>> 8cbda17608dc773e0a9ccc70141d55ec2687353e
 from scripts.train_regression import SmallCNNRegressor
-from scripts.PaddingTensores import PadOrCrop
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 DATASET_PATH = "Datasets/datasetFMespec_torchaudio"
@@ -55,10 +95,9 @@ def crear_columna_tensor():
 def cargar_dataset():
     # Usaremos la implementación de SpectrogramTensorDataset ya definida en `scripts/dataset_torchaudio.py`
     # Esta carga los .pt y devuelve (tensor, [carrier, ratio, index])
-    transform = PadOrCrop((513, 173))
     dataset = SpectrogramTensorDataset(
         tensors_dir=DATASET_PATH,
-        transform=transform
+        transform=False
     )
 
     # Dividir en train/test (80/20)
