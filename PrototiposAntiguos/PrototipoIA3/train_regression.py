@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, random_split
-from scripts.dataset_torchaudio import SpectrogramTensorDataset
+from Clases.SpectrogramTensorDataset4 import SpectrogramTensorDataset
 
 # =============================================================================================================
 #  Clase que realiza un entrenamiento sencillo de una CNN para regresión de (carrier, ratio, index). Conviene ajustar hiperparámetros.

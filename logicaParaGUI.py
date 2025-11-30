@@ -34,7 +34,7 @@ def reproducir_prediccion(params):
     waveform, sr = fm_synthesize(carrier, ratio, index, duration=1.0)
     play_audio(waveform, sr)
 
-from scripts.dataset_torchaudio import SpectrogramTensorDataset
+from Clases.SpectrogramTensorDataset4 import SpectrogramTensorDataset
 from scripts.train_regression import SmallCNNRegressor
 from scripts.PaddingTensores import PadOrCrop
 
@@ -116,7 +116,7 @@ def predict_tensor(model, tensor):
     
 def predict_wav(model, wav_path):
     import torchaudio
-    from scripts.dataset_torchaudio import waveform_to_spectrogram_tensor
+    from Clases.SpectrogramTensorDataset4 import waveform_to_spectrogram_tensor
 
     waveform, sr = torchaudio.load(wav_path)
 
