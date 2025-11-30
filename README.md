@@ -57,7 +57,7 @@ Optimización del primer prototipo introduciendo modelos convolucionales y mejor
 ---
 
 ## Prototipo 3 — Regresión con CNN propia  
-**Notebook:** `PrototipoIA4_Regresion.ipynb`
+**Notebook:** `PrototipoIA3_Regresion.ipynb`
 
 Avance hacia la **síntesis paramétrica**, no solo identificación.
 
@@ -81,3 +81,24 @@ Avance hacia la **síntesis paramétrica**, no solo identificación.
 - **Precisión limitada**, aún por optimizar
 
 ---
+## Prototipo 4 — Regresión con función de pérdida híbrida
+**Notebook:** `PrototipoIA4_Regresion.ipynb`
+
+MSE sobre parámetros es incorrecto debido a nula inyectividad, se plantea una función de pérdida hibrida que sigue teniendo en cuenta el MSE sobre parámetros (ponderado a 0.1) y sobretodo compara el espectrograma predicho con el original. Ahora la arquitectura de la CNN ya no es arbitraria.
+
+### Dataset
+- Igual que prototipo 3
+
+### Entrenamiento
+- 10 etapas, con función de pérdida hibrida
+
+### Modelo
+- Tipo: **Regresión**  
+- Convolucional  
+- Arquitectura propia:
+  - Encoder: 3 capas
+  - Bottleneck
+  - Global pooling
+  - Decoder: 3 capas
+  - Recon head
+
