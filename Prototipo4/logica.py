@@ -15,6 +15,11 @@ import glob
 import torch
 import torchaudio
 from torch.utils.data import DataLoader
+import numpy as np
+import simpleaudio as sa
+
+os.environ["TORCHAUDIO_USE_TORCHCODEC"] = "0"
+torchaudio.set_audio_backend("soundfile")
 
 # importa tus componentes (ajusta los nombres/paths según tu proyecto)
 from SpectrogramTensorDataset4 import SpectrogramTensorDataset
@@ -281,3 +286,28 @@ def entrenar_modelo(nombreModelo,
 
     # devuelve la ruta completa para que la UI la use como pathModelo
     return save_path
+
+#==============================================================================================================
+#=========================================== PRUEBA MODELO ====================================================
+#==============================================================================================================
+
+def fm_synthesize(carrier, ratio, index, duration=0.5, sr=44100):
+    t = np.linspace(0, duration, int(sr * duration), endpoint=False)
+    mod = np.sin(2 * np.pi * (carrier * ratio) * t)
+    car = np.sin(2 * np.pi * carrier * t + index * mod)
+    return car.astype(np.float32), sr
+
+def play_audio(waveform, sr):
+    # Normalizamos a int16 para reproducir
+    audio = (waveform * 32767).astype(np.int16)
+    sa.play_buffer(audio, 1, 2, sr)
+
+def reproducir_wav(path):
+    waveform, sr = torchaudio.load(path)
+    waveform = waveform[0].numpy()  # Mono
+    play_audio(waveform, sr)
+    
+def reproducir_prediccion(params):
+    carrier, ratio, index = params
+    waveform, sr = fm_synthesize(carrier, ratio, index, duration=1.0)
+    play_audio(waveform, sr)

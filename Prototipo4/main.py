@@ -2,8 +2,14 @@
 import os
 import tkinter as tk
 from tkinter import filedialog, messagebox
-from logica import generar_dataset, cargar_dataset, entrenar_modelo
+from logica import generar_dataset, cargar_dataset, entrenar_modelo, fm_synthesize,play_audio,reproducir_wav,reproducir_prediccion
 
+from Prototipo4 import CNNRegressor4
+import librosa
+import numpy as np
+import torch
+#import simpleaudio as sa
+ 
 class App:
     def __init__(self, root):
         self.root = root
@@ -320,13 +326,79 @@ class App:
             self.btn_cargar_ds.config(state="normal")
 
     # ================================ Página Test =====================
+    # --- Inserta este código dentro de la clase App en main.py (reemplaza/añade los métodos de la página TEST).
+#    Añade reproducción de audio y generación de síntesis FM mínima a partir de los parámetros predichos.
+#    Nota: requiere librosa y simpleaudio instalados en el entorno.
+
     def _build_test(self):
         p = self.page_test
         tk.Label(p, text="Test", font=("Arial", 18)).pack(pady=(12,8))
-        tk.Label(p, text="Página de Test — (por ahora solo título)", font=("Arial", 12)).pack(pady=(0,12))
+        tk.Label(p, text="Selecciona un WAV, pulsa 'Predecir WAV' y luego reproduce original o síntesis.", font=("Arial", 12)).pack(pady=(0,12))
 
-        # Botón volver
-        tk.Button(p, text="Volver al inicio", command=lambda: self.show_page(self.page_inicio)).pack(pady=8)
+        frame = tk.Frame(p); frame.pack(fill="both", expand=True, padx=8, pady=8)
+
+        # Modelo
+        model_frame = tk.Frame(frame); model_frame.pack(fill="x", pady=6)
+        tk.Label(model_frame, text="Modelo cargado:").pack(side="left", padx=(0,4))
+        self.label_model_selected = tk.Label(model_frame, text=getattr(self, "nombreModelo", "Ninguno"))
+        self.label_model_selected.pack(side="left", padx=4)
+
+        # Wav
+        wav_frame = tk.Frame(frame); wav_frame.pack(fill="x", pady=6)
+        tk.Button(wav_frame, text="Seleccionar WAV", command=self._seleccionar_wav).pack(side="left", padx=6)
+        self.label_wav_selected = tk.Label(wav_frame, text="WAV: Ninguno")
+        self.label_wav_selected.pack(side="left", padx=6)
+
+        # Modelo
+        opts_frame = tk.Frame(frame); opts_frame.pack(fill="x", pady=6)
+        tk.Label(opts_frame, text="Device:").grid(row=0, column=0, sticky="e")
+        self.test_device_var = tk.StringVar(value=self.train_device)
+        tk.OptionMenu(opts_frame, self.test_device_var, "cpu", "cuda").grid(row=0, column=1, sticky="w", padx=6)
+        tk.Label(opts_frame, text="SR:").grid(row=0, column=2, sticky="e")
+        self.test_sr_var = tk.StringVar(value="22050")
+        tk.Entry(opts_frame, textvariable=self.test_sr_var, width=8).grid(row=0, column=3, sticky="w", padx=6)
+
+        #Preddiccion
+        action_frame = tk.Frame(frame); action_frame.pack(fill="x", pady=(8,6))
+        self.btn_predict = tk.Button(action_frame, text="Predecir WAV", state="disabled", command=self._predecir_wav)
+        self.btn_predict.pack(side="left", padx=6)
+        tk.Button(action_frame, text="Reproducir original", command=self._play_original).pack(side="left", padx=6)
+        tk.Button(action_frame, text="Reproducir síntesis", command=self._play_synth).pack(side="left", padx=6)
+        tk.Button(action_frame, text="Volver", command=lambda: self.show_page(self.page_inicio)).pack(side="right", padx=6)
+
+        res_frame = tk.LabelFrame(frame, text="Resultado")
+        res_frame.pack(fill="both", expand=True, pady=6)
+        self.result_text = tk.Text(res_frame, height=12)
+        self.result_text.pack(fill="both", expand=True)
+
+        # estado para reproducción y síntesis
+        self.test_wav_path = None
+        self._orig_audio = None       # numpy float32 mono, rango [-1,1]
+        self._orig_sr = None
+        self._synth_audio = None      # numpy float32 mono, rango [-1,1]
+        self._synth_sr = None
+
+    def _seleccionar_wav(self):
+        path = filedialog.askopenfilename(title="Selecciona WAV", filetypes=[("WAV files", "*.wav"), ("All", "*.*")])
+        if not path:
+            return
+        self.test_wav_path = path
+        self.label_wav_selected.config(text=f"WAV: {os.path.basename(path)}")
+        self.btn_predict.config(state="normal")
+        # limpiar estados previos
+        self._orig_audio = None
+        self._synth_audio = None
+        self.result_text.delete("1.0", tk.END)
+
+    def _play_original(self):
+        reproducir_wav(self.test_wav_path)
+
+    def _predecir_wav(self):
+       print("hola")
+
+    def _play_synth(self):
+        print("hola") 
+
 
 
 if __name__ == "__main__":
