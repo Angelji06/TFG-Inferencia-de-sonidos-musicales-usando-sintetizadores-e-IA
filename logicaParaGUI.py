@@ -46,9 +46,6 @@ def reproducir_prediccion(params):
     waveform, sr = fm_synthesize(carrier, ratio, index, duration=1.0)
     play_audio(waveform, sr)
 
-<<<<<<< HEAD
-from Clases.SpectrogramTensorDataset4 import SpectrogramTensorDataset
-=======
 def mostrar_espectrograma_prediccion(pred):
     carrier, ratio, index = pred
     waveform, sr = fm_synthesize(carrier, ratio, index, duration=0.5)
@@ -75,7 +72,6 @@ def mostrar_espectrograma(wav, sample_rate):
 
 
 from scripts.dataset_torchaudio import SpectrogramTensorDataset
->>>>>>> 8cbda17608dc773e0a9ccc70141d55ec2687353e
 from scripts.train_regression import SmallCNNRegressor
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
