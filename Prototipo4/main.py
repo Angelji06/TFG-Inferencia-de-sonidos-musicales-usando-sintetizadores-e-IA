@@ -49,6 +49,8 @@ class App:
     def show_page(self, page):
         self.refresh_inicio_status()
         self.refresh_entrenamiento_page()
+        if hasattr(self, "refresh_test_page"):
+            self.refresh_test_page()
         # ocultar todas y mostrar la solicitada
         for p in (self.page_inicio, self.page_entrenamiento, self.page_test):
             p.pack_forget()
@@ -330,53 +332,68 @@ class App:
 #    Añade reproducción de audio y generación de síntesis FM mínima a partir de los parámetros predichos.
 #    Nota: requiere librosa y simpleaudio instalados en el entorno.
 
+    # ================================ Página Test ================================
+
     def _build_test(self):
         p = self.page_test
         tk.Label(p, text="Test", font=("Arial", 18)).pack(pady=(12,8))
-        tk.Label(p, text="Selecciona un WAV, pulsa 'Predecir WAV' y luego reproduce original o síntesis.", font=("Arial", 12)).pack(pady=(0,12))
+        tk.Label(p, text="Selecciona un WAV, pulsa 'Predecir WAV' y luego reproduce.", font=("Arial", 12)).pack(pady=(0,12))
 
-        frame = tk.Frame(p); frame.pack(fill="both", expand=True, padx=8, pady=8)
+        frame = tk.Frame(p)
+        frame.pack(fill="both", expand=True, padx=8, pady=8)
 
-        # Modelo
-        model_frame = tk.Frame(frame); model_frame.pack(fill="x", pady=6)
+        # 1. Info Modelo
+        model_frame = tk.Frame(frame)
+        model_frame.pack(fill="x", pady=6)
         tk.Label(model_frame, text="Modelo cargado:").pack(side="left", padx=(0,4))
-        self.label_model_selected = tk.Label(model_frame, text=getattr(self, "nombreModelo", "Ninguno"))
-        self.label_model_selected.pack(side="left", padx=4)
+        # Usamos un Label dinámico para poder actualizar su texto si cambia el modelo
+        self.label_model_test_var = tk.StringVar(value="Ninguno")
+        tk.Label(model_frame, textvariable=self.label_model_test_var).pack(side="left", padx=4)
 
-        # Wav
-        wav_frame = tk.Frame(frame); wav_frame.pack(fill="x", pady=6)
+        # 2. Selección de WAV
+        wav_frame = tk.Frame(frame)
+        wav_frame.pack(fill="x", pady=6)
         tk.Button(wav_frame, text="Seleccionar WAV", command=self._seleccionar_wav).pack(side="left", padx=6)
         self.label_wav_selected = tk.Label(wav_frame, text="WAV: Ninguno")
         self.label_wav_selected.pack(side="left", padx=6)
 
-        # Modelo
-        opts_frame = tk.Frame(frame); opts_frame.pack(fill="x", pady=6)
+        # 3. Opciones de inferencia
+        opts_frame = tk.Frame(frame)
+        opts_frame.pack(fill="x", pady=6)
         tk.Label(opts_frame, text="Device:").grid(row=0, column=0, sticky="e")
         self.test_device_var = tk.StringVar(value=self.train_device)
         tk.OptionMenu(opts_frame, self.test_device_var, "cpu", "cuda").grid(row=0, column=1, sticky="w", padx=6)
-        tk.Label(opts_frame, text="SR:").grid(row=0, column=2, sticky="e")
-        self.test_sr_var = tk.StringVar(value="22050")
-        tk.Entry(opts_frame, textvariable=self.test_sr_var, width=8).grid(row=0, column=3, sticky="w", padx=6)
 
-        #Preddiccion
-        action_frame = tk.Frame(frame); action_frame.pack(fill="x", pady=(8,6))
+        # 4. Botones de Acción
+        action_frame = tk.Frame(frame)
+        action_frame.pack(fill="x", pady=(8,6))
+        
         self.btn_predict = tk.Button(action_frame, text="Predecir WAV", state="disabled", command=self._predecir_wav)
         self.btn_predict.pack(side="left", padx=6)
+        
         tk.Button(action_frame, text="Reproducir original", command=self._play_original).pack(side="left", padx=6)
         tk.Button(action_frame, text="Reproducir síntesis", command=self._play_synth).pack(side="left", padx=6)
+        
         tk.Button(action_frame, text="Volver", command=lambda: self.show_page(self.page_inicio)).pack(side="right", padx=6)
 
+        # 5. Área de Resultados
         res_frame = tk.LabelFrame(frame, text="Resultado")
         res_frame.pack(fill="both", expand=True, pady=6)
         self.result_text = tk.Text(res_frame, height=12)
         self.result_text.pack(fill="both", expand=True)
 
-        # estado para reproducción y síntesis
+        # Estado interno para reproducción
         self.test_wav_path = None
-        self._orig_audio = None       # numpy float32 mono, rango [-1,1]
-        self._orig_sr = None
-        self._synth_audio = None      # numpy float32 mono, rango [-1,1]
-        self._synth_sr = None
+        self.last_prediction_params = None
+
+        # Actualizar nombre del modelo al entrar (por si acaso)
+        self.refresh_test_page()
+
+    def refresh_test_page(self):
+        """Actualiza la etiqueta del modelo en la página de test."""
+        nombre = getattr(self, "nombreModelo", "Ninguno")
+        if hasattr(self, "label_model_test_var"):
+            self.label_model_test_var.set(nombre)
 
     def _seleccionar_wav(self):
         path = filedialog.askopenfilename(title="Selecciona WAV", filetypes=[("WAV files", "*.wav"), ("All", "*.*")])
@@ -385,19 +402,88 @@ class App:
         self.test_wav_path = path
         self.label_wav_selected.config(text=f"WAV: {os.path.basename(path)}")
         self.btn_predict.config(state="normal")
-        # limpiar estados previos
-        self._orig_audio = None
-        self._synth_audio = None
+        
+        # Limpiar resultados anteriores
+        self.last_prediction_params = None
         self.result_text.delete("1.0", tk.END)
 
-    def _play_original(self):
-        reproducir_wav(self.test_wav_path)
-
     def _predecir_wav(self):
-       print("hola")
+        # 1. Validaciones
+        if not self.test_wav_path:
+            messagebox.showerror("Error", "Selecciona un WAV primero.")
+            return
+        
+        # UI Feedback
+        self.btn_predict.config(state="disabled") 
+        self.result_text.delete("1.0", tk.END)
+        self.result_text.insert(tk.END, "Procesando inferencia...\n")
+        
+        # Refresco visual
+        if hasattr(self, 'root'): self.root.update_idletasks() 
+
+        try:
+            from logica import hacer_inferencia
+
+            device = self.test_device_var.get()
+            
+            # --- DEBUG: Imprimir antes de llamar ---
+            print(f"DEBUG: Llamando a inferencia con {self.pathModelo}")
+
+            # Llamada al backend
+            params = hacer_inferencia(self.pathModelo, self.test_wav_path, device)
+            
+            # --- DEBUG: Ver qué devuelve el modelo ---
+            print(f"DEBUG: El modelo devolvió: {params}")
+
+            # =======================================================
+            # IMPORTANTE: ESTA ES LA LÍNEA QUE TE FALTABA O FALLABA
+            # Guardamos los datos en la variable de la clase (self)
+            self.last_prediction_params = params 
+            # =======================================================
+
+            # Mostrar texto en pantalla
+            c, r, i = params
+            texto_res = (
+                f"--- PREDICCIÓN EXITOSA ---\n"
+                f"Carrier (fc): {c:.2f}\n"
+                f"Ratio (fm/fc): {r:.2f}\n"
+                f"Index (I):    {i:.2f}\n"
+                f"\n(Nota: Si los valores son < 1, recuerda que pueden estar normalizados)"
+            )
+            self.result_text.insert(tk.END, texto_res)
+            
+            # --- DEBUG: Confirmar guardado ---
+            print(f"DEBUG: Guardado en memoria self.last_prediction_params = {self.last_prediction_params}")
+
+        except Exception as e:
+            self.result_text.insert(tk.END, f"ERROR CRÍTICO:\n{str(e)}\n")
+            print(f"ERROR: {e}")
+        finally:
+            self.btn_predict.config(state="normal")
 
     def _play_synth(self):
-        print("hola") 
+        # ... imports y validaciones ...
+
+        # TRUCO RÁPIDO SI NO SUENA: Multiplicar valores
+        p = self.last_prediction_params
+        
+        # Ajusta estos multiplicadores según los rangos que usaste al crear el dataset
+        carrier_real = p[0] if p[0] > 50 else p[0] * 2000  
+        ratio_real   = p[1] if p[1] > 0.1 else p[1] * 2
+        index_real   = p[2] if p[2] > 0.5 else p[2] * 10
+        
+        reproducir_prediccion([carrier_real, ratio_real, index_real])
+
+    def _play_original(self):
+        from logica import reproducir_wav
+        
+        if not self.test_wav_path:
+            return
+            
+        try:
+            reproducir_wav(self.test_wav_path)
+        except Exception as e:
+            messagebox.showerror("Error Audio", f"No se pudo reproducir el original:\n{e}")
 
 
 

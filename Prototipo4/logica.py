@@ -16,16 +16,14 @@ import torch
 import torchaudio
 from torch.utils.data import DataLoader
 import numpy as np
-import simpleaudio as sa
-
-os.environ["TORCHAUDIO_USE_TORCHCODEC"] = "0"
-torchaudio.set_audio_backend("soundfile")
+import soundfile as sf
+import sounddevice as sd
 
 # importa tus componentes (ajusta los nombres/paths según tu proyecto)
 from SpectrogramTensorDataset4 import SpectrogramTensorDataset
 from Prototipo4 import CNNRegressor4, HybridLoss 
 # pyo debe importarse DESPUÉS porque inicializa servidor de audio
-from pyo import Server, Sig, FM, Pattern
+#from pyo import Server, Sig, FM, Pattern
 
 # IMPORTANTE: importa tu función espectrograma centralizada
 from SpectrogramTensorDataset4 import waveform_to_spectrogram_tensor
@@ -34,97 +32,43 @@ from SpectrogramTensorDataset4 import waveform_to_spectrogram_tensor
 #=================================== GENERACION DE DATASET ====================================================
 #==============================================================================================================
 
-# 1. GENERACIÓN DE WAVs FM + CSV DE ETIQUETAS CON BARRIDO PYO
+# 1. GENERACIÓN DE WAVs FM + CSV DE ETIQUETAS CON BARRIDO CON NUMPY
 def generar_wavs_FM():
-    """
-    Genera dataset FM (.wav) + labels.csv usando PYO (offline) SIN Pattern.
-    Funciona dentro de funciones (pyo offline estable).
-    """
-
-    print("=== GENERACIÓN WAV FM (fase 1) ===")
-
-    # Directorios
+    # dirs
     script_dir = os.path.dirname(os.path.abspath(__file__))
     main_dir = os.path.dirname(script_dir)
-    datasets_dir = os.path.join(main_dir, "Datasets")
-    os.makedirs(datasets_dir, exist_ok=True)
+    out_path = os.path.join(main_dir, "Datasets", "datasetFMwav")
+    if os.path.exists(out_path): shutil.rmtree(out_path)
+    os.makedirs(out_path, exist_ok=True)
 
-    DATASETWAV_DIR = "datasetFMwav"
-    out_path = os.path.join(datasets_dir, DATASETWAV_DIR)
-
-    # Crear / limpiar
-    if os.path.exists(out_path):
-        shutil.rmtree(out_path)
-    os.makedirs(out_path)
-
-    print("Carpeta creada:", out_path)
-
-    # CSV
+    # params (misma semántica que la versión con pyo)
+    params = {"carrier": (100,2000,100), "ratio": (0.05,2,0.05), "index": (1,10,0.5)}
+    SR, TIME = 44100, 0.5
+    t = np.linspace(0, TIME, int(SR*TIME), endpoint=False)
+    # csv header
     csv_path = os.path.join(out_path, "labels.csv")
     with open(csv_path, "w", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow(["filename", "carrier", "ratio", "index"])
+        csv.writer(f).writerow(["filename","carrier","ratio","index"])
+   
 
-    # Servidor offline
-    s = Server(audio="offline", nchnls=1, sr=44100).boot()
-
-    # Parámetros del barrido
-    params = {
-        "carrier": (100, 2000, 100),
-        "ratio":   (0.05, 2, 0.05),
-        "index":   (1, 10, 0.5)
-    }
-
-    # Crear señales dinámicas
-    carrier = Sig(100)
-    ratio = Sig(0.05)
-    index = Sig(1)
-
-    synth = FM(carrier=carrier, ratio=ratio, index=index, mul=1, add=0)
-    synth.out()
-
-    TIME = 0.5  # duración por wav
-
-    # Generadores de valores
-    import numpy as np
-
-    carrier_vals = np.arange(*params["carrier"])
-    ratio_vals   = np.arange(*params["ratio"])
-    index_vals   = np.arange(*params["index"])
-
+    print("Generando Wavs...")
     g = 0
-
-    # BARRIDO MANUAL 100% SEGURO
-    for c in carrier_vals:
-        for r in ratio_vals:
-            for i in index_vals:
-
+    for c in np.arange(*params["carrier"]):
+        for r in np.arange(*params["ratio"]):
+            for I in np.arange(*params["index"]):
                 g += 1
                 fname = f"fm_{g}.wav"
+                print(f"Generado fm_{g}.wav")
                 file_path = os.path.join(out_path, fname)
-
-                # Setear valores
-                carrier.setValue(float(c))
-                ratio.setValue(float(r))
-                index.setValue(float(i))
-
-                # Registrar en CSV
+                fm = c * r
+                mod = np.sin(2*np.pi*fm*t)
+                x = np.sin(2*np.pi*c*t + I*mod).astype(np.float32)
+                sf.write(file_path, x, SR, subtype='PCM_16')
                 with open(csv_path, "a", newline="") as f:
-                    writer = csv.writer(f)
-                    writer.writerow([fname, c, r, i])
+                    csv.writer(f).writerow([fname, float(c), float(r), float(I)])
 
-                # Render offline
-                s.recordOptions(
-                    dur=TIME,
-                    filename=file_path,
-                    fileformat=0,
-                    sampletype=3
-                )
-                s.start()  # ← AQUI SE GENERA EL WAV
-
-    print(f"WAVs generados: {g}")
+    print(f"WAVs generados: {g}; carpeta: {out_path}")
     return out_path
-
 
 # 2. CONVERSIÓN WAV → TENSORES PYTORCH
 def convertir_wavs_a_tensores(wav_folder):
@@ -164,10 +108,10 @@ def convertir_wavs_a_tensores(wav_folder):
         # Guardar tensor
         out_name = wav_file.replace(".wav", ".pt")
         torch.save(spec, os.path.join(out_folder, out_name))
+        print(f"generado {out_name}")
 
     print("Conversión completada:", out_folder)
     return out_folder
-
 
 # FUNCIÓN PRINCIPAL (LA QUE USA TKINTER)
 def generar_dataset():
@@ -262,7 +206,7 @@ def entrenar_modelo(nombreModelo,
     # --- Instanciar modelo ---
     model = CNNRegressor4(n_params=n_params, input_channels=input_channels, base_filters=base_filters)
 
-    print("Entrenando modelo!")
+    print(f"Entrenando modelo!       Usando {device}")
     # --- Entrenamiento: el método fit está definido en la clase ---
     history = model.fit(train_loader,
                         device=device,
@@ -290,24 +234,107 @@ def entrenar_modelo(nombreModelo,
 #==============================================================================================================
 #=========================================== PRUEBA MODELO ====================================================
 #==============================================================================================================
+def hacer_inferencia(ruta_modelo, ruta_wav, device="cpu"):
+    """
+    Carga el modelo, procesa el wav y devuelve los parámetros predichos (C, R, I).
+    Adapada para CNNRegressor4 que devuelve (params, recon).
+    """
+    import torch
+    import torchaudio
+    import numpy as np
+    from Prototipo4 import CNNRegressor4
+    from SpectrogramTensorDataset4 import waveform_to_spectrogram_tensor
 
-def fm_synthesize(carrier, ratio, index, duration=0.5, sr=44100):
+    if not os.path.exists(ruta_modelo):
+        raise FileNotFoundError("No se encuentra el archivo del modelo.")
+
+    # 1. Configurar dispositivo
+    device = torch.device("cuda" if (device == "cuda" and torch.cuda.is_available()) else "cpu")
+
+    # 2. Instanciar arquitectura
+    # Importante: n_params debe coincidir con tu entrenamiento (por defecto 3)
+    model = CNNRegressor4(n_params=3) 
+    
+    # 3. Cargar pesos
+    # Usamos weights_only=True para evitar el warning de seguridad
+    try:
+        state_dict = torch.load(ruta_modelo, map_location=device, weights_only=True)
+    except:
+        # Fallback por si tu versión de torch es antigua
+        state_dict = torch.load(ruta_modelo, map_location=device)
+        
+    model.load_state_dict(state_dict)
+    model.to(device)
+    model.eval()
+
+    # 4. Procesar Audio
+    waveform, sr = torchaudio.load(ruta_wav)
+    # Convertir a espectrograma
+    spec = waveform_to_spectrogram_tensor(waveform, sr)
+    # Añadir dimensión de Batch (1, 1, H, W) y mover al device
+    spec = spec.unsqueeze(0).to(device)
+
+    # 5. Inferencia
+    with torch.no_grad():
+        # TU MODELO DEVUELVE: (params, recon)
+        resultado = model(spec)
+        
+        # Separamos la tupla
+        pred_params = resultado[0]  # Nos quedamos con los parámeteros
+        # resultado[1] sería la 'recon' (imagen), la ignoramos
+    
+    # 6. Limpieza y conversión a lista plana de Python
+    # .detach() saca el tensor del grafo de gradientes
+    # .flatten() convierte [[c, r, i]] en [c, r, i]
+    lista_valores = pred_params.detach().cpu().numpy().flatten().tolist()
+    
+    return lista_valores
+
+def fm_synthesize(carrier, ratio, index, duration=1.0, sr=44100):
+    """
+    Genera la señal de audio sintética usando fórmulas FM.
+    """
     t = np.linspace(0, duration, int(sr * duration), endpoint=False)
     mod = np.sin(2 * np.pi * (carrier * ratio) * t)
     car = np.sin(2 * np.pi * carrier * t + index * mod)
+    
+    # sounddevice prefiere float32 para el audio
     return car.astype(np.float32), sr
 
 def play_audio(waveform, sr):
-    # Normalizamos a int16 para reproducir
-    audio = (waveform * 32767).astype(np.int16)
-    sa.play_buffer(audio, 1, 2, sr)
+    """
+    Reproduce un array de Numpy directamente usando sounddevice.
+    """
+    # sd.play es asíncrono (el código seguiría corriendo), 
+    # por lo que añadimos sd.wait() para asegurarnos de que se escucha todo
+    # antes de hacer otra cosa (opcional, puedes quitarlo si quieres).
+    sd.play(waveform, sr)
+    sd.wait()
 
 def reproducir_wav(path):
-    waveform, sr = torchaudio.load(path)
-    waveform = waveform[0].numpy()  # Mono
-    play_audio(waveform, sr)
-    
+    """
+    Lee un archivo con soundfile y lo reproduce con sounddevice.
+    """
+    if os.path.exists(path):
+        # Leemos el audio y el sample rate del archivo
+        data, sr = sf.read(path)
+        play_audio(data, sr)
+    else:
+        print(f"Error: No se encuentra el archivo {path}")
+
 def reproducir_prediccion(params):
-    carrier, ratio, index = params
-    waveform, sr = fm_synthesize(carrier, ratio, index, duration=1.0)
+    """
+    Genera el audio en tiempo real basado en los parámetros predichos y lo reproduce.
+    """
+    # Desempaquetar parámetros (asegurando floats de Python)
+    carrier = float(params[0])
+    ratio = float(params[1])
+    index = float(params[2])
+    
+    print(f"Reproduciendo predicción: C={carrier:.2f}, R={ratio:.2f}, I={index:.2f}")
+    
+    # 1. Sintetizar (generamos 2 segundos para escucharlo bien)
+    waveform, sr = fm_synthesize(carrier, ratio, index, duration=2.0)
+    
+    # 2. Reproducir
     play_audio(waveform, sr)
