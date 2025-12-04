@@ -233,7 +233,7 @@ class App:
 
     def _generar_dataset(self):
         try:
-            ds = generar_dataset(self.device_var)
+            ds = generar_dataset(self.device_var.get())
             self.dataset_obj = ds
             self.pathDataset = ds.get('ruta')
 
@@ -310,11 +310,6 @@ class App:
             self.btn_entrenar.config(state="normal")
             self.btn_generar_ds.config(state="normal")
             self.btn_cargar_ds.config(state="normal")
-
-    # ================================ Página Test =====================
-    # --- Inserta este código dentro de la clase App en main.py (reemplaza/añade los métodos de la página TEST).
-#    Añade reproducción de audio y generación de síntesis FM mínima a partir de los parámetros predichos.
-#    Nota: requiere librosa y simpleaudio instalados en el entorno.
 
     # ================================ Página Test ================================
 
@@ -401,7 +396,7 @@ class App:
         try:
             from logica import hacer_inferencia
 
-            device = self.device_var
+            device = self.device_var.get()
             
             # --- DEBUG: Imprimir antes de llamar ---
             print(f"DEBUG: Llamando a inferencia con {self.pathModelo}")

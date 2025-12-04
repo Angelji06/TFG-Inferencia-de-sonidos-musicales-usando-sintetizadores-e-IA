@@ -29,45 +29,80 @@ from Prototipo4 import CNNRegressor4, HybridLoss
 
 # 1. GENERACIÓN DE WAVs FM + CSV DE ETIQUETAS CON BARRIDO CON NUMPY
 def generar_wavs_FM():
+    t_start = time.time()  
     # dirs
     script_dir = os.path.dirname(os.path.abspath(__file__))
     main_dir = os.path.dirname(script_dir)
     out_path = os.path.join(main_dir, "Datasets", "datasetFMwav")
-    if os.path.exists(out_path): shutil.rmtree(out_path)
+    if os.path.exists(out_path):
+        shutil.rmtree(out_path)
     os.makedirs(out_path, exist_ok=True)
-
+    
     # params (misma semántica que la versión con pyo)
     params = {"carrier": (100,2000,100), "ratio": (0.05,2,0.05), "index": (1,10,0.5)}
     SR, TIME = 44100, 1
-    t = np.linspace(0, TIME, int(SR*TIME), endpoint=False)
-    # csv header
+
+    # t en float32 para evitar casts en cada iteración
+    t = np.linspace(0, TIME, int(SR*TIME), endpoint=False).astype(np.float32)
+
+    # csv header (abrimos el archivo una sola vez y escribimos en buffer por bloques)
     csv_path = os.path.join(out_path, "labels.csv")
-    with open(csv_path, "w", newline="") as f:
-        csv.writer(f).writerow(["filename","carrier","ratio","index"])
-   
+    csv_buffer = []
+    buffer_flush = 1000  # escribir cada 1000 filas (REVISAR NUMERO)
+
+    with open(csv_path, "w", newline="") as f_header:
+        csv.writer(f_header).writerow(["filename","carrier","ratio","index"])
 
     print("=== GENERACIÓN DE WAVS (fase 1/2) ===")
     g = 0
+    # iteración principal
     for c in np.arange(*params["carrier"]):
         for r in np.arange(*params["ratio"]):
             for I in np.arange(*params["index"]):
                 g += 1
                 fname = f"fm_{g}.wav"
-                print(f"Generado fm_{g}.wav")
                 file_path = os.path.join(out_path, fname)
-                fm = c * r
-                mod = np.sin(2*np.pi*fm*t)
-                x = np.sin(2*np.pi*c*t + I*mod).astype(np.float32)
+
+                # cálculo en float32 (evitar casts repetidos)
+                fm = float(c) * float(r)
+                mod = np.sin(2.0 * np.pi * fm * t).astype(np.float32)
+                x = np.sin(2.0 * np.pi * float(c) * t + float(I) * mod).astype(np.float32)
+
+                # escribir wav (sf.write es I/O; no se puede evitar per-file)
                 sf.write(file_path, x, SR, subtype='PCM_16')
-                with open(csv_path, "a", newline="") as f:
-                    csv.writer(f).writerow([fname, float(c), float(r), float(I)])
+
+                # acumular fila en buffer
+                csv_buffer.append([fname, float(c), float(r), float(I)])
+                if len(csv_buffer) >= buffer_flush:
+                    # volcar buffer al CSV en bloque
+                    with open(csv_path, "a", newline="") as f:
+                        csv.writer(f).writerows(csv_buffer)
+                    csv_buffer = []
+
+                # prints reducidos para evitar overhead de I/O en consola
+                if g % 1000 == 0:
+                    print(f"Generados {g} wavs...")
+
+    # flush final del buffer restante
+    if csv_buffer:
+        with open(csv_path, "a", newline="") as f:
+            csv.writer(f).writerows(csv_buffer)
+
+    # tiempo final
+    t_end = time.time()
+    elapsed = t_end - t_start
+    per_file = elapsed / g if g > 0 else 0.0
 
     print(f"WAVs generados: {g}; carpeta: {out_path}")
+    print(f"Tiempo total generación WAVs: {elapsed:.2f}s  |  media por wav: {per_file:.4f}s")
+
     return out_path
+
 
 # 2. CONVERSIÓN WAV → TENSORES PYTORCH
 def convertir_wavs_a_tensores(wav_folder, device):
     print("=== CONVERSIÓN WAV → TENSOR (fase 2/2) ===")
+    t_start = time.time()  # inicio temporizador
 
     # Directorios y carpetas
     main_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -76,7 +111,8 @@ def convertir_wavs_a_tensores(wav_folder, device):
         shutil.rmtree(out_folder)
     os.makedirs(out_folder)
     wav_files = [f for f in os.listdir(wav_folder) if f.endswith(".wav")]
-    print("WAV encontrados:", len(wav_files))
+    n_wavs = len(wav_files)
+    print("WAV encontrados:", len(n_wavs))
 
     # Crear el transform UNA VEZ (STFT)
     spec_transform = torchaudio.transforms.Spectrogram(n_fft=1024, hop_length=256, power=None, return_complex=True).to(device)
@@ -102,16 +138,21 @@ def convertir_wavs_a_tensores(wav_folder, device):
         # Guardar tensor espectrograma
         out_name = wav_file.replace(".wav", ".pt")
         torch.save(spec, os.path.join(out_folder, out_name))
-        print(f"generado {out_name}")
 
-    print("Conversión completada en:", out_folder)
+    # tiempo total y por fichero
+    t_end = time.time()
+    elapsed = t_end - t_start
+    per_file = elapsed / n_wavs if n_wavs > 0 else 0.0
+    print(f"Conversión completada en: {out_folder}")
+    print(f"Tiempo conversión total: {elapsed:.2f}s  |  media por wav: {per_file:.4f}s")
     return out_folder
 
 # FUNCIÓN PRINCIPAL
 def generar_dataset(device):
     start = time.time()
 
-    wav_folder = generar_wavs_FM()
+    #wav_folder = generar_wavs_FM()
+    wav_folder = r"C:\Users\David\Documents\GitHub\TFG-Inferencia-de-sonidos-musicales-usando-sintetizadores-e-IA\Datasets\datasetFMwav"
     tensor_folder = convertir_wavs_a_tensores(wav_folder, device)   #Le paso el device para acelerar la transformacion a tensor
 
     end = time.time()
@@ -165,6 +206,7 @@ def check_dataset(path):
 
 # Función encargada de instanciar y entrenar el modelo
 def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3, device="cuda", print_every_batches=100):
+    t_total_start = time.time()  
     tensors_dir = dataset_obj.get("ruta") 
 
     # --- Dataset y DataLoader ---
@@ -187,7 +229,18 @@ def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3
     save_path = os.path.join(save_dir , nombreModelo)
     torch.save(model.state_dict(), save_path)       # Guardar state_dict
 
+    # -- Guardar stats (REVISAR no estoy seguro de que se haga asi) ---
+    stats = dataset.get_stats()  # {'means': array, 'stds': array}
+    checkpoint = {
+        'state_dict': model.state_dict(),
+        'param_means': stats['means'],
+        'param_stds': stats['stds']
+    }
+    torch.save(checkpoint, save_path)
+
+    t_total_end = time.time()
     print(f"Entrenamiento finalizado. Modelo guardado en: {save_path}")
+    print(f"Tiempo de entrenamiento: {t_total_end - t_total_start:.2f}s")
 
     return save_path  #Retorna: path completo al archivo .pth guardado (string).
 
@@ -195,60 +248,71 @@ def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3
 #=========================================== PRUEBA MODELO ====================================================
 #==============================================================================================================
 def hacer_inferencia(ruta_modelo, ruta_wav, device="cpu"):
-    """
-    Carga el modelo, procesa el wav y devuelve los parámetros predichos (C, R, I).
-    Adapada para CNNRegressor4 que devuelve (params, recon).
-    """
-    import torch
-    import torchaudio
-    import numpy as np
-    from Prototipo4 import CNNRegressor4
-    from SpectrogramTensorDataset4 import waveform_to_spectrogram_tensor
-
     if not os.path.exists(ruta_modelo):
         raise FileNotFoundError("No se encuentra el archivo del modelo.")
 
-    # 1. Configurar dispositivo
+    # 1) Normalizar device
     device = torch.device("cuda" if (device == "cuda" and torch.cuda.is_available()) else "cpu")
 
-    # 2. Instanciar arquitectura
-    # Importante: n_params debe coincidir con tu entrenamiento (por defecto 3)
-    model = CNNRegressor4(n_params=3) 
-    
-    # 3. Cargar pesos
-    # Usamos weights_only=True para evitar el warning de seguridad
-    try:
-        state_dict = torch.load(ruta_modelo, map_location=device, weights_only=True)
-    except:
-        # Fallback por si tu versión de torch es antigua
-        state_dict = torch.load(ruta_modelo, map_location=device)
-        
+    # 2) Instanciar arquitectura y cargar checkpoint
+    model = CNNRegressor4(n_params=3)
+    ckpt = torch.load(ruta_modelo, map_location=device)
+
+    # soporte ambos formatos: checkpoint con 'state_dict' o antiguo state_dict directo
+    if isinstance(ckpt, dict) and 'state_dict' in ckpt:
+        state_dict = ckpt['state_dict']
+        means = ckpt.get('param_means', None)
+        stds = ckpt.get('param_stds', None)
+    else:
+        # archivo antiguo que contenía solo state_dict
+        state_dict = ckpt
+        means = None
+        stds = None
+
     model.load_state_dict(state_dict)
     model.to(device)
     model.eval()
 
-    # 4. Procesar Audio
-    waveform, sr = torchaudio.load(ruta_wav)
-    # Convertir a espectrograma
-    spec = waveform_to_spectrogram_tensor(waveform, sr)
-    # Añadir dimensión de Batch (1, 1, H, W) y mover al device
-    spec = spec.unsqueeze(0).to(device)
+    # 3) Procesar audio: leer WAV y calcular espectrograma como en entrenamiento
+    waveform, sr = torchaudio.load(ruta_wav)           # tensor en CPU
+    # normalizar peak igual que en pipeline de training
+    waveform = waveform / waveform.abs().max().clamp(min=1e-8)
 
-    # 5. Inferencia
+    # crear transform igual que en training
+    spec_transform = torchaudio.transforms.Spectrogram(
+        n_fft=1024, hop_length=256, power=None, return_complex=True
+    ).to(device)
+
+    # mover waveform al device antes de transform y calcular magnitud dB
+    waveform = waveform.to(device)
+    spec_c = spec_transform(waveform)                  # compleja
+    mag = spec_c.abs()
+    db = torchaudio.transforms.AmplitudeToDB(stype='amplitude', top_db=80.0).to(device)(mag)
+
+    # asegurar shape (1, H, W) y batch dim (1, C, H, W)
+    if db.dim() == 2:
+        db = db.unsqueeze(0)    # (1, H, W)
+    spec = db.unsqueeze(0).to(device)  # (1, 1, H, W)
+
+    # 4) Inferencia
     with torch.no_grad():
-        # TU MODELO DEVUELVE: (params, recon)
-        resultado = model(spec)
-        
-        # Separamos la tupla
-        pred_params = resultado[0]  # Nos quedamos con los parámeteros
-        # resultado[1] sería la 'recon' (imagen), la ignoramos
-    
-    # 6. Limpieza y conversión a lista plana de Python
-    # .detach() saca el tensor del grafo de gradientes
-    # .flatten() convierte [[c, r, i]] en [c, r, i]
-    lista_valores = pred_params.detach().cpu().numpy().flatten().tolist()
-    
-    return lista_valores
+        out = model(spec)
+        if isinstance(out, (tuple, list)):
+            pred_params = out[0]
+        else:
+            pred_params = out
+
+    pred = pred_params.detach().cpu().numpy().flatten()  # (3,)
+
+    # 5) Desnormalizar usando stats guardadas en el checkpoint
+    if (means is None) or (stds is None):
+        raise RuntimeError("El checkpoint no contiene 'param_means'/'param_stds'. Reentrena guardando stats en el checkpoint.")
+
+    means = np.asarray(means, dtype=np.float32)
+    stds = np.asarray(stds, dtype=np.float32)
+    pred_raw = pred * stds + means
+
+    return pred_raw.tolist()
 
 def fm_synthesize(carrier, ratio, index, duration=1.0, sr=44100):
     """
@@ -262,19 +326,12 @@ def fm_synthesize(carrier, ratio, index, duration=1.0, sr=44100):
     return car.astype(np.float32), sr
 
 def play_audio(waveform, sr):
-    """
-    Reproduce un array de Numpy directamente usando sounddevice.
-    """
-    # sd.play es asíncrono (el código seguiría corriendo), 
-    # por lo que añadimos sd.wait() para asegurarnos de que se escucha todo
-    # antes de hacer otra cosa (opcional, puedes quitarlo si quieres).
-    sd.play(waveform, sr)
+    arr = np.asarray(waveform, dtype=np.float32)
+    sd.play(arr, sr)
     sd.wait()
 
+# Lee un archivo con soundfile y lo reproduce con sounddevice.
 def reproducir_wav(path):
-    """
-    Lee un archivo con soundfile y lo reproduce con sounddevice.
-    """
     if os.path.exists(path):
         # Leemos el audio y el sample rate del archivo
         data, sr = sf.read(path)

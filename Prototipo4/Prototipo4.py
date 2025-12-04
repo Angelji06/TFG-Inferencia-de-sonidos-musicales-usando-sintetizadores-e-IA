@@ -41,7 +41,7 @@ class HybridLoss(nn.Module):
         loss_spec = self.l1(pred_spec, tgt_spec)
 
         # 2) Convergencia espectral 
-        sc_loss = self.spectral_convergence(pred_spec, tgt_spec) if self.use_sc else 0.0
+        sc_loss = self.spectral_convergence(pred_spec, tgt_spec)
 
         # 3) Pérdida paramétrica (bajo peso)
         loss_params = self.param_loss(pred_params, tgt_params)
