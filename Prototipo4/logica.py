@@ -1,6 +1,3 @@
-# logica.py
-# Placeholders: implementa aquí tu lógica real
-
 import time
 import os
 
@@ -54,6 +51,7 @@ def generar_wavs_FM():
         csv.writer(f_header).writerow(["filename","carrier","ratio","index"])
 
     print("=== GENERACIÓN DE WAVS (fase 1/2) ===")
+    print("Generando...")
     g = 0
     # iteración principal
     for c in np.arange(*params["carrier"]):
@@ -63,12 +61,12 @@ def generar_wavs_FM():
                 fname = f"fm_{g}.wav"
                 file_path = os.path.join(out_path, fname)
 
-                # cálculo en float32 (evitar casts repetidos)
+                # cálculo en float32
                 fm = float(c) * float(r)
                 mod = np.sin(2.0 * np.pi * fm * t).astype(np.float32)
                 x = np.sin(2.0 * np.pi * float(c) * t + float(I) * mod).astype(np.float32)
 
-                # escribir wav (sf.write es I/O; no se puede evitar per-file)
+                # escribir wav
                 sf.write(file_path, x, SR, subtype='PCM_16')
 
                 # acumular fila en buffer
@@ -92,9 +90,10 @@ def generar_wavs_FM():
     t_end = time.time()
     elapsed = t_end - t_start
     per_file = elapsed / g if g > 0 else 0.0
-
+    h, rem = divmod(elapsed, 3600)
+    m, s = divmod(rem, 60)
     print(f"WAVs generados: {g}; carpeta: {out_path}")
-    print(f"Tiempo total generación WAVs: {elapsed:.2f}s  |  media por wav: {per_file:.4f}s")
+    print(f"Tiempo total generación WAVs: {int(h)}h {int(m)}m {s:.2f}s  |  media por wav: {per_file:.4f}s")
 
     return out_path
 
@@ -112,7 +111,7 @@ def convertir_wavs_a_tensores(wav_folder, device):
     os.makedirs(out_folder)
     wav_files = [f for f in os.listdir(wav_folder) if f.endswith(".wav")]
     n_wavs = len(wav_files)
-    print("WAV encontrados:", len(n_wavs))
+    print("WAV encontrados:", n_wavs)
 
     # Crear el transform UNA VEZ (STFT)
     spec_transform = torchaudio.transforms.Spectrogram(n_fft=1024, hop_length=256, power=None, return_complex=True).to(device)
@@ -144,19 +143,24 @@ def convertir_wavs_a_tensores(wav_folder, device):
     elapsed = t_end - t_start
     per_file = elapsed / n_wavs if n_wavs > 0 else 0.0
     print(f"Conversión completada en: {out_folder}")
-    print(f"Tiempo conversión total: {elapsed:.2f}s  |  media por wav: {per_file:.4f}s")
+    h, rem = divmod(elapsed, 3600)
+    m, s = divmod(rem, 60)
+    print(f"Tiempo conversión total: {int(h)}h {int(m)}m {s:.2f}s  |  media por wav: {per_file:.4f}s")
     return out_folder
 
 # FUNCIÓN PRINCIPAL
 def generar_dataset(device):
     start = time.time()
 
-    #wav_folder = generar_wavs_FM()
-    wav_folder = r"C:\Users\David\Documents\GitHub\TFG-Inferencia-de-sonidos-musicales-usando-sintetizadores-e-IA\Datasets\datasetFMwav"
+    wav_folder = generar_wavs_FM()
+    #wav_folder = r"C:\Users\David\Documents\GitHub\TFG-Inferencia-de-sonidos-musicales-usando-sintetizadores-e-IA\Datasets\datasetFMwav"
     tensor_folder = convertir_wavs_a_tensores(wav_folder, device)   #Le paso el device para acelerar la transformacion a tensor
 
     end = time.time()
-    print(f"=== DATASET COMPLETO GENERADO en {end-start:.2f}s ===")
+    elapsed = end - start
+    h, rem = divmod(elapsed, 3600)
+    m, s = divmod(rem, 60)
+    print(f"=== DATASET COMPLETO GENERADO en {int(h)}h {int(m)}m {s:.2f}s ===")
 
     # Para que el front lo trate igual que cargar_dataset
     return {
@@ -206,7 +210,7 @@ def check_dataset(path):
 
 # Función encargada de instanciar y entrenar el modelo
 def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3, device="cuda", print_every_batches=100):
-    t_total_start = time.time()  
+    start = time.time()  
     tensors_dir = dataset_obj.get("ruta") 
 
     # --- Dataset y DataLoader ---
@@ -238,9 +242,12 @@ def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3
     }
     torch.save(checkpoint, save_path)
 
-    t_total_end = time.time()
+    end = time.time()
+    elapsed = end - start
+    h, rem = divmod(elapsed, 3600)
+    m, s = divmod(rem, 60)
     print(f"Entrenamiento finalizado. Modelo guardado en: {save_path}")
-    print(f"Tiempo de entrenamiento: {t_total_end - t_total_start:.2f}s")
+    print(f"Tiempo de entrenamiento: {int(h)}h {int(m)}m {s:.2f}s")
 
     return save_path  #Retorna: path completo al archivo .pth guardado (string).
 
