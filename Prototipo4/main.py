@@ -31,7 +31,7 @@ class App:
         self.train_epochs = 5
         self.train_lr = 1e-3
         self.train_batch_size = 32
-        self.train_device = "cpu"       # "cpu" o "cuda"
+        self.train_device = "cuda" if torch.cuda.is_available() else "cpu"
         self.train_print_every = 50
 
         # Páginas
@@ -138,7 +138,7 @@ class App:
 
         tk.Label(device_frame, text="Device:").grid(row=0, column=0, sticky="e", padx=4, pady=4)
         self.device_var = tk.StringVar(value=self.train_device)
-        device_menu = tk.OptionMenu(device_frame, self.device_var, "cpu", "cuda")
+        device_menu = tk.OptionMenu(device_frame, self.device_var, "cuda", "cpu")
         device_menu.config(width=8)
         device_menu.grid(row=0, column=1, sticky="w", padx=4, pady=4)
 

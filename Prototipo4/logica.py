@@ -212,6 +212,11 @@ def check_dataset(path):
 def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3, device="cuda", print_every_batches=100):
     start = time.time()  
     tensors_dir = dataset_obj.get("ruta") 
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    root_dir = os.path.dirname(script_dir)          # subir un nivel (carpeta del proyecto)
+    save_dir = os.path.join(root_dir, "models")     # carpeta estable
+
+    os.makedirs(save_dir, exist_ok=True)
 
     # --- Dataset y DataLoader ---
     dataset = SpectrogramTensorDataset(tensors_dir)
@@ -226,12 +231,7 @@ def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3
     history = model.fit(train_loader, device=device, epochs=epochs, lr=lr, print_every_batches=print_every_batches)
 
     # --- Guardar modelo ---
-    save_dir = "models"
-    os.makedirs(save_dir, exist_ok=True)
-    if not nombreModelo.lower().endswith(".pth"):  # asegurar extensión .pth
-        nombreModelo = nombreModelo + ".pth"
     save_path = os.path.join(save_dir , nombreModelo)
-    torch.save(model.state_dict(), save_path)       # Guardar state_dict
 
     # -- Guardar stats (REVISAR no estoy seguro de que se haga asi) ---
     stats = dataset.get_stats()  # {'means': array, 'stds': array}
