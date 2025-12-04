@@ -22,11 +22,6 @@ import sounddevice as sd
 # importa tus componentes (ajusta los nombres/paths según tu proyecto)
 from SpectrogramTensorDataset4 import SpectrogramTensorDataset
 from Prototipo4 import CNNRegressor4, HybridLoss 
-# pyo debe importarse DESPUÉS porque inicializa servidor de audio
-#from pyo import Server, Sig, FM, Pattern
-
-# IMPORTANTE: importa tu función espectrograma centralizada
-from SpectrogramTensorDataset4 import waveform_to_spectrogram_tensor
 
 #==============================================================================================================
 #=================================== GENERACION DE DATASET ====================================================
@@ -43,7 +38,7 @@ def generar_wavs_FM():
 
     # params (misma semántica que la versión con pyo)
     params = {"carrier": (100,2000,100), "ratio": (0.05,2,0.05), "index": (1,10,0.5)}
-    SR, TIME = 44100, 0.5
+    SR, TIME = 44100, 1
     t = np.linspace(0, TIME, int(SR*TIME), endpoint=False)
     # csv header
     csv_path = os.path.join(out_path, "labels.csv")
@@ -51,7 +46,7 @@ def generar_wavs_FM():
         csv.writer(f).writerow(["filename","carrier","ratio","index"])
    
 
-    print("Generando Wavs...")
+    print("=== GENERACIÓN DE WAVS (fase 1/2) ===")
     g = 0
     for c in np.arange(*params["carrier"]):
         for r in np.arange(*params["ratio"]):
@@ -71,30 +66,29 @@ def generar_wavs_FM():
     return out_path
 
 # 2. CONVERSIÓN WAV → TENSORES PYTORCH
-def convertir_wavs_a_tensores(wav_folder):
-    """
-    Convierte los .wav en `wav_folder` a tensores de espectrograma (.pt).
-    Devuelve la ruta a la carpeta final de tensores.
-    """
+def convertir_wavs_a_tensores(wav_folder, device):
+    print("=== CONVERSIÓN WAV → TENSOR (fase 2/2) ===")
 
-    print("=== CONVERSIÓN WAV → TENSOR (fase 2) ===")
-
+    # Directorios y carpetas
     main_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     out_folder = os.path.join(main_dir, "Datasets", "datasetFMespec_torchaudio")
-
     if os.path.exists(out_folder):
         shutil.rmtree(out_folder)
     os.makedirs(out_folder)
-
     wav_files = [f for f in os.listdir(wav_folder) if f.endswith(".wav")]
     print("WAV encontrados:", len(wav_files))
 
+    # Crear el transform UNA VEZ (STFT)
+    spec_transform = torchaudio.transforms.Spectrogram(n_fft=1024, hop_length=256, power=None, return_complex=True).to(device)
+
+    # Transformación
     for wav_file in wav_files:
         file_path = os.path.join(wav_folder, wav_file)
 
-        waveform, sr = torchaudio.load(file_path)
+        # Carga el tensor onda en CPU
+        waveform, sr = torchaudio.load(file_path)  
 
-        # Fade (del script original)
+        # Fade
         fade_samples = int(sr * 0.05)
         if fade_samples * 2 < waveform.shape[-1]:
             fade_in = torch.linspace(0, 1, fade_samples)
@@ -102,30 +96,23 @@ def convertir_wavs_a_tensores(wav_folder):
             waveform[:, :fade_samples] *= fade_in
             waveform[:, -fade_samples:] *= fade_out
 
-        # Espectrograma
-        spec = waveform_to_spectrogram_tensor(waveform, sr)
+        # Tensor espectrograma
+        spec = waveform_to_spectrogram_tensor(waveform, sr, device, spec_transform)
 
-        # Guardar tensor
+        # Guardar tensor espectrograma
         out_name = wav_file.replace(".wav", ".pt")
         torch.save(spec, os.path.join(out_folder, out_name))
         print(f"generado {out_name}")
 
-    print("Conversión completada:", out_folder)
+    print("Conversión completada en:", out_folder)
     return out_folder
 
-# FUNCIÓN PRINCIPAL (LA QUE USA TKINTER)
-def generar_dataset():
-    """
-    Función que llama Tkinter cuando pulsas 'Generar dataset'.
-    Ejecuta:
-        1. Generación FM (WAV+CSV)
-        2. Conversión a tensores (.pt)
-    Devuelve dict con la carpeta final de tensores.
-    """
+# FUNCIÓN PRINCIPAL
+def generar_dataset(device):
     start = time.time()
 
     wav_folder = generar_wavs_FM()
-    tensor_folder = convertir_wavs_a_tensores(wav_folder)
+    tensor_folder = convertir_wavs_a_tensores(wav_folder, device)   #Le paso el device para acelerar la transformacion a tensor
 
     end = time.time()
     print(f"=== DATASET COMPLETO GENERADO en {end-start:.2f}s ===")
@@ -137,11 +124,27 @@ def generar_dataset():
         "tensores": [f for f in os.listdir(tensor_folder) if f.endswith(".pt")]
     }
 
+# Función que pasa una onda a un tensor de espectrograma
+def waveform_to_spectrogram_tensor(waveform, sr, device, spec_transform):
+    # Normalización: evita variaciones grandes de volumen
+    waveform = waveform / waveform.abs().max().clamp(min=1e-8)
+    waveform = waveform.to(device)
+
+    # Espectrograma complejo (STFT)
+    spec = spec_transform(waveform)   
+
+    # Conversión a escala logarítmica (dB): comprime el rango dinámico y facilita el aprendizaje REVISAR ESTO
+    mag = spec.abs()  # Magnitud lineal
+    db = torchaudio.transforms.AmplitudeToDB(stype='amplitude',top_db=80.0).to(device)(mag)
+
+    return db
+
 #==============================================================================================================
 #=============================== CARGA DATASET YA EXISTENTE ===================================================
 #==============================================================================================================
 
-def cargar_dataset(path):
+# Busca la carpeta y se asegura de que contiene tensores
+def check_dataset(path):
     import os
     if not os.path.isdir(path):
         raise ValueError("Se esperaba una carpeta, no un archivo.")
@@ -160,76 +163,33 @@ def cargar_dataset(path):
 #==================================== ENTRENAMIENTO MODELO ====================================================
 #==============================================================================================================
 
-def entrenar_modelo(nombreModelo,
-                    dataset_obj,
-                    epochs=10,
-                    batch_size=16,
-                    lr=1e-3,
-                    device=None,
-                    n_params=3,
-                    input_channels=1,
-                    base_filters=32,
-                    save_dir="models",
-                    num_workers=0,
-                    pin_memory=False,
-                    print_every_batches=100):
-    """
-    Entrena un CNNRegressor sobre el dataset dado.
-
-    Args:
-        dataset_obj: dict con al menos la clave 'ruta' apuntando al directorio de tensores (.pt),
-                     o una cadena con la ruta al directorio de tensores.
-        epochs, batch_size, lr: hiperparámetros.
-        device: 'cpu'|'cuda' o None (se elige automáticamente si None).
-        n_params, input_channels, base_filters: parámetros del modelo.
-        save_dir: carpeta donde se guardará el .pth (se crea si no existe).
-        save_name: nombre de archivo (si None se genera con timestamp).
-        num_workers, pin_memory: argumentos para DataLoader.
-        print_every_batches: se pasa a model.fit para prints intermedios.
-
-    Retorna:
-        path completo al archivo .pth guardado (string).
-    """
-
-
+# Función encargada de instanciar y entrenar el modelo
+def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3, device="cuda", print_every_batches=100):
     tensors_dir = dataset_obj.get("ruta") 
-
-    # --- Device ---
-    if device is None:
-        device = "cuda" if torch.cuda.is_available() else "cpu"
 
     # --- Dataset y DataLoader ---
     dataset = SpectrogramTensorDataset(tensors_dir)
-    train_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True,num_workers=num_workers, pin_memory=pin_memory)
+    train_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
     print("Instanciando modelo!")
     # --- Instanciar modelo ---
-    model = CNNRegressor4(n_params=n_params, input_channels=input_channels, base_filters=base_filters)
+    model = CNNRegressor4(3,1,32)
 
+     # --- Entrenamiento ---
     print(f"Entrenando modelo!       Usando {device}")
-    # --- Entrenamiento: el método fit está definido en la clase ---
-    history = model.fit(train_loader,
-                        device=device,
-                        epochs=epochs,
-                        lr=lr,
-                        print_every_batches=print_every_batches)
+    history = model.fit(train_loader, device=device, epochs=epochs, lr=lr, print_every_batches=print_every_batches)
 
     # --- Guardar modelo ---
+    save_dir = "models"
     os.makedirs(save_dir, exist_ok=True)
-    save_path = os.path.join(save_dir, nombreModelo)
-
-    # Guardar state_dict (método save de la clase o torch.save directo)
-    try:
-        # si la clase implementa .save(path) lo usamos
-        model.save(save_path)
-    except Exception:
-        # fallback: guardar state_dict directamente
-        torch.save(model.state_dict(), save_path)
+    if not nombreModelo.lower().endswith(".pth"):  # asegurar extensión .pth
+        nombreModelo = nombreModelo + ".pth"
+    save_path = os.path.join(save_dir , nombreModelo)
+    torch.save(model.state_dict(), save_path)       # Guardar state_dict
 
     print(f"Entrenamiento finalizado. Modelo guardado en: {save_path}")
 
-    # devuelve la ruta completa para que la UI la use como pathModelo
-    return save_path
+    return save_path  #Retorna: path completo al archivo .pth guardado (string).
 
 #==============================================================================================================
 #=========================================== PRUEBA MODELO ====================================================

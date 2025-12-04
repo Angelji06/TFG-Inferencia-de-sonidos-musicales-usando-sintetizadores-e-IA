@@ -6,15 +6,7 @@ import torchaudio
 import numpy as np
 
 class SpectrogramTensorDataset(Dataset):
-    """
-    Dataset que devuelve (spectrogram_tensor, params_tensor).
-    No carga ni requiere archivos .wav.
-    """
-
-    def __init__(self, tensors_dir, transform=None, target_transform=None,
-                 param_cols=('carrier', 'ratio', 'index'),
-                 normalize=True):
-        
+    def __init__(self, tensors_dir, transform=None, target_transform=None, param_cols=('carrier', 'ratio', 'index'), normalize=True):
         self.tensors_dir = tensors_dir
         self.transform = transform
         self.target_transform = target_transform
@@ -36,7 +28,6 @@ class SpectrogramTensorDataset(Dataset):
 
 
         # 3) Mapear filename → params normalizados
-        # ----------------------------
         self.labels = {}
         for _, row in df.iterrows():
             key = os.path.splitext(str(row["filename"]).strip())[0].lower()
@@ -84,35 +75,3 @@ class SpectrogramTensorDataset(Dataset):
 
         # 4) Devolver SOLO (spec, params)
         return spectrogram, params
-
-
-
-def waveform_to_spectrogram_tensor(waveform, sample_rate):
-    """
-    Convierte un waveform en un espectrograma compatible con el modelo.
-    Usa la misma configuración que los espectrogramas .pt del dataset.
-    """
-    # Convertir a mono si tiene más de un canal
-    if waveform.shape[0] > 1:
-        waveform = waveform.mean(dim=0, keepdim=True)
-
-    # Crear transformador de espectrograma (ajusta parámetros si tu dataset usa otros)
-    transform = torchaudio.transforms.Spectrogram(
-        n_fft=1024,
-        win_length=None,
-        hop_length=512,
-        power=2.0
-    )
-
-    # Aplicar transformación
-    spectrogram = transform(waveform)
-
-    # Normalizar (ns si hace falta)
-    spectrogram = (spectrogram - spectrogram.mean()) / (spectrogram.std() + 1e-6)
-
-    # Asegurar tipo y forma
-    spectrogram = spectrogram.float()
-    if spectrogram.dim() == 2:
-        spectrogram = spectrogram.unsqueeze(0)
-
-    return spectrogram

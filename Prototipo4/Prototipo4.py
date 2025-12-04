@@ -7,62 +7,49 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-
-class HybridLoss2(nn.Module):
-    def __init__(self, spec_weight=1.0, param_weight=0.05, eps=1e-6):
+# Función de pérdida hibrida:
+#   1) Reconstrucción espectral (L1 en dB): 
+#        - Mide la diferencia directa entre espectrogramas
+#        - Es la parte principal de la pérdida
+#
+#   2) Spectral Convergence (SC):
+#        - Compara las magnitudes de forma relativa
+#        - Captura la estructura global del espectro (armónicos, energía)
+#        - Se usa con un peso bajo (mas como refuerzo)
+#
+#   3) Parámetros (SmoothL1):
+#        - Penaliza diferencias en los parámetros del sintetizador
+#        - Peso pequeño porque los parámetros son menos importantes y no siempre son únicos para un mismo espectrograma.
+class HybridLoss(nn.Module):
+    def __init__(self, spec_weight=1.0, param_weight=0.05, eps=1e-8):
         super().__init__()
         self.spec_weight = spec_weight
         self.param_weight = param_weight
         self.eps = eps
-
         self.l1 = nn.L1Loss()
-        self.smooth = nn.SmoothL1Loss()  # mejor que MSE para parámetros no inyectivos
+        self.param_loss = nn.SmoothL1Loss()
 
-    def forward(self, pred_spec, target_spec, pred_params, target_params):
-        
-        # --- Espectrograma en log ---
-        log_pred = torch.log(pred_spec.abs() + self.eps)
-        log_tgt  = torch.log(target_spec.abs() + self.eps)
+    def spectral_convergence(self, pred_db, tgt_db):
+        pred_mag = 10 ** (pred_db / 20)
+        tgt_mag  = 10 ** (tgt_db / 20)
+        num = torch.norm(pred_mag - tgt_mag, p='fro')
+        den = torch.norm(tgt_mag, p='fro').clamp(min=self.eps)
+        return num / den
 
-        loss_spec = self.l1(log_pred, log_tgt)
+    def forward(self, pred_spec, tgt_spec, pred_params, tgt_params):
+        # 1) Pérdida espectral (diferencia entre espectrogramas)
+        loss_spec = self.l1(pred_spec, tgt_spec)
 
-        # --- Parámetros (no inyectivos → SmoothL1) ---
-        loss_params = self.smooth(pred_params, target_params)
+        # 2) Convergencia espectral 
+        sc_loss = self.spectral_convergence(pred_spec, tgt_spec) if self.use_sc else 0.0
 
-        # --- Combinación ---
-        total = self.spec_weight * loss_spec + self.param_weight * loss_params
+        # 3) Pérdida paramétrica (bajo peso)
+        loss_params = self.param_loss(pred_params, tgt_params)
+
+        # 4) Combinación de pérdidas
+        total = (self.spec_weight * loss_spec + self.spec_weight * 0.5 * sc_loss + self.param_weight * loss_params)
 
         return total, loss_spec.detach(), loss_params.detach()
-# -------------------------
-# HybridLoss (espectrograma + parámetros)
-# -------------------------
-class HybridLoss(nn.Module):
-    def __init__(self, param_weight=0.1, spec_weight=1.0):
-        """
-        param_weight: peso multiplicador para la pérdida de parámetros (MSE)
-        spec_weight: peso multiplicador para la pérdida de espectrograma (L1)
-        """
-        super().__init__()
-        self.param_weight = float(param_weight)
-        self.spec_weight = float(spec_weight)
-        self.l1 = nn.L1Loss()
-        self.mse = nn.MSELoss()
-    
-    def forward(self, pred_spec, target_spec, pred_params, target_params):
-        """
-        pred_spec, target_spec: shape (B, 1, H, W) o (B, C, H, W)
-        pred_params, target_params: shape (B, n_params)
-        """
-        # asegurarse de que shapes son compatibles
-        if pred_spec.shape != target_spec.shape:
-            # intentar redimensionar si pred tiene un canal distinto (ej: B,H,W)
-            # pero lo ideal es que el modelo devuelva exactamente la misma forma
-            raise ValueError(f"pred_spec.shape {pred_spec.shape} != target_spec.shape {target_spec.shape}")
-        
-        loss_spec = self.l1(pred_spec, target_spec) * self.spec_weight
-        loss_params = self.mse(pred_params, target_params) * self.param_weight
-        total = loss_spec + loss_params
-        return total, loss_spec, loss_params
 
 # -------------------------
 # CNNRegressor
@@ -166,41 +153,24 @@ class CNNRegressor4(nn.Module):
         
         return params, recon
 
-    def fit(self,
-                train_loader,
-                device='cpu',
-                epochs=10,
-                lr=1e-3,
-                print_every_batches=50,
-                criterion=None,
-                optimizer=None):
-            """
-            Entrena el modelo con la lógica que proporcionaste.
-            - train_loader: DataLoader que devuelve (batch_spec, batch_params)
-            - device: 'cpu' o 'cuda'
-            - epochs: número de épocas (por defecto 10)
-            - lr: learning rate si no se pasa optimizer
-            - print_every_batches: no usado para prints por batch en el bucle original, pero lo dejo disponible
-            - criterion: instancia de HybridLoss (si None se crea una por defecto)
-            - optimizer: optimizador; si None se crea Adam con lr
-            Retorna: history dict con listas 'total', 'spec', 'params' (valores medios por época)
-            """
-            # preparar device
+    # Función que entrena el modelo
+    def fit(self, train_loader, device='cpu', epochs=10, lr=1e-3, print_every_batches=50, criterion=None, optimizer=None):
+            # - train_loader: DataLoader que devuelve (batch_spec, batch_params)
+            # - criterion: instancia de HybridLoss (si None se crea una por defecto)
+            # - optimizer: optimizador; si None se crea Adam con lr
+            
             self.to(device)
 
-            # criterion y optimizer por defecto
+            # Lo implemento así para poder probar distintos criterios y optimizers
             if criterion is None:
-                criterion = HybridLoss2()
+                criterion = HybridLoss()
                 criterion.to(device)
             if optimizer is None:
                 optimizer = optim.Adam(self.parameters(), lr=lr)
 
-            history = {
-                'total': [],
-                'spec': [],
-                'params': []
-            }
+            history = {'total': [],'spec': [],'params': []}
 
+            # Entrenamiento
             for epoch in range(epochs):
                 self.train()
                 running_total = 0.0
@@ -213,13 +183,12 @@ class CNNRegressor4(nn.Module):
                     batch_spec = batch_spec.to(device)       # (B,1,H,W)
                     batch_params = batch_params.to(device)   # (B,3) o (B,n_params)
 
-                    optimizer.zero_grad()
+                    optimizer.zero_grad()  # Reset gradientes
                     pred_params, pred_spec = self(batch_spec)
 
-                    # criterio: devuelve (total, spec, params)
                     loss_total, loss_spec, loss_params = criterion(pred_spec, batch_spec, pred_params, batch_params)
-                    loss_total.backward()
-                    optimizer.step()
+                    loss_total.backward()  #Backprop
+                    optimizer.step()       #Descenso de gradientes
 
                     running_total += loss_total.item()
                     running_spec += loss_spec.item()
@@ -244,8 +213,9 @@ class CNNRegressor4(nn.Module):
 
                 print(f"Epoch {epoch+1}/{epochs}  Avg total: {avg_total:.6f}  Spec: {avg_spec:.6f}  Params: {avg_params:.6f}")
 
-            return history
+            return history #Retorna: history dict con listas 'total', 'spec', 'params' (valores medios por época)
     
+    #???
     def evaluate(self, test_loader, device='cpu', save_dir="eval_results"):
         """
         Evalúa el modelo sobre test_loader siguiendo la celda que proporcionaste.
@@ -403,11 +373,7 @@ class CNNRegressor4(nn.Module):
         }
         return metrics
 
-    def save(self, path="cnn_spectrogram.pth"):
-        """Guarda solo el state_dict del modelo."""
-        torch.save(self.state_dict(), path)
-        print(f"Modelo guardado en: {path}")
-
+    #???
     @staticmethod
     def load(path="cnn_spectrogram.pth", device="cpu", n_params=3, input_channels=1, base_filters=32):
         """

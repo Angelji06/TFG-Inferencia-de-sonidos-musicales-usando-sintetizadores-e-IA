@@ -2,7 +2,7 @@
 import os
 import tkinter as tk
 from tkinter import filedialog, messagebox
-from logica import generar_dataset, cargar_dataset, entrenar_modelo, fm_synthesize,play_audio,reproducir_wav,reproducir_prediccion
+from logica import generar_dataset, check_dataset, entrenar_modelo, fm_synthesize,play_audio,reproducir_wav,reproducir_prediccion
 
 from Prototipo4 import CNNRegressor4
 import librosa
@@ -133,6 +133,16 @@ class App:
 
         tk.Label(p, text="Entrenamiento", font=("Arial", 16)).pack(pady=(6,10))
 
+        # Seccion dispositivo
+        device_frame = tk.LabelFrame(p, text="Device", padx=8, pady=8)
+        device_frame.pack(fill="x", padx=6, pady=(4,10))
+
+        tk.Label(device_frame, text="Device:").grid(row=0, column=0, sticky="e", padx=4, pady=4)
+        self.device_var = tk.StringVar(value=self.train_device)
+        device_menu = tk.OptionMenu(device_frame, self.device_var, "cpu", "cuda")
+        device_menu.config(width=8)
+        device_menu.grid(row=0, column=1, sticky="w", padx=4, pady=4)
+
         # Sección superior: generar / cargar dataset
         top_frame = tk.LabelFrame(p, text="Dataset (generar o cargar)", padx=8, pady=8)
         top_frame.pack(fill="x", padx=6, pady=(4,10))
@@ -173,13 +183,6 @@ class App:
         self.entry_batch.delete(0, "end")
         self.entry_batch.insert(0, str(self.train_batch_size))
         self.entry_batch.grid(row=1, column=1, sticky="w", padx=4, pady=4)
-
-        # Device
-        tk.Label(params_frame, text="Device:").grid(row=1, column=2, sticky="e", padx=4, pady=4)
-        self.device_var = tk.StringVar(value=self.train_device)
-        device_menu = tk.OptionMenu(params_frame, self.device_var, "cpu", "cuda")
-        device_menu.config(width=8)
-        device_menu.grid(row=1, column=3, sticky="w", padx=4, pady=4)
 
         # print_every_batches
         tk.Label(params_frame, text="Print every (batches):").grid(row=2, column=0, sticky="e", padx=4, pady=4)
@@ -230,12 +233,11 @@ class App:
 
     def _generar_dataset(self):
         try:
-            ds = generar_dataset()
+            ds = generar_dataset(self.device_var)
             self.dataset_obj = ds
             self.pathDataset = ds.get('ruta')
 
             self.refresh_entrenamiento_page()
-
             self.btn_entrenar.config(state="normal")
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo generar dataset:\n{e}")
@@ -247,7 +249,7 @@ class App:
             return
 
         try:
-            ds = cargar_dataset(path)
+            ds = check_dataset(path)
             self.dataset_obj = ds
             self.pathDataset = path
 
@@ -263,7 +265,7 @@ class App:
             messagebox.showwarning("Aviso", "No hay dataset para entrenar.")
             return
 
-        # Leer y validar hiperparámetros desde la UI
+        # Leer y validar hiperparámetros desde la GUI
         try:
             nombre = str(self.hp_name_var.get())
             epochs = int(self.entry_epochs.get())
@@ -289,28 +291,10 @@ class App:
         self.btn_cargar_ds.config(state="disabled")
 
         try:
-            # Llamada a la función de lógica: pasamos kwargs comunes
-            # Asegúrate de que entrenar_modelo acepta estos argumentos en logica.py.
-
-            result = entrenar_modelo(
-                self.nombreModelo,
-                self.dataset_obj,
-                epochs=epochs,
-                lr=lr,
-                batch_size=batch_size,
-                device=device,
-                print_every_batches=print_every
-            )
+            result = entrenar_modelo(self.nombreModelo, self.dataset_obj, epochs=epochs, lr=lr, batch_size=batch_size, device=device, print_every_batches=print_every)
             
-            # Interpretamos 'result' como la ruta completa al .pth guardado.
-            if result:
-                # si result es path completo:
-                self.pathModelo = result
-                self.nombreModelo = os.path.basename(result)
-            else:
-                # fallback: marcar entrenado sin ruta
-                self.pathModelo = None
-                self.nombreModelo = "modelo_entrenado"
+            self.pathModelo = result
+            self.nombreModelo = os.path.basename(result)
 
             self.model_trained = True
 
@@ -356,13 +340,6 @@ class App:
         tk.Button(wav_frame, text="Seleccionar WAV", command=self._seleccionar_wav).pack(side="left", padx=6)
         self.label_wav_selected = tk.Label(wav_frame, text="WAV: Ninguno")
         self.label_wav_selected.pack(side="left", padx=6)
-
-        # 3. Opciones de inferencia
-        opts_frame = tk.Frame(frame)
-        opts_frame.pack(fill="x", pady=6)
-        tk.Label(opts_frame, text="Device:").grid(row=0, column=0, sticky="e")
-        self.test_device_var = tk.StringVar(value=self.train_device)
-        tk.OptionMenu(opts_frame, self.test_device_var, "cpu", "cuda").grid(row=0, column=1, sticky="w", padx=6)
 
         # 4. Botones de Acción
         action_frame = tk.Frame(frame)
@@ -424,7 +401,7 @@ class App:
         try:
             from logica import hacer_inferencia
 
-            device = self.test_device_var.get()
+            device = self.device_var
             
             # --- DEBUG: Imprimir antes de llamar ---
             print(f"DEBUG: Llamando a inferencia con {self.pathModelo}")
