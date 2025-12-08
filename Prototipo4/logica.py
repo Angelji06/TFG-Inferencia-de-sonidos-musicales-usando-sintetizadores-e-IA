@@ -40,69 +40,99 @@ def generar_wavs_FM():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     main_dir = os.path.dirname(script_dir)
     out_path = os.path.join(main_dir, "Datasets", "datasetFMwav")
+    
     if os.path.exists(out_path):
         shutil.rmtree(out_path)
     os.makedirs(out_path, exist_ok=True)
     
-    # params (misma semántica que la versión con pyo)
+    # params
     params = GEN_PARAMS
     SR, TIME = 44100, 1
+
+    # Extraemos los pasos (step) para calcular el límite del Jitter
+    step_c = params["carrier"][2]
+    step_r = params["ratio"][2]
+    step_i = params["index"][2]
 
     # t en float32 para evitar casts en cada iteración
     t = np.linspace(0, TIME, int(SR*TIME), endpoint=False).astype(np.float32)
 
-    # csv header (abrimos el archivo una sola vez y escribimos en buffer por bloques)
+    # csv header
     csv_path = os.path.join(out_path, "labels.csv")
     csv_buffer = []
-    buffer_flush = 1000  # escribir cada 1000 filas (REVISAR NUMERO)
+    buffer_flush = 1000 
 
     with open(csv_path, "w", newline="") as f_header:
+        # Importante: Las etiquetas ahora serán decimales (floats), no enteros exactos
         csv.writer(f_header).writerow(["filename","carrier","ratio","index"])
 
-    print("=== GENERACIÓN DE WAVS (fase 1/2) ===")
+    print("=== GENERACIÓN DE WAVS (CON JITTER) (fase 1/2) ===")
+    print(f"Jitter aplicado: Carrier ~±{step_c/2}Hz, Ratio ~±{step_r/2}, Index ~±{step_i/2}")
     print("Generando...")
+    
     g = 0
-    # iteración principal
-    for c in np.arange(*params["carrier"]):
-        for r in np.arange(*params["ratio"]):
-            for I in np.arange(*params["index"]):
+    
+    # --- ITERACIÓN PRINCIPAL ---
+    # Usamos la rejilla como base, pero sintetizamos valores desviados
+    for c_grid in np.arange(*params["carrier"]):
+        for r_grid in np.arange(*params["ratio"]):
+            for I_grid in np.arange(*params["index"]):
                 g += 1
                 fname = f"fm_{g}.wav"
                 file_path = os.path.join(out_path, fname)
 
-                # cálculo en float32
-                fm = float(c) * float(r)
+                # --- APLICACIÓN DEL JITTER ---  Esto convierte la rejilla discreta en una cobertura continua
+                jitter_c = np.random.uniform(-step_c/2.0, step_c/2.0)
+                jitter_r = np.random.uniform(-step_r/2.0, step_r/2.0)
+                jitter_I = np.random.uniform(-step_i/2.0, step_i/2.0)
+
+                # Valores finales para la síntesis 
+                c_real = float(c_grid + jitter_c)
+                r_real = float(r_grid + jitter_r)
+                I_real = float(I_grid + jitter_I)
+                
+                # Protección mínima: evitamos frecuencias negativas o ratios/indices <= 0 extremos
+                if c_real < 10: c_real = 10.0
+                if r_real < 0.01: r_real = 0.01
+                if I_real < 0: I_real = 0.0
+
+                # --- SÍNTESIS (Usando los valores reales con Jitter) ---
+                # Fm = Fc * Ratio
+                fm = c_real * r_real
+                
+                # Moduladora
                 mod = np.sin(2.0 * np.pi * fm * t).astype(np.float32)
-                x = np.sin(2.0 * np.pi * float(c) * t + float(I) * mod).astype(np.float32)
+                
+                # Portadora modulada
+                # x = sin(2*pi*Fc*t + I*mod)
+                x = np.sin(2.0 * np.pi * c_real * t + I_real * mod).astype(np.float32)
 
                 # escribir wav
                 sf.write(file_path, x, SR, subtype='PCM_16')
 
-                # acumular fila en buffer
-                csv_buffer.append([fname, float(c), float(r), float(I)])
+                # --- GUARDAR ETIQUETA ---
+                csv_buffer.append([fname, c_real, r_real, I_real])
+                
                 if len(csv_buffer) >= buffer_flush:
-                    # volcar buffer al CSV en bloque
                     with open(csv_path, "a", newline="") as f:
                         csv.writer(f).writerows(csv_buffer)
                     csv_buffer = []
 
-                # prints reducidos para evitar overhead de I/O en consola
                 if g % 1000 == 0:
                     print(f"Generados {g} wavs...")
 
-    # flush final del buffer restante
+    # flush final
     if csv_buffer:
         with open(csv_path, "a", newline="") as f:
             csv.writer(f).writerows(csv_buffer)
 
-    # tiempo final
     t_end = time.time()
     elapsed = t_end - t_start
     per_file = elapsed / g if g > 0 else 0.0
     h, rem = divmod(elapsed, 3600)
     m, s = divmod(rem, 60)
     print(f"WAVs generados: {g}; carpeta: {out_path}")
-    print(f"Tiempo total generación WAVs: {int(h)}h {int(m)}m {s:.2f}s  |  media por wav: {per_file:.4f}s")
+    print(f"Tiempo total: {int(h)}h {int(m)}m {s:.2f}s  |  media: {per_file:.4f}s")
 
     return out_path
 
