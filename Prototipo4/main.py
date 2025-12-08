@@ -1,12 +1,13 @@
 import os
 import tkinter as tk
 from tkinter import filedialog, messagebox
-from logica import generar_dataset, check_dataset, entrenar_modelo, fm_synthesize,play_audio,reproducir_wav,reproducir_prediccion
+from logica import get_gen_params, generar_dataset, check_dataset, entrenar_modelo, fm_synthesize,play_audio,reproducir_wav,reproducir_prediccion, hacer_inferencia
 
 from Prototipo4 import CNNRegressor4
 import librosa
 import numpy as np
 import torch
+import pandas as pd
 #import simpleaudio as sa
  
 class App:
@@ -379,11 +380,6 @@ class App:
         self.result_text.delete("1.0", tk.END)
 
     def _predecir_wav(self):
-        # 1. Validaciones
-        if not self.test_wav_path:
-            messagebox.showerror("Error", "Selecciona un WAV primero.")
-            return
-        
         # UI Feedback
         self.btn_predict.config(state="disabled") 
         self.result_text.delete("1.0", tk.END)
@@ -393,48 +389,62 @@ class App:
         if hasattr(self, 'root'): self.root.update_idletasks() 
 
         try:
-            from logica import hacer_inferencia
+            params = hacer_inferencia(self.pathModelo, self.test_wav_path, device = self.device_var.get())
+            self.last_prediction_params = params  
 
-            device = self.device_var.get()
-            
-            # --- DEBUG: Imprimir antes de llamar ---
-            print(f"DEBUG: Llamando a inferencia con {self.pathModelo}")
+            # Comprobar si el audio está dentro del conjunto de entrenamiento
+            nombre = os.path.basename(self.test_wav_path) 
+            if nombre[:3] == "fm_":  # De momento simplemente revisando el nombre del archivo
+                ruta_csv = os.path.join(os.path.dirname(os.getcwd()), 'Datasets', 'datasetFMwav', 'labels.csv')
+                df_labels = pd.read_csv(ruta_csv) 
+                fila = df_labels[df_labels['filename'] == nombre]
 
-            # Llamada al backend
-            params = hacer_inferencia(self.pathModelo, self.test_wav_path, device)
-            
-            # --- DEBUG: Ver qué devuelve el modelo ---
-            print(f"DEBUG: El modelo devolvió: {params}")
+                val_fc = fila.iloc[0]['carrier']
+                val_fm = fila.iloc[0]['ratio']
+                val_i  = fila.iloc[0]['index']
+                
+                texto_ori = (
+                    f"Audio en Dataset Entrenamiento! Valores Originales: \n"
+                    f"Carrier (fc): {val_fc:.2f}\n"
+                    f"Ratio (fm/fc): {val_fm:.2f}\n"
+                    f"Index (I):    {val_i:.2f}\n"
+                )
+                self.result_text.insert(tk.END, texto_ori)
+            else:
+                GENparams = get_gen_params() # Devuelve la copia de GEN_PARAMS
 
-            # =======================================================
-            # IMPORTANTE: ESTA ES LA LÍNEA QUE TE FALTABA O FALLABA
-            # Guardamos los datos en la variable de la clase (self)
-            self.last_prediction_params = params 
-            # =======================================================
+                c_min, c_max = GENparams['carrier'][0], GENparams['carrier'][1]
+                r_min, r_max = GENparams['ratio'][0], GENparams['ratio'][1]
+                i_min, i_max = GENparams['index'][0], GENparams['index'][1]
+
+                texto_ori = (
+                    f"Audio NO en Dataset Entrenamiento!\n"
+                    f"Recuerda el Dominio (Rango de entrenamiento):\n"
+                    f"Carrier (Fc): {c_min} - {c_max} Hz\n"
+                    f"Ratio (h):    {r_min} - {r_max}\n"
+                    f"Index (I):    {i_min} - {i_max}\n"
+                )
+
+                self.result_text.insert(tk.END, texto_ori)
 
             # Mostrar texto en pantalla
             c, r, i = params
-            texto_res = (
-                f"--- PREDICCIÓN EXITOSA ---\n"
+            texto_pre = (
+                f"--- PREDICCIÓN ---\n"
                 f"Carrier (fc): {c:.2f}\n"
                 f"Ratio (fm/fc): {r:.2f}\n"
                 f"Index (I):    {i:.2f}\n"
                 f"\n(Nota: Si los valores son < 1, recuerda que pueden estar normalizados)"
             )
-            self.result_text.insert(tk.END, texto_res)
-            
-            # --- DEBUG: Confirmar guardado ---
-            print(f"DEBUG: Guardado en memoria self.last_prediction_params = {self.last_prediction_params}")
+            self.result_text.insert(tk.END, texto_pre)
 
         except Exception as e:
-            self.result_text.insert(tk.END, f"ERROR CRÍTICO:\n{str(e)}\n")
+            self.result_text.insert(tk.END, f"ERROR:\n{str(e)}\n")
             print(f"ERROR: {e}")
         finally:
             self.btn_predict.config(state="normal")
 
     def _play_synth(self):
-        # ... imports y validaciones ...
-
         # TRUCO RÁPIDO SI NO SUENA: Multiplicar valores
         p = self.last_prediction_params
         
@@ -446,8 +456,6 @@ class App:
         reproducir_prediccion([carrier_real, ratio_real, index_real])
 
     def _play_original(self):
-        from logica import reproducir_wav
-        
         if not self.test_wav_path:
             return
             

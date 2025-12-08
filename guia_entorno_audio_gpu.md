@@ -36,6 +36,9 @@ Ejecutar en orden:
 # 1. PyTorch con soporte GPU (CUDA 12.1)
 conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia -y
 
+# Si usas cpu
+conda install pytorch torchvision torchaudio cpuonly -c pytorch -y
+
 # 2. Herramientas de procesamiento de audio y matemáticas base
 # Usamos conda-forge para obtener las versiones compiladas más estables de ffmpeg y librosa
 conda install -c conda-forge ffmpeg librosa numpy -y

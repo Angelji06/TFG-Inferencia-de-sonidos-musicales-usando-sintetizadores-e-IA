@@ -24,6 +24,15 @@ from Prototipo4 import CNNRegressor4, HybridLoss
 #=================================== GENERACION DE DATASET ====================================================
 #==============================================================================================================
 
+GEN_PARAMS = {
+    "carrier": (100, 2000, 100), 
+    "ratio": (0.05, 2, 0.05), 
+    "index": (1, 10, 0.5)
+}
+
+def get_gen_params():
+    return GEN_PARAMS.copy()
+
 # 1. GENERACIÓN DE WAVs FM + CSV DE ETIQUETAS CON BARRIDO CON NUMPY
 def generar_wavs_FM():
     t_start = time.time()  
@@ -36,7 +45,7 @@ def generar_wavs_FM():
     os.makedirs(out_path, exist_ok=True)
     
     # params (misma semántica que la versión con pyo)
-    params = {"carrier": (100,2000,100), "ratio": (0.05,2,0.05), "index": (1,10,0.5)}
+    params = GEN_PARAMS
     SR, TIME = 44100, 1
 
     # t en float32 para evitar casts en cada iteración
@@ -96,7 +105,6 @@ def generar_wavs_FM():
     print(f"Tiempo total generación WAVs: {int(h)}h {int(m)}m {s:.2f}s  |  media por wav: {per_file:.4f}s")
 
     return out_path
-
 
 # 2. CONVERSIÓN WAV → TENSORES PYTORCH
 def convertir_wavs_a_tensores(wav_folder, device):
@@ -321,10 +329,8 @@ def hacer_inferencia(ruta_modelo, ruta_wav, device="cpu"):
 
     return pred_raw.tolist()
 
+# Genera la señal de audio sintética usando fórmulas FM.
 def fm_synthesize(carrier, ratio, index, duration=1.0, sr=44100):
-    """
-    Genera la señal de audio sintética usando fórmulas FM.
-    """
     t = np.linspace(0, duration, int(sr * duration), endpoint=False)
     mod = np.sin(2 * np.pi * (carrier * ratio) * t)
     car = np.sin(2 * np.pi * carrier * t + index * mod)
@@ -337,19 +343,16 @@ def play_audio(waveform, sr):
     sd.play(arr, sr)
     sd.wait()
 
-# Lee un archivo con soundfile y lo reproduce con sounddevice.
+# Lee un archivo con soundfile y lo reproduce con sounddevice (se usa para reproducir el wav original)
 def reproducir_wav(path):
     if os.path.exists(path):
-        # Leemos el audio y el sample rate del archivo
         data, sr = sf.read(path)
         play_audio(data, sr)
     else:
         print(f"Error: No se encuentra el archivo {path}")
 
+# Genera el audio en tiempo real basado en los parámetros predichos y lo reproduce
 def reproducir_prediccion(params):
-    """
-    Genera el audio en tiempo real basado en los parámetros predichos y lo reproduce.
-    """
     # Desempaquetar parámetros (asegurando floats de Python)
     carrier = float(params[0])
     ratio = float(params[1])
