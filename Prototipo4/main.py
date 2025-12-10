@@ -8,6 +8,9 @@ import librosa
 import numpy as np
 import torch
 import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import librosa.display
 #import simpleaudio as sa
  
 class App:
@@ -445,15 +448,7 @@ class App:
             self.btn_predict.config(state="normal")
 
     def _play_synth(self):
-        # TRUCO RÁPIDO SI NO SUENA: Multiplicar valores
-        p = self.last_prediction_params
-        
-        # Ajusta estos multiplicadores según los rangos que usaste al crear el dataset
-        carrier_real = p[0] if p[0] > 50 else p[0] * 2000  
-        ratio_real   = p[1] if p[1] > 0.1 else p[1] * 2
-        index_real   = p[2] if p[2] > 0.5 else p[2] * 10
-        
-        reproducir_prediccion([carrier_real, ratio_real, index_real])
+        reproducir_prediccion(self.last_prediction_params)
 
     def _play_original(self):
         if not self.test_wav_path:

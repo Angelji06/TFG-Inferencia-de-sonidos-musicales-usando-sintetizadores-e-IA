@@ -1,8 +1,5 @@
 import time
 import os
-
-# logica.py
-import os
 import shutil
 import time
 import math
@@ -368,6 +365,7 @@ def fm_synthesize(carrier, ratio, index, duration=1.0, sr=44100):
     # sounddevice prefiere float32 para el audio
     return car.astype(np.float32), sr
 
+# Reproduce audio usando soundevice
 def play_audio(waveform, sr):
     arr = np.asarray(waveform, dtype=np.float32)
     sd.play(arr, sr)
