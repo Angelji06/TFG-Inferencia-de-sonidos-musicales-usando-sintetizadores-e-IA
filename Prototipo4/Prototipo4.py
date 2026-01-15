@@ -154,7 +154,7 @@ class CNNRegressor4(nn.Module):
         return params, recon
 
     # Función que entrena el modelo
-    def fit(self, train_loader, device='cpu', epochs=10, lr=1e-3, print_every_batches=50, criterion=None, optimizer=None):
+    def fit(self, train_loader, val_loader=None, device='cpu', epochs=10, lr=1e-3, print_every_batches=50, criterion=None, optimizer=None):
             # - train_loader: DataLoader que devuelve (batch_spec, batch_params)
             # - criterion: instancia de HybridLoss (si None se crea una por defecto)
             # - optimizer: optimizador; si None se crea Adam con lr
@@ -168,7 +168,13 @@ class CNNRegressor4(nn.Module):
             if optimizer is None:
                 optimizer = optim.Adam(self.parameters(), lr=lr)
 
-            history = {'total': [],'spec': [],'params': []}
+            history = {'total': [],'spec': [],'params': [], 'val_total' : []}
+
+            # Variable que guarda el mejor modelo
+
+            best_val_loss = float('inf')
+            best_state = None
+
 
             # Entrenamiento
             for epoch in range(epochs):
@@ -210,6 +216,35 @@ class CNNRegressor4(nn.Module):
                 history['total'].append(avg_total)
                 history['spec'].append(avg_spec)
                 history['params'].append(avg_params)
+
+                # Fase de validación
+
+                avg_val_loss = 0.0
+
+                if val_loader is not None:
+                    self.eval()
+                    val_running = 0.0
+                    n_val = 0
+                    with torch.no_grad():
+                        for v_spec, v_params in val_loader:
+                            v_spec = v_spec.to(device)
+                            v_params = v_params.to(device)
+                            
+                            v_p, v_s = self(v_spec)
+                            v_loss, _, _ = criterion(v_s, v_spec, v_p, v_params)
+                            
+                            val_running += v_loss.item()
+                            n_val += 1
+                
+                    avg_val_loss = val_running / max(1, n_val)
+                    history['val_total'].append(avg_val_loss)
+                    msg_val = f" | Val Loss: {avg_val_loss:.6f}"
+
+                    # Guardar el mejor modelo si mejora
+                    if avg_val_loss < best_val_loss:
+                        best_val_loss = avg_val_loss
+                        best_state_dict = self.state_dict()
+                        msg_val += " (*)"
 
                 print(f"Epoch {epoch+1}/{epochs}  Avg total: {avg_total:.6f}  Spec: {avg_spec:.6f}  Params: {avg_params:.6f}")
 

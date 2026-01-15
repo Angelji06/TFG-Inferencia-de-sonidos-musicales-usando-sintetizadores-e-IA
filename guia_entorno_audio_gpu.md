@@ -5,7 +5,7 @@ Esta guía documenta los pasos necesarios para replicar el entorno de ejecución
 ## 1. Gestión del Entorno Virtual (Conda)
 
 ### 1.1 Crear el entorno
-Creamos un entorno limpio especificando Python 3.10 para asegurar compatibilidad con las librerías de audio.
+Creamos un entorno limpio especificando Python 3.10 para asegurar compatibilidad con las librerías de audio. (Te hacen aceptar términos)
 
 ```bash
 conda create -n audio_gpu python=3.10 -y

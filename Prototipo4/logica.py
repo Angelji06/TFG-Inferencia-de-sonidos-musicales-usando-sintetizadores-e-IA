@@ -8,7 +8,7 @@ import csv
 import glob
 import torch
 import torchaudio
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 import numpy as np
 import soundfile as sf
 import sounddevice as sd
@@ -263,7 +263,18 @@ def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3
 
      # --- Entrenamiento ---
     print(f"Entrenando modelo!       Usando {device}")
-    history = model.fit(train_loader, device=device, epochs=epochs, lr=lr, print_every_batches=print_every_batches)
+
+    # Vamos usar el 80% de los parámetros para entrenar y el 20% restante lo usamos para la validación
+    train_size = int(len(dataset) * 0.8)
+    val_size = len(dataset) - train_size
+
+    # Lo dividimos aleatoriamente
+    train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+
+
+    history = model.fit(train_loader, val_loader=val_loader, device=device, epochs=epochs, lr=lr, print_every_batches=print_every_batches)
 
     # --- Guardar modelo ---
     save_path = os.path.join(save_dir , nombreModelo)
