@@ -12,6 +12,7 @@ from torch.utils.data import DataLoader, random_split
 import numpy as np
 import soundfile as sf
 import sounddevice as sd
+import matplotlib.pyplot as plt
 
 # importa tus componentes (ajusta los nombres/paths según tu proyecto)
 from SpectrogramTensorDataset4 import SpectrogramTensorDataset
@@ -404,3 +405,29 @@ def reproducir_prediccion(params):
     
     # 2. Reproducir
     play_audio(waveform, sr)
+
+# Funciones para mostrar espectrogramas
+
+def mostrar_espectrograma(wav, sample_rate):
+    # aseguramos que sean tensores
+    if isinstance(wav, np.ndarray):
+        wav = torch.from_numpy(wav).float
+
+    spec_transform = torchaudio.transforms.Spectrogram(n_fft=1024, hop_length=256, power=2.0)
+
+    # Lo acercamos a algo similar a lo que escucha el oido humano
+    amplitude_to_db = torchaudio.transforms.AmplitudeToDB(top_db=80)
+
+    spec = spec_transform(wav)
+    spec_db = amplitude_to_db(spec)
+
+    image = spec_db.squeeze(0).numpy()
+
+    # Visualización
+    plt.figure(figsize=(10, 4))
+    plt.imshow(image, origin='lower', aspect='auto', cmap='inferno')
+    plt.colorbar(format='%+2.0f dB')
+    plt.xlabel("Tiempo (Frames)")
+    plt.ylabel("Frecuencia (Bins)")
+    plt.tight_layout()
+    plt.show()
