@@ -13,6 +13,8 @@ import numpy as np
 import soundfile as sf
 import sounddevice as sd
 import matplotlib.pyplot as plt
+import librosa          # <--- NUEVO
+import librosa.display
 
 # importa tus componentes (ajusta los nombres/paths según tu proyecto)
 from SpectrogramTensorDataset4 import SpectrogramTensorDataset
@@ -408,26 +410,26 @@ def reproducir_prediccion(params):
 
 # Funciones para mostrar espectrogramas
 
-def mostrar_espectrograma(wav, sample_rate):
-    # aseguramos que sean tensores
-    if isinstance(wav, np.ndarray):
-        wav = torch.from_numpy(wav).float
+def mostrar_espectrograma(wav, sample_rate, title):
+    stft = librosa.stft(wav)
+    spectrogram = np.abs(stft)
 
-    spec_transform = torchaudio.transforms.Spectrogram(n_fft=1024, hop_length=256, power=2.0)
+    # 3. Convertir a dB NORMALIZADO
+    # ref=np.max es la CLAVE: Hace que el sonido más fuerte sea 0 dB
+    S_db = librosa.amplitude_to_db(spectrogram)
 
-    # Lo acercamos a algo similar a lo que escucha el oido humano
-    amplitude_to_db = torchaudio.transforms.AmplitudeToDB(top_db=80)
+    # 4. VISUALIZACIÓN    
+    fig, ax = plt.subplots(figsize=(10, 4))
 
-    spec = spec_transform(wav)
-    spec_db = amplitude_to_db(spec)
+    librosa.display.specshow(
+       S_db,
+        y_axis='log',
+        x_axis='time',
+        sr=sample_rate,
+        cmap='inferno',
+        ax=ax
+    )
+    ax.axis('off')
 
-    image = spec_db.squeeze(0).numpy()
-
-    # Visualización
-    plt.figure(figsize=(10, 4))
-    plt.imshow(image, origin='lower', aspect='auto', cmap='inferno')
-    plt.colorbar(format='%+2.0f dB')
-    plt.xlabel("Tiempo (Frames)")
-    plt.ylabel("Frecuencia (Bins)")
-    plt.tight_layout()
+    plt.title(title)
     plt.show()
