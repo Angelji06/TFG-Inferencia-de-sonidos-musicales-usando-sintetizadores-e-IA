@@ -1,7 +1,8 @@
 import os
+import glob
 import tkinter as tk
 from tkinter import filedialog, messagebox
-from logica import get_gen_params, generar_dataset, check_dataset, entrenar_modelo, fm_synthesize,play_audio,reproducir_wav,reproducir_prediccion, hacer_inferencia, mostrar_espectrograma
+from logica import get_gen_params, generar_dataset, check_dataset, entrenar_modelo, fm_synthesize,play_audio,reproducir_wav,reproducir_prediccion, hacer_inferencia, mostrar_espectrograma, prediccion_multiples_wav
 
 from Prototipo4 import CNNRegressor4
 import librosa
@@ -47,7 +48,7 @@ class App:
         self._build_entrenamiento()
         self._build_test()
 
-        self.show_page(self.page_inicio)
+        self.show_page(self.page_inicio)        
 
     def show_page(self, page):
         self.refresh_inicio_status()
@@ -339,6 +340,9 @@ class App:
         self.label_wav_selected = tk.Label(wav_frame, text="WAV: Ninguno")
         self.label_wav_selected.pack(side="left", padx=6)
 
+        # Llama a la función para generar el lote de wavs para FAD
+        tk.Button(wav_frame, text="Generar Eval Set (FAD)", bg="#e1f5fe", command=self._predecir_2000_wavs).pack(side="right", padx=6)
+
         # 4. Botones de Acción
         action_frame = tk.Frame(frame)
         action_frame.pack(fill="x", pady=(8,6))
@@ -503,6 +507,25 @@ class App:
 
             except Exception as e:
                 messagebox.showerror("Error", f"No se pudo cargar el original:\n{e}")
+
+    # bucle para la predicción de 2000 wavs. Los usaremos para evaluar el modelo con FAD
+    def _predecir_2000_wavs(self):
+        self.result_text.delete("1.0", tk.END)
+        self.result_text.insert(tk.END, "Iniciando generación masiva para FAD...\nMira la consola para ver el progreso.\n")
+        self.root.update_idletasks()
+
+        try:
+            # Llamamos a tu lógica pasando la ruta CORRECTA del modelo
+            # Nota: Asumo que prediccion_multiples_wav gestiona internamente las carpetas de entrada/salida
+            # o que pregunta por ellas. Si necesita argumentos, añádelos aquí.
+            prediccion_multiples_wav(self.pathModelo) 
+            
+            messagebox.showinfo("Éxito", "Generación de audios completada.")
+            self.result_text.insert(tk.END, "¡Generación completada!\n")
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Falló la generación masiva:\n{e}")
+            self.result_text.insert(tk.END, f"Error: {e}\n")
 
 if __name__ == "__main__":
     root = tk.Tk()

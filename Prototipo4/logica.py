@@ -13,7 +13,7 @@ import numpy as np
 import soundfile as sf
 import sounddevice as sd
 import matplotlib.pyplot as plt
-import librosa          # <--- NUEVO
+import librosa         
 import librosa.display
 
 # importa tus componentes (ajusta los nombres/paths según tu proyecto)
@@ -370,6 +370,94 @@ def hacer_inferencia(ruta_modelo, ruta_wav, device="cpu"):
 
     return pred_raw.tolist()
 
+# Las dos funciones siguientes son la anterior dividida en dos, para hacer más eficiente el bucle de generación de predicciones
+def cargar_modelo_para_inferencia(ruta_modelo, device="cpu"):
+    """
+    Carga el modelo y las estadísticas UNA SOLA VEZ.
+    Devuelve el objeto model listo y las medias/desviaciones.
+    """
+    if not os.path.exists(ruta_modelo):
+        raise FileNotFoundError("No se encuentra el archivo del modelo.")
+
+    # 1) Normalizar device
+    device = torch.device("cuda" if (device == "cuda" and torch.cuda.is_available()) else "cpu")
+
+    # 2) Instanciar arquitectura y cargar checkpoint
+    model = CNNRegressor4(n_params=3)
+    ckpt = torch.load(ruta_modelo, map_location=device)
+
+    # soporte ambos formatos: checkpoint con 'state_dict' o antiguo state_dict directo
+    if isinstance(ckpt, dict) and 'state_dict' in ckpt:
+        state_dict = ckpt['state_dict']
+        means = ckpt.get('param_means', None)
+        stds = ckpt.get('param_stds', None)
+    else:
+        # archivo antiguo que contenía solo state_dict
+        state_dict = ckpt
+        means = None
+        stds = None
+
+    model.load_state_dict(state_dict)
+    model.to(device)
+    model.eval()
+    
+    # Preparamos las stats como numpy arrays aquí para no hacerlo en cada vuelta
+    if means is not None:
+        means = np.asarray(means, dtype=np.float32)
+    if stds is not None:
+        stds = np.asarray(stds, dtype=np.float32)
+
+    print("Modelo cargado exitosamente en:", device)
+    
+    # Devolvemos todo lo que necesita la siguiente función
+    return model, means, stds, device
+
+def hacer_inferencia_rapida(model, means, stds, ruta_wav, device):
+    """
+    Procesa un solo WAV usando un modelo YA cargado.
+    """
+    # 3) Procesar audio: leer WAV y calcular espectrograma como en entrenamiento
+    waveform, sr = torchaudio.load(ruta_wav)           # tensor en CPU
+    
+    # normalizar peak igual que en pipeline de training
+    waveform = waveform / waveform.abs().max().clamp(min=1e-8)
+
+    # crear transform igual que en training
+    # (Nota: Podríamos sacarlo fuera también, pero crearlo aquí es rápido y seguro)
+    spec_transform = torchaudio.transforms.Spectrogram(
+        n_fft=1024, hop_length=256, power=None, return_complex=True
+    ).to(device)
+
+    # mover waveform al device antes de transform y calcular magnitud dB
+    waveform = waveform.to(device)
+    spec_c = spec_transform(waveform)                  # compleja
+    mag = spec_c.abs()
+    db = torchaudio.transforms.AmplitudeToDB(stype='amplitude', top_db=80.0).to(device)(mag)
+
+    # asegurar shape (1, H, W) y batch dim (1, C, H, W)
+    if db.dim() == 2:
+        db = db.unsqueeze(0)    # (1, H, W)
+    spec = db.unsqueeze(0).to(device)  # (1, 1, H, W)
+
+    # 4) Inferencia
+    with torch.no_grad():
+        out = model(spec)
+        if isinstance(out, (tuple, list)):
+            pred_params = out[0]
+        else:
+            pred_params = out
+
+    pred = pred_params.detach().cpu().numpy().flatten()  # (3,)
+
+    # 5) Desnormalizar usando stats QUE NOS HAN PASADO
+    if (means is None) or (stds is None):
+        raise RuntimeError("Error: 'means' o 'stds' son None. Revisa el checkpoint.")
+
+    pred_raw = pred * stds + means
+
+    return pred_raw.tolist()
+
+
 # Genera la señal de audio sintética usando fórmulas FM.
 def fm_synthesize(carrier, ratio, index, duration=1.0, sr=44100):
     t = np.linspace(0, duration, int(sr * duration), endpoint=False)
@@ -433,3 +521,26 @@ def mostrar_espectrograma(wav, sample_rate, title):
 
     plt.title(title)
     plt.show()
+
+def prediccion_multiples_wav(path_modelo):
+    ruta_originales = "./Datasets/FAD_originales"
+    ruta_predicciones = "./Datasets/FAD_predicciones"
+
+    lista_wavs = glob.glob(os.path.join(ruta_originales, "*.wav"))
+    print(f"hay {len(lista_wavs)} wavs. Empezando a procesar...")
+    model, means, stds, device = cargar_modelo_para_inferencia(path_modelo, device="cuda")
+
+    for ruta_wav_original in lista_wavs:
+        
+        prediccion = hacer_inferencia_rapida(model, means, stds, ruta_wav_original, device)
+
+        p_carrier = prediccion[0]
+        p_ratio   = prediccion[1]
+        p_index   = prediccion[2]
+
+        audio_prediccion, sr = fm_synthesize(p_carrier, p_ratio, p_index)
+
+        nombre_archivo = os.path.basename(ruta_wav_original) 
+        ruta_guardado = os.path.join(ruta_predicciones, nombre_archivo)
+
+        sf.write(ruta_guardado, audio_prediccion, sr)
