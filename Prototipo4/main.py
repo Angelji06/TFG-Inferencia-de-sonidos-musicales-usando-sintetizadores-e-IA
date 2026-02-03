@@ -510,6 +510,13 @@ class App:
 
     # bucle para la predicción de 2000 wavs. Los usaremos para evaluar el modelo con FAD
     def _predecir_2000_wavs(self):
+        carpeta_input = filedialog.askdirectory(
+            title="Selecciona la carpeta con los wavs"
+        )
+
+        carpeta_output = carpeta_input + "_predicciones"
+
+
         self.result_text.delete("1.0", tk.END)
         self.result_text.insert(tk.END, "Iniciando generación masiva para FAD...\nMira la consola para ver el progreso.\n")
         self.root.update_idletasks()
@@ -518,7 +525,7 @@ class App:
             # Llamamos a tu lógica pasando la ruta CORRECTA del modelo
             # Nota: Asumo que prediccion_multiples_wav gestiona internamente las carpetas de entrada/salida
             # o que pregunta por ellas. Si necesita argumentos, añádelos aquí.
-            prediccion_multiples_wav(self.pathModelo) 
+            prediccion_multiples_wav(self.pathModelo, carpeta_input, carpeta_output) 
             
             messagebox.showinfo("Éxito", "Generación de audios completada.")
             self.result_text.insert(tk.END, "¡Generación completada!\n")

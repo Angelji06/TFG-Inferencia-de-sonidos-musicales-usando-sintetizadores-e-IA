@@ -522,11 +522,11 @@ def mostrar_espectrograma(wav, sample_rate, title):
     plt.title(title)
     plt.show()
 
-def prediccion_multiples_wav(path_modelo):
-    ruta_originales = "./Datasets/FAD_originales"
-    ruta_predicciones = "./Datasets/FAD_predicciones"
+def prediccion_multiples_wav(path_modelo, path_entrada, path_salida):
+    os.makedirs(path_salida, exist_ok=True)
 
-    lista_wavs = glob.glob(os.path.join(ruta_originales, "*.wav"))
+
+    lista_wavs = glob.glob(os.path.join(path_entrada, "*.wav"))
     print(f"hay {len(lista_wavs)} wavs. Empezando a procesar...")
     model, means, stds, device = cargar_modelo_para_inferencia(path_modelo, device="cuda")
 
@@ -541,6 +541,6 @@ def prediccion_multiples_wav(path_modelo):
         audio_prediccion, sr = fm_synthesize(p_carrier, p_ratio, p_index)
 
         nombre_archivo = os.path.basename(ruta_wav_original) 
-        ruta_guardado = os.path.join(ruta_predicciones, nombre_archivo)
+        ruta_guardado = os.path.join(path_salida, nombre_archivo)
 
         sf.write(ruta_guardado, audio_prediccion, sr)
