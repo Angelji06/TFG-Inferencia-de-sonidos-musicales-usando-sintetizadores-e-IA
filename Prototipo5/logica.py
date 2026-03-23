@@ -20,7 +20,7 @@ from SpectrogramTensorDataset5 import SpectrogramTensorDataset
 from Prototipo5 import CNNRegressor5, HybridLoss 
 
 # Función que convierte una onda en espectrograma
-def procesar_espectrograma(waveform, sr=44100, device="cpu"):
+def procesar_espectrograma(waveform, sr=44100, device="cpu", spec_transform=None, db_transform=None):
     """
     Abstracción total: Normalización -> STFT -> Magnitud -> DB.
     Garantiza que el tensor tenga forma (1, Freq, Tiempo) para el modelo.
@@ -34,18 +34,16 @@ def procesar_espectrograma(waveform, sr=44100, device="cpu"):
     # 2. Normalización de pico (Peak Normalization)
     waveform = waveform / waveform.abs().max().clamp(min=1e-8)
 
-    # 3. Configuración de Transformada (idéntica a entrenamiento)
-    spec_transform = torchaudio.transforms.Spectrogram(
-        n_fft=1024, 
-        hop_length=256, 
-        power=None, 
-        return_complex=True
-    ).to(device)
+    # 3. Configuración de Transformada idéntica a entrenamiento (Instanciada solo si no se proporcionan por parámetro)
+    if spec_transform is None:
+        spec_transform = torchaudio.transforms.Spectrogram(
+            n_fft=1024, hop_length=256, power=None, return_complex=True
+        ).to(device)
     
-    db_transform = torchaudio.transforms.AmplitudeToDB(
-        stype='amplitude', 
-        top_db=80.0
-    ).to(device)
+    if db_transform is None:
+        db_transform = torchaudio.transforms.AmplitudeToDB(
+            stype='amplitude', top_db=80.0
+        ).to(device)
 
     # 4. Cálculo
     spec_complex = spec_transform(waveform)
@@ -196,6 +194,7 @@ def convertir_wavs_a_tensores(wav_folder, device):
 
     # Crear el transform UNA VEZ (STFT)
     spec_transform = torchaudio.transforms.Spectrogram(n_fft=1024, hop_length=256, power=None, return_complex=True).to(device)
+    db_transform = torchaudio.transforms.AmplitudeToDB(stype='amplitude', top_db=80.0).to(device)
 
     # Transformación
     for wav_file in wav_files:
@@ -211,7 +210,7 @@ def convertir_wavs_a_tensores(wav_folder, device):
             waveform[:, -fade_samples:] *= fade_out
 
         # Guardamos solo el tensor (C, F, T), quitando la dimensión de batch
-        spec = procesar_espectrograma(waveform, sr, device).squeeze(0)
+        spec = procesar_espectrograma(waveform, sr, device, spec_transform, db_transform).squeeze(0)
 
         # Guardar tensor espectrograma
         out_name = wav_file.replace(".wav", ".pt")
@@ -246,21 +245,6 @@ def generar_dataset(device):
         "ruta": tensor_folder,
         "tensores": [f for f in os.listdir(tensor_folder) if f.endswith(".pt")]
     }
-
-# Función que pasa una onda a un tensor de espectrograma
-def waveform_to_spectrogram_tensor(waveform, sr, device, spec_transform):
-    # Normalización: evita variaciones grandes de volumen (divide toda la onda entre su valor maximo)
-    waveform = waveform / waveform.abs().max().clamp(min=1e-8)
-    waveform = waveform.to(device)
-
-    # Espectrograma complejo (STFT)
-    spec = spec_transform(waveform)   
-
-    # Conversión a escala logarítmica (dB): comprime el rango dinámico y facilita el aprendizaje 
-    mag = spec.abs()  # Magnitud lineal
-    db = torchaudio.transforms.AmplitudeToDB(stype='amplitude',top_db=80.0).to(device)(mag)
-
-    return db
 
 #==============================================================================================================
 #=============================== CARGA DATASET YA EXISTENTE ===================================================
