@@ -163,7 +163,7 @@ class App:
         params_frame = tk.LabelFrame(p, text="Parámetros de entrenamiento", padx=8, pady=8)
         params_frame.pack(fill="x", padx=6, pady=(4,8))
 
-         # Nombre opcional del modelo
+        # Nombre opcional del modelo
         tk.Label(params_frame, text="Nombre modelo (.pth):").grid(row=4, column=0, sticky="w")
         self.hp_name_var = tk.StringVar(value="prueba.pth")   
         tk.Entry(params_frame, textvariable=self.hp_name_var, width=20).grid(row=4, column=1, padx=4)
@@ -194,6 +194,24 @@ class App:
         self.entry_print_every.delete(0, "end")
         self.entry_print_every.insert(0, str(self.train_print_every))
         self.entry_print_every.grid(row=2, column=1, sticky="w", padx=4, pady=4)
+
+        # Peso Spec (L1)
+        tk.Label(params_frame, text="Peso Spec (L1):").grid(row=3, column=0, sticky="e", padx=4, pady=4)
+        self.entry_spec_w = tk.Entry(params_frame, width=8)
+        self.entry_spec_w.insert(0, "1.0") # Valor por defecto
+        self.entry_spec_w.grid(row=3, column=1, sticky="w", padx=4, pady=4)
+
+        # Peso SC (Convergencia)
+        tk.Label(params_frame, text="Peso SC:").grid(row=3, column=2, sticky="e", padx=4, pady=4)
+        self.entry_sc_w = tk.Entry(params_frame, width=8)
+        self.entry_sc_w.insert(0, "0.5") # Valor por defecto
+        self.entry_sc_w.grid(row=3, column=3, sticky="w", padx=4, pady=4)
+
+        # Peso Paramétrico
+        tk.Label(params_frame, text="Peso Params:").grid(row=4, column=0, sticky="e", padx=4, pady=4)
+        self.entry_param_w = tk.Entry(params_frame, width=8)
+        self.entry_param_w.insert(0, "0.05") # Valor por defecto
+        self.entry_param_w.grid(row=4, column=1, sticky="w", padx=4, pady=4)
 
         # Sección inferior: entrenar con dataset existente
         bottom_frame = tk.LabelFrame(p, text="Entrenar modelo (requiere dataset)", padx=8, pady=8)
@@ -277,6 +295,9 @@ class App:
             batch_size = int(self.entry_batch.get())
             device = str(self.device_var.get())
             print_every = int(self.entry_print_every.get())
+            spec_w = float(self.entry_spec_w.get())  
+            sc_w = float(self.entry_sc_w.get())       
+            param_w = float(self.entry_param_w.get())
         except Exception as e:
             messagebox.showerror("Error", f"Parámetros inválidos: {e}")
             return
@@ -295,7 +316,7 @@ class App:
         self.btn_cargar_ds.config(state="disabled")
 
         try:
-            result = entrenar_modelo(self.nombreModelo, self.dataset_obj, epochs=epochs, lr=lr, batch_size=batch_size, device=device, print_every_batches=print_every)
+            result = entrenar_modelo(self.nombreModelo, self.dataset_obj, epochs=epochs, lr=lr, batch_size=batch_size, device=device, print_every_batches=print_every, spec_w=spec_w, sc_w=sc_w, param_w=param_w)
             
             self.pathModelo = result
             self.nombreModelo = os.path.basename(result)

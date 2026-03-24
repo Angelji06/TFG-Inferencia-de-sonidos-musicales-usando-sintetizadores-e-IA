@@ -271,7 +271,7 @@ def check_dataset(path):
 #==============================================================================================================
 
 # Función encargada de instanciar y entrenar el modelo
-def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3, device="cuda", print_every_batches=100):
+def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3, device="cuda", print_every_batches=100, spec_w=1.0, sc_w=0.5, param_w=0.05):
     # dirs
     start = time.time()  
     tensors_dir = dataset_obj.get("ruta") 
@@ -288,6 +288,8 @@ def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3
     print("Instanciando modelo!")
     model = CNNRegressor5(7,1,32)
 
+    criterion = HybridLoss(spec_weight=spec_w, sc_weight=sc_w, param_weight=param_w) 
+
     # --- Entrenamiento ---
     print(f"Entrenando modelo!       Usando {device}")
     train_size = int(len(dataset) * 0.8)    # 80% train, 20% val
@@ -296,7 +298,7 @@ def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
-    history = model.fit(train_loader, val_loader=val_loader, device=device, epochs=epochs, lr=lr, print_every_batches=print_every_batches)
+    history = model.fit(train_loader, val_loader=val_loader, device=device, epochs=epochs, lr=lr, print_every_batches=print_every_batches, criterion=criterion)
 
     # --- Guardar modelo ---
     save_path = os.path.join(save_dir , nombreModelo)
