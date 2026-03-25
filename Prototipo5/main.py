@@ -2,7 +2,7 @@ import os
 import glob
 import tkinter as tk
 from tkinter import filedialog, messagebox
-from logica import get_gen_params, generar_dataset, check_dataset, entrenar_modelo, fm_synthesize,play_audio,reproducir_wav,reproducir_prediccion, hacer_inferencia, mostrar_espectrograma, prediccion_multiples_wav
+from logica import get_gen_params, generar_dataset, check_dataset, entrenar_modelo, reproducir_wav,reproducir_prediccion, hacer_inferencia, prediccion_multiples_wav, comparar_espectrogramas_4en1
 
 from Prototipo5 import CNNRegressor5
 import librosa
@@ -163,7 +163,7 @@ class App:
         params_frame = tk.LabelFrame(p, text="Parámetros de entrenamiento", padx=8, pady=8)
         params_frame.pack(fill="x", padx=6, pady=(4,8))
 
-         # Nombre opcional del modelo
+        # Nombre opcional del modelo
         tk.Label(params_frame, text="Nombre modelo (.pth):").grid(row=4, column=0, sticky="w")
         self.hp_name_var = tk.StringVar(value="prueba.pth")   
         tk.Entry(params_frame, textvariable=self.hp_name_var, width=20).grid(row=4, column=1, padx=4)
@@ -194,6 +194,24 @@ class App:
         self.entry_print_every.delete(0, "end")
         self.entry_print_every.insert(0, str(self.train_print_every))
         self.entry_print_every.grid(row=2, column=1, sticky="w", padx=4, pady=4)
+
+        # Peso Spec (L1)
+        tk.Label(params_frame, text="Peso Spec (L1):").grid(row=3, column=0, sticky="e", padx=4, pady=4)
+        self.entry_spec_w = tk.Entry(params_frame, width=8)
+        self.entry_spec_w.insert(0, "1.0") # Valor por defecto
+        self.entry_spec_w.grid(row=3, column=1, sticky="w", padx=4, pady=4)
+
+        # Peso SC (Convergencia)
+        tk.Label(params_frame, text="Peso SC:").grid(row=3, column=2, sticky="e", padx=4, pady=4)
+        self.entry_sc_w = tk.Entry(params_frame, width=8)
+        self.entry_sc_w.insert(0, "0.5") # Valor por defecto
+        self.entry_sc_w.grid(row=3, column=3, sticky="w", padx=4, pady=4)
+
+        # Peso Paramétrico
+        tk.Label(params_frame, text="Peso Params:").grid(row=4, column=0, sticky="e", padx=4, pady=4)
+        self.entry_param_w = tk.Entry(params_frame, width=8)
+        self.entry_param_w.insert(0, "0.05") # Valor por defecto
+        self.entry_param_w.grid(row=4, column=1, sticky="w", padx=4, pady=4)
 
         # Sección inferior: entrenar con dataset existente
         bottom_frame = tk.LabelFrame(p, text="Entrenar modelo (requiere dataset)", padx=8, pady=8)
@@ -277,6 +295,9 @@ class App:
             batch_size = int(self.entry_batch.get())
             device = str(self.device_var.get())
             print_every = int(self.entry_print_every.get())
+            spec_w = float(self.entry_spec_w.get())  
+            sc_w = float(self.entry_sc_w.get())       
+            param_w = float(self.entry_param_w.get())
         except Exception as e:
             messagebox.showerror("Error", f"Parámetros inválidos: {e}")
             return
@@ -295,7 +316,7 @@ class App:
         self.btn_cargar_ds.config(state="disabled")
 
         try:
-            result = entrenar_modelo(self.nombreModelo, self.dataset_obj, epochs=epochs, lr=lr, batch_size=batch_size, device=device, print_every_batches=print_every)
+            result = entrenar_modelo(self.nombreModelo, self.dataset_obj, epochs=epochs, lr=lr, batch_size=batch_size, device=device, print_every_batches=print_every, spec_w=spec_w, sc_w=sc_w, param_w=param_w)
             
             self.pathModelo = result
             self.nombreModelo = os.path.basename(result)
@@ -353,9 +374,7 @@ class App:
         tk.Button(action_frame, text="Reproducir original", command=self._play_original).pack(side="left", padx=6)
         tk.Button(action_frame, text="Reproducir síntesis", command=self._play_synth).pack(side="left", padx=6)
 
-        tk.Button(action_frame, text="Ver Espectrograma", command=self._ver_espectrograma).pack(side="left", padx=6)
-
-        tk.Button(action_frame, text="Ver Original", command=self._ver_espectrograma_original).pack(side="left", padx=6)
+        tk.Button(action_frame, text="Visualizar Espectrogramas", command=self._ver_comparativa_espectrogramas,).pack(side="left", padx=6)
         
         tk.Button(action_frame, text="Volver", command=lambda: self.show_page(self.page_inicio)).pack(side="right", padx=6)
 
@@ -400,8 +419,12 @@ class App:
         if hasattr(self, 'root'): self.root.update_idletasks() 
 
         try:
+            # 1. Hacer inferencia
             params = hacer_inferencia(self.pathModelo, self.test_wav_path, device = self.device_var.get())
-            self.last_prediction_params = params  
+              
+            # 2. GUARDAR DATOS PARA EL BOTÓN DE ESPECTROGRAMA
+            self.last_prediction_params = params
+            self.ultimo_wav_orig, self.ultimo_sr_orig = librosa.load(self.test_wav_path, sr=44100)
 
             # Comprobar si el audio está dentro del conjunto de entrenamiento
             nombre = os.path.basename(self.test_wav_path) 
@@ -475,6 +498,12 @@ class App:
         finally:
             self.btn_predict.config(state="normal")
 
+    def _ver_comparativa_espectrogramas(self):
+        if hasattr(self, 'last_prediction_params'):
+            comparar_espectrogramas_4en1(self.ultimo_wav_orig, self.ultimo_sr_orig, self.last_prediction_params, self.device_var.get())
+        else:
+            messagebox.showwarning("Aviso", "Primero debes predecir un audio.")
+
     def _play_synth(self):
         reproducir_prediccion(self.last_prediction_params)
 
@@ -486,47 +515,6 @@ class App:
             reproducir_wav(self.test_wav_path)
         except Exception as e:
             messagebox.showerror("Error Audio", f"No se pudo reproducir el original:\n{e}")
-
-
-    def _ver_espectrograma(self):
-            if self.last_prediction_params is None:
-                messagebox.showwarning("Aviso", "Primero debes pulsar 'Predecir WAV'.")
-                return
-                
-            try:
-                # 1. Recuperamos los datos guardados en la variable de clase   
-                c, r, idx, a_att, a_dec, m_att, m_dec = self.last_prediction_params
-                
-                # 2. Sintetizamos el audio, le damos más duración 1s
-                # fm_synthesize devuelve (waveform, sr)
-                waveform, sr = fm_synthesize(c, r, idx, a_att, a_dec, m_att, m_dec, duration=1.0)
-
-                # 3. Llamamos a tu función de logica que abre la ventana
-                mostrar_espectrograma(waveform, sr, "Prediccion")
-                
-            except Exception as e:
-                messagebox.showerror("Error", f"No se pudo generar el gráfico:\n{e}")
-
-
-    def _ver_espectrograma_original(self):
-            """
-            Carga el WAV original y lo manda a pintar.
-            """
-            if not self.test_wav_path:
-                messagebox.showwarning("Aviso", "Primero selecciona un WAV original.")
-                return
-
-            try:
-                # 1. Cargar el audio original (Solo 0.5s para que coincida con la síntesis)
-                # Usamos librosa porque lee cualquier archivo del disco
-                wav_np, sr = librosa.load(self.test_wav_path, sr=44100, mono=True, duration=0.5)
-                
-                # 2. Reutilizamos tu función de logica para pintarlo
-                print("Abriendo espectrograma original...")
-                mostrar_espectrograma(wav_np, sr, "Original")
-
-            except Exception as e:
-                messagebox.showerror("Error", f"No se pudo cargar el original:\n{e}")
 
     # bucle para la predicción de 2000 wavs. Los usaremos para evaluar el modelo con FAD
     def _predecir_2000_wavs(self):

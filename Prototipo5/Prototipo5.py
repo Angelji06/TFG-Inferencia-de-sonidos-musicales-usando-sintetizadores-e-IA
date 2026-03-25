@@ -21,20 +21,22 @@ import matplotlib.pyplot as plt
 #        - Penaliza diferencias en los parámetros del sintetizador
 #        - Peso pequeño porque los parámetros son menos importantes y no siempre son únicos para un mismo espectrograma.
 class HybridLoss(nn.Module):
-    def __init__(self, spec_weight=1.0, param_weight=0.05, eps=1e-8):
+    def __init__(self, spec_weight=1.0, sc_weight=0.5, param_weight=0.05, eps=1e-8):
         super().__init__()
         self.spec_weight = spec_weight
+        self.sc_weight = sc_weight
         self.param_weight = param_weight
         self.eps = eps
+
         self.l1 = nn.L1Loss()
         self.param_loss = nn.SmoothL1Loss()
 
     def spectral_convergence(self, pred_db, tgt_db):
-        pred_mag = 10 ** (pred_db / 20)
+        pred_mag = 10 ** (pred_db / 20)                         # Espectrogramas de vuelta a escala lineal
         tgt_mag  = 10 ** (tgt_db / 20)
-        num = torch.norm(pred_mag - tgt_mag, p='fro')
-        den = torch.norm(tgt_mag, p='fro').clamp(min=self.eps)
-        return num / den
+        num = torch.norm(pred_mag - tgt_mag, p='fro')           # Norma de Frobenius en matriz diferencia (Raiz del sumatorio de cuadrados)
+        den = torch.norm(tgt_mag, p='fro').clamp(min=self.eps)  # Norma de Frobenius en matriz target
+        return num / den                                        # Error relativo
 
     def forward(self, pred_spec, tgt_spec, pred_params, tgt_params):
         # 1) Pérdida espectral (diferencia entre espectrogramas)
@@ -47,9 +49,9 @@ class HybridLoss(nn.Module):
         loss_params = self.param_loss(pred_params, tgt_params)
 
         # 4) Combinación de pérdidas
-        total = (self.spec_weight * loss_spec + self.spec_weight * 0.5 * sc_loss + self.param_weight * loss_params)
+        total = (self.spec_weight * loss_spec) + (self.sc_weight * sc_loss) + (self.param_weight * loss_params)
 
-        return total, loss_spec.detach(), loss_params.detach()
+        return total, loss_spec.detach(), sc_loss.detach(), loss_params.detach()
 
 # -------------------------
 # CNNRegressor
@@ -181,6 +183,7 @@ class CNNRegressor5(nn.Module):
                 self.train()
                 running_total = 0.0
                 running_spec = 0.0
+                running_sc = 0.0
                 running_params = 0.0
                 n_batches = 0
 
@@ -192,12 +195,13 @@ class CNNRegressor5(nn.Module):
                     optimizer.zero_grad()  # Reset gradientes
                     pred_params, pred_spec = self(batch_spec)
 
-                    loss_total, loss_spec, loss_params = criterion(pred_spec, batch_spec, pred_params, batch_params)
+                    loss_total, loss_spec, loss_sc, loss_params = criterion(pred_spec, batch_spec, pred_params, batch_params)
                     loss_total.backward()  #Backprop
                     optimizer.step()       #Descenso de gradientes
 
                     running_total += loss_total.item()
                     running_spec += loss_spec.item()
+                    running_sc += loss_sc.item()
                     running_params += loss_params.item()
                     n_batches += 1
 
@@ -206,6 +210,7 @@ class CNNRegressor5(nn.Module):
                         if (batch_idx + 1) % print_every_batches == 0:
                             avg_total_sofar = running_total / max(1, n_batches)
                             avg_spec_sofar = running_spec / max(1, n_batches)
+                            avg_sc = running_sc / print_every_batches
                             avg_params_sofar = running_params / max(1, n_batches)
                             print(f" Epoch {epoch+1}/{epochs}  Batch {batch_idx+1}  Avg total so far: {avg_total_sofar:.6f}  Spec: {avg_spec_sofar:.6f}  Params: {avg_params_sofar:.6f}")
 
@@ -231,7 +236,7 @@ class CNNRegressor5(nn.Module):
                             v_params = v_params.to(device)
                             
                             v_p, v_s = self(v_spec)
-                            v_loss, _, _ = criterion(v_s, v_spec, v_p, v_params)
+                            v_loss, _, _, _ = criterion(v_s, v_spec, v_p, v_params)
                             
                             val_running += v_loss.item()
                             n_val += 1
@@ -246,7 +251,11 @@ class CNNRegressor5(nn.Module):
                         best_state_dict = self.state_dict()
                         msg_val += " (*)"
 
-                print(f"Epoch {epoch+1}/{epochs}  Avg total: {avg_total:.6f}  Spec: {avg_spec:.6f}  Params: {avg_params:.6f}")
+                print(f"Epoch {epoch+1}/{epochs}  Avg total: {avg_total:.6f}  Spec: {avg_spec:.6f}  Params: {avg_params:.6f}{msg_val}")
+
+            if best_state_dict is not None:
+                self.load_state_dict(best_state_dict)
+                print("Entrenamiento finalizado. Se han restaurado los pesos de la mejor época.")
 
             return history #Retorna: history dict con listas 'total', 'spec', 'params' (valores medios por época)
     
