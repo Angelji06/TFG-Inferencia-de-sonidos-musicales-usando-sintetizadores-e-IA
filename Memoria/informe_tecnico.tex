@@ -61,6 +61,22 @@ verosimilitud estadística del sonido sobre la identidad exacta del mismo \cite{
 
 \subsection{Validación por Fuerza Bruta (Grid Search)}
 % Explicaremos la necesidad de buscar en todo el espacio de parámetros.
+Una de las cuestiones principales que se plantean en el desarrollo de este proyecto es si el uso de un modelo de Inteligencia Artificial representa
+la aproximación más óptima para el objetivo de la inferencia de parámetros. Esta disyuntiva surge, sobre todo, al analizar los primeros prototipos, 
+como el \textit{Prototipo 4}, en el que se emplean únicamente 3 parámetros para la síntesis FM: \textit{Carrier}, \textit{Index} y \textit{Ratio}.
+Debido al reducido tamaño de este espacio de parámetros, resulta lógico plantear en la viabilidad de realizar un método de búsqueda exhaustiva 
+(\textit{Grid Search}). Este enfoque consiste en realizar un recorrido iterativo por todas las combinaciones posibles por ellos que prueben 
+el total de combinaciones posibles, evaluándolas y registrando aquellas configuraciones que presenten una mayor similitud acústica con
+respecto al sonido objetivo.
+
+Por otro lado, surge la necesidad de encontrar un método rubusto para evaluar la fidelidad del modelo de inferencia de parámetros, buscando una métrica
+que simule la percepción de un oído humano experto haría un oído humano experto. Esta necesidad y la cuestión anterior convergen en la fase de experimentación.
+De este modo, se consiguen probar diferentes métricas que evalúen la similitud acústica dentro del algoritmo de \textit{Grid Search}, comprobando
+simultáneamente la viabilidad técnica del enfoque de fuerza bruta frente al modelo predictivo.
+
+Para lograr esta simulación del sistema auditivo humano, en el procesamiento digital de señales de audio se encuentra la \textbf{Escala Mel} como estándar.
+Esta aplica una transformación logarítmica que modela la resol
+
 
 \subsubsection{Comparativa: Espectrograma de Mel vs. MFCC}
 % Aquí meteremos los resultados que sacamos hoy: cómo Mel falla por la rejilla armónica y MFCC acierta capturando la envolvente espectral.
