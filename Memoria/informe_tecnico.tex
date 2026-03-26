@@ -1,0 +1,87 @@
+\documentclass[12pt, a4paper]{article}
+
+% Paquetes esenciales para español, matemáticas y gráficos
+\usepackage[utf8]{inputenc}
+\usepackage[spanish, es-tabla]{babel}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{a4paper, margin=2.5cm}
+
+% Información del documento
+\title{\textbf{Análisis Técnico y Evaluación del Modelo de Síntesis FM}}
+\author{Tu  Nombre \\ \textit{Borrador para reunión con experto}}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este documento detalla el proceso de evaluación del modelo de predicción de parámetros para síntesis FM. Se analiza la discrepancia entre métricas de clasificación global (FAD) y la percepción auditiva del tono (Pitch), proponiendo un sistema de validación basado en búsqueda en rejilla (Grid Search) utilizando coeficientes cepstrales (MFCC) para solventar los problemas de no-unicidad armónica.
+
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Evaluación y Métricas del Modelo}
+% Aquí introduciremos por qué es difícil evaluar la síntesis FM.
+
+
+\subsection{Limitaciones de Fréchet Audio Distance (FAD)}
+% Aquí redactaremos cómo sacamos un 0.99 de FAD y por qué engaña con el Pitch.
+Para la evaluación del modelo, se seleccionó la métrica \textit{Fréchet Audio Distance} (FAD) \cite{kilgour2019}. 
+Esta herramienta, introducida originalmente por investigadores de Google AI, es utilizada actualmente en proyectos muy grandes como 
+MusicLM \cite{agostinelli2023}, pudiendo considerarse como el \textbf{estado del arte} para medir la calidad objetiva de los audios generados mediante Inteligencia Artificial, adaptando al dominio del audio las métricas utilizadas en la generación de imágenes.
+
+Conceptualmente, el FAD deriva de \textit{Fréchet Inception Distance} (FID), una métrica referente en la evaluación de modelos generativos de imágenes.
+Al igual que su predecesora, esta métrica no realiza comparación muestra a muestra, sino que compara características de alto nivel extraídas por una red neuronal profunda.
+
+Para la extracción de estas caractarísticas, el FAD utiliza un modelo llamado \textit{VGGish}, un clasificador de audio entrenado con una base de datos 
+de gran envergadura de vídeos de YouTube. Este modelo transforma la señal de audio en \textit{log-mel features} extraídas del espectrograma de magnitud
+
+Finalmente, la métrica se obtiene calculando la \textit{Distancia de Fréchet} entre la música de referencia y la generada. Un valor de FAD reducido indíca una estadística similar entre el audio de referencia y el generado.
+
+
+Para la implementación de la métrica FAD en el proyecto, se compararon dos conjuntos de datos: una muestra de 2.000 audios FM generados aleatoriamente
+y sus predicciones con el modelo utilizado en el \textit{Prototipo 4}. El resultado obtenido fue de \textbf{0.9999}, un valor que, según la literatura de referencia, indica una similitud estadística casi absoluta entre las distribuciones de audio.
+
+
+A pesar de que el resultado obtenido planteaba una evaluación teóricamente óptima, el análisis cualitativo reveló una discrepancia. 
+El motivo de la poca validez de la métrica en el proyecto, se atribuye a un sesgo de interpretación de su 
+utilidad real, ya que el FAD está diseñado para evaluar la calidad global de modelos generativos \cite{kilgour2019}, mientras que este proyecto se centra 
+en la estimación de los parámetros que luego utiliza para generar audio FM. 
+Puesto que tanto el conjunto de referencia como las predicciones se crean mediante síntesis FM, su huella espectral y sus caractarísticas de alto nivel(\textit{embeddings})
+son casi idénticas \cite{kilgour2019}. Por tanto, el FAD evalúa positivamente que el modelo ha aprendido a recrear el timbre o "textura" de 
+la síntesis FM, pero, como se comentaba previamente, resulta una muestra ciega a precisión muestra a muestra. En resumen, se prioriza la 
+verosimilitud estadística del sonido sobre la identidad exacta del mismo \cite{kilgour2019, agostinelli2023}.
+
+
+\subsection{Validación por Fuerza Bruta (Grid Search)}
+% Explicaremos la necesidad de buscar en todo el espacio de parámetros.
+
+\subsubsection{Comparativa: Espectrograma de Mel vs. MFCC}
+% Aquí meteremos los resultados que sacamos hoy: cómo Mel falla por la rejilla armónica y MFCC acierta capturando la envolvente espectral.
+
+\section{Evolución del Modelo: Prototipo 5}
+% Esta es la parte de tu compañero que vas a estudiar e ir rellenando poco a poco.
+\subsection{Ampliación del espacio de parámetros: La Envolvente}
+% Explicación de los nuevos parámetros para hacer el sonido más "orgánico".
+
+\vspace{2cm} % Esto añade un poco de espacio en blanco
+\begin{thebibliography}{9}
+
+\bibitem{kilgour2019}
+Kilgour, K., Zuluaga, M., Roblek, D., \& Sharifi, M. (2019). 
+\textit{Fréchet Audio Distance: A Reference-free Metric for Evaluating Music Enhancement Algorithms}. 
+Interspeech 2019, Graz, Austria, pp. 2350-2354.
+
+\bibitem{agostinelli2023}
+Agostinelli, A., Denk, T. I., Borsos, Z., Engel, J., Verzetti, M., \& Roberts, A. (2023). 
+\textit{MusicLM: Generating Music From Text}. 
+arXiv preprint arXiv:2301.11325.
+
+\end{thebibliography}
+\end{document}
