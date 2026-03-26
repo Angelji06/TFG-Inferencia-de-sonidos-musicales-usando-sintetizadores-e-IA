@@ -159,59 +159,54 @@ class App:
 
         tk.Label(top_frame, textvariable=self.dataset_status_var).grid(row=1, column=0, columnspan=2, sticky="w", padx=6, pady=(6,0))
 
-        # Controles de hiperparámetros (nuevo)
-        params_frame = tk.LabelFrame(p, text="Parámetros de entrenamiento", padx=8, pady=8)
+        # Controles de hiperparámetros 
+        params_frame = tk.LabelFrame(p, text="Parámetros de entrenamiento", padx=10, pady=10)
         params_frame.pack(fill="x", padx=6, pady=(4,8))
 
-        # Nombre opcional del modelo
-        tk.Label(params_frame, text="Nombre modelo (.pth):").grid(row=4, column=0, sticky="w")
-        self.hp_name_var = tk.StringVar(value="prueba.pth")   
-        tk.Entry(params_frame, textvariable=self.hp_name_var, width=20).grid(row=4, column=1, padx=4)
-
-        # Epochs
+        # Fila 0: Epochs | LR | Batch Size
         tk.Label(params_frame, text="Epochs:").grid(row=0, column=0, sticky="e", padx=4, pady=4)
         self.entry_epochs = tk.Spinbox(params_frame, from_=1, to=1000, width=8)
         self.entry_epochs.delete(0, "end")
         self.entry_epochs.insert(0, str(self.train_epochs))
         self.entry_epochs.grid(row=0, column=1, sticky="w", padx=4, pady=4)
 
-        # Learning rate
         tk.Label(params_frame, text="LR:").grid(row=0, column=2, sticky="e", padx=4, pady=4)
-        self.entry_lr = tk.Entry(params_frame, width=12)
+        self.entry_lr = tk.Entry(params_frame, width=10)
         self.entry_lr.insert(0, str(self.train_lr))
         self.entry_lr.grid(row=0, column=3, sticky="w", padx=4, pady=4)
 
-        # Batch size
-        tk.Label(params_frame, text="Batch size:").grid(row=1, column=0, sticky="e", padx=4, pady=4)
+        tk.Label(params_frame, text="Batch size:").grid(row=0, column=4, sticky="e", padx=4, pady=4)
         self.entry_batch = tk.Spinbox(params_frame, from_=1, to=1024, width=8)
         self.entry_batch.delete(0, "end")
         self.entry_batch.insert(0, str(self.train_batch_size))
-        self.entry_batch.grid(row=1, column=1, sticky="w", padx=4, pady=4)
+        self.entry_batch.grid(row=0, column=5, sticky="w", padx=4, pady=4)
 
-        # print_every_batches
-        tk.Label(params_frame, text="Print every (batches):").grid(row=2, column=0, sticky="e", padx=4, pady=4)
+        # Fila 1: Print Every | Peso Spec | Peso SC
+        tk.Label(params_frame, text="Print every:").grid(row=1, column=0, sticky="e", padx=4, pady=4)
         self.entry_print_every = tk.Spinbox(params_frame, from_=0, to=10000, width=8)
         self.entry_print_every.delete(0, "end")
         self.entry_print_every.insert(0, str(self.train_print_every))
-        self.entry_print_every.grid(row=2, column=1, sticky="w", padx=4, pady=4)
+        self.entry_print_every.grid(row=1, column=1, sticky="w", padx=4, pady=4)
 
-        # Peso Spec (L1)
-        tk.Label(params_frame, text="Peso Spec (L1):").grid(row=3, column=0, sticky="e", padx=4, pady=4)
-        self.entry_spec_w = tk.Entry(params_frame, width=8)
-        self.entry_spec_w.insert(0, "1.0") # Valor por defecto
-        self.entry_spec_w.grid(row=3, column=1, sticky="w", padx=4, pady=4)
+        tk.Label(params_frame, text="Peso Spec (L1):").grid(row=1, column=2, sticky="e", padx=4, pady=4)
+        self.entry_spec_w = tk.Entry(params_frame, width=10)
+        self.entry_spec_w.insert(0, "1.0")
+        self.entry_spec_w.grid(row=1, column=3, sticky="w", padx=4, pady=4)
 
-        # Peso SC (Convergencia)
-        tk.Label(params_frame, text="Peso SC:").grid(row=3, column=2, sticky="e", padx=4, pady=4)
-        self.entry_sc_w = tk.Entry(params_frame, width=8)
-        self.entry_sc_w.insert(0, "0.5") # Valor por defecto
-        self.entry_sc_w.grid(row=3, column=3, sticky="w", padx=4, pady=4)
+        tk.Label(params_frame, text="Peso SC:").grid(row=1, column=4, sticky="e", padx=4, pady=4)
+        self.entry_sc_w = tk.Entry(params_frame, width=10)
+        self.entry_sc_w.insert(0, "0.5")
+        self.entry_sc_w.grid(row=1, column=5, sticky="w", padx=4, pady=4)
 
-        # Peso Paramétrico
-        tk.Label(params_frame, text="Peso Params:").grid(row=4, column=0, sticky="e", padx=4, pady=4)
-        self.entry_param_w = tk.Entry(params_frame, width=8)
-        self.entry_param_w.insert(0, "0.05") # Valor por defecto
-        self.entry_param_w.grid(row=4, column=1, sticky="w", padx=4, pady=4)
+        # Fila 2: Nombre Modelo (ocupa más espacio) | Peso Params
+        tk.Label(params_frame, text="Nombre (.pth):").grid(row=2, column=0, sticky="e", padx=4, pady=4)
+        self.hp_name_var = tk.StringVar(value="prueba.pth")   
+        tk.Entry(params_frame, textvariable=self.hp_name_var, width=18).grid(row=2, column=1, columnspan=2, sticky="w", padx=4)
+
+        tk.Label(params_frame, text="Peso Params:").grid(row=2, column=3, sticky="e", padx=4, pady=4)
+        self.entry_param_w = tk.Entry(params_frame, width=10)
+        self.entry_param_w.insert(0, "0.05")
+        self.entry_param_w.grid(row=2, column=4, sticky="w", padx=4, pady=4)
 
         # Sección inferior: entrenar con dataset existente
         bottom_frame = tk.LabelFrame(p, text="Entrenar modelo (requiere dataset)", padx=8, pady=8)

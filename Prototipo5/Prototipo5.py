@@ -33,7 +33,7 @@ class HybridLoss(nn.Module):
 
     def spectral_convergence(self, pred_db, tgt_db):
         pred_mag = 10 ** (pred_db / 20)                         # Espectrogramas de vuelta a escala lineal
-        tgt_mag  = 10 ** (tgt_db / 20)
+        tgt_mag = 10 ** (tgt_db / 20)
         num = torch.norm(pred_mag - tgt_mag, p='fro')           # Norma de Frobenius en matriz diferencia (Raiz del sumatorio de cuadrados)
         den = torch.norm(tgt_mag, p='fro').clamp(min=self.eps)  # Norma de Frobenius en matriz target
         return num / den                                        # Error relativo
@@ -96,12 +96,12 @@ class CNNRegressor5(nn.Module):
         # GLOBAL POOLING -> Para los parámetros (pues describen todo el sonido completo, no un punto concreto del espectrograma.)
         # Toma cada canal completo y hace la media de todas sus posiciones, quedándose con un único número que resume todo el canal.
         # (C, H, W)  →  (C, 1, 1)
-        self.global_pool = nn.AdaptiveAvgPool2d((1,1))
+        self.global_pool = nn.AdaptiveAvgPool2d((1,1))   # Solo un numero por canal (256, 1, 1)
         self.fc_params = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(base_filters*8, 64),
+            nn.Linear(base_filters*8, 64),              # Conecta los 256 detectores de sonido con 64 neuronas intermedias
             nn.ReLU(inplace=True),
-            nn.Linear(64, n_params)
+            nn.Linear(64, n_params)                     # Conecta las 64 neuronas intermedias a las 7 salidas
         )
 
         # DECODER -> su misión es reconstruir el espectrograma original a partir de la representación comprimida del bottleneck.
