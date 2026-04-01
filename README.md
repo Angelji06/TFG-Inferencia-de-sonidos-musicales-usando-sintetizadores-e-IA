@@ -1,125 +1,32 @@
-# Inferencia de sonidos musicales usando sintetizadores e IA
+# 🎵 Arquitectura del Proyecto de Síntesis FM
 
-**Autores:** David Cendejas Rodríguez y Ángel Jiménez Izquierdo  
-**Tutores:** Miguel Gómez-Zamalloa Gil y Jaime Sánchez Hernández  
+## 🧠 `Prototipo5.py` — Modelo y Pérdida
+Define la arquitectura de la red neuronal y la función de costo.
 
-Este proyecto (aun en desarrollo) explora diferentes aproximaciones al **procesamiento, identificación y reproducción de un timbre** a partir de una muestra de audio. Para ello, se han desarrollado varios prototipos incrementales, cada uno aplicando mejoras en dataset, arquitectura y metodología.
+* **`HybridLoss`**: Función de pérdida combinada que integra L1 Espectral, Convergencia Espectral (*Spectral Convergence*) y *SmoothL1* aplicado a los parámetros.
+* **`CNNRegressor5` (Encoder)**: Extrae características mediante 3 bloques compuestos por `Conv` + `BatchNorm` + `ReLU` + `MaxPool`, conectados a un *bottleneck*.
+* **`CNNRegressor5` (Cabezas de salida)**: El modelo se bifurca en dos ramas. La rama `fc_params` aplica `GlobalAvgPool` y una capa `FC` para predecir 7 parámetros FM. La rama `decoder` emplea 3 capas `ConvTranspose` para la reconstrucción del espectrograma.
+* **Métodos principales**: Proporciona la interfaz base del modelo con `fit()`, `evaluate()` y `load()`.
 
----
-## Prototipo 1 — Clasificación básica  
+## 📊 `SpectrogramTensorDataset5.py` — Dataset
+Responsable de la carga de datos y el acondicionamiento para el entrenamiento.
 
-**Notebook:** `PrototipoIA1.ipynb`
+* **Carga de datos**: Consume tensores `.pt` precomputados y extrae las etiquetas de parámetros desde un archivo CSV.
+* **Normalización**: Aplica estandarización *Z-score* por cada parámetro utilizando la media y desviación estándar global del dataset.
+* **`denormalize()`**: Método integrado para invertir matemáticamente la normalización y recuperar los valores absolutos de los parámetros sintetizadores.
 
-Primera aproximación al aprendizaje automático aplicado al audio.
+## ⚙️ `logica.py` — Lógica
+El motor computacional que maneja la señal de audio, las transformaciones y las métricas.
 
-### Dataset
-- Tamaño reducido (≈ 50 muestras)  
-- Archivos `.wav` de 1 segundo  
-- Generados sintéticamente con:
-  - Frecuencias aleatorias  
-  - Formas de onda: *sine, square, sawtooth, triangle, noise*  
-- Construidos usando **NumPy**
+* **Síntesis FM (`fm_synthesize`)**: Generador de audio que incorpora envolventes de ataque (*attack*) y decaimiento (*decay*) tanto para la amplitud como para la modulación.
+* **Pipeline de datos**: Transforma audios WAV aleatorios en tensores de espectrograma aplicando STFT (con `n_fft=1024` y `hop=256`) seguido de una conversión `AmplitudeToDB`.
+* **Inferencia**: Incluye rutinas para predecir sobre un único archivo y versiones optimizadas para lotes que mantienen el modelo cargado en memoria.
+* **`prediccion_multiples_wav`**: Automatiza la generación de WAVs sintetizados para facilitar la evaluación de calidad de audio mediante métricas FAD.
+* **`comparar_espectrogramas_4en1`**: Utilidad de visualización que genera una matriz 2x2 para comparar visualmente el audio original frente a la predicción en escalas lineal y logarítmica.
 
-### Entrenamiento
-- Implementación con **TensorFlow**  
-- Extracción de características mediante **MFCC**  
-- Asociación de MFCC → tipo de onda (clasificación)
+## 🖥️ `main.py` — Interfaz Gráfica (Tkinter)
+Aplicación de escritorio interactiva estructurada en 3 páginas principales para el control del flujo de trabajo.
 
-### Modelo
-- Tipo: **Clasificación**  
-- No convolucional  
-- Arquitectura simple y poco optimizada  
-- **Precisión baja**
-
----
-
-## Prototipo 2 — Clasificación con CNN preentrenada  
-**Notebook:** `PrototipoIA2.ipynb`
-
-Optimización del primer prototipo introduciendo modelos convolucionales y mejor tratamiento del dataset.
-
-### Dataset
-- Basado en el Prototipo 1  
-- Convertido a **espectrogramas `.png`** usando *librosa*  
-- Menor coste computacional y de almacenamiento  
-- Permite usar modelos de visión
-
-### Entrenamiento
-- Uso de **ResNet34 preentrenada** vía fastAI  
-- Adaptación del modelo mediante **DataBlocks**
-
-### Modelo
-- Tipo: **Clasificación**  
-- Convolucional  
-- Arquitectura externa (ResNet34)  
-- **Buena precisión**, especialmente en ondas puras dentro del rango entrenado
-
----
-
-## Prototipo 3 — Regresión con CNN propia  
-**Notebook:** `PrototipoIA3_Regresion.ipynb`
-
-Avance hacia la **síntesis paramétrica**, no solo identificación.
-
-### Dataset
-- Tamaño mediano (≈ 15.000 muestras)  
-- Generado mediante barrido de parámetros en un **sintetizador FM de pyo**
-- Ahora con .csv con las etiquetas de los valores carrier, ratio e index de cada muestra
-- Convertido a tensores de espectrogramas con **torchaudio**
-
-### Entrenamiento
-- Implementado en **PyTorch**  
-- Dataset definido en `SpectrogramTensorDataset`  
-- Arquitectura definida en `SmallCNNRegressor`  
-- Entrenamiento en **5 etapas**  
-- Función de pérdida: **MSELoss**
-
-### Modelo
-- Tipo: **Regresión**  
-- Convolucional  
-- Arquitectura propia  
-- **Precisión limitada**, aún por optimizar
-
----
-## Prototipo 4 — Regresión con función de pérdida híbrida
-**Notebook:** `PrototipoIA4_Regresion.ipynb`
-
-MSE sobre parámetros es incorrecto debido a nula inyectividad, se plantea una función de pérdida hibrida que sigue teniendo en cuenta el MSE sobre parámetros (ponderado a 0.1) y sobretodo compara el espectrograma predicho con el original. Ahora la arquitectura de la CNN ya no es arbitraria.
-
-### Dataset
-- Igual que prototipo 3
-
-### Entrenamiento
-- 10 etapas, con función de pérdida hibrida
-
-### Modelo
-- Tipo: **Regresión**  
-- Convolucional  
-- Arquitectura propia:
-  - Encoder: 3 capas
-  - Bottleneck
-  - Global pooling
-  - Decoder: 3 capas
-  - Recon head
-
----
-## Prototipo 5 — FINAL: Modelo de sound matching de síntesis FM de 7 parámetros con 
-
-**Notebook:** `PrototipoIA4_Regresion.ipynb`
-
-MSE sobre parámetros es incorrecto debido a nula inyectividad, se plantea una función de pérdida hibrida que sigue teniendo en cuenta el MSE sobre parámetros (ponderado a 0.1) y sobretodo compara el espectrograma predicho con el original. Ahora la arquitectura de la CNN ya no es arbitraria.
-
-### Dataset
-- Modificado la función de generación, al subir el número de parámetros ya no se podía hacer un barrido, por lo que ahora se recibe el numero de muestras deseadas y se genera aleatoriamente dentro de unos rangos.
-
-### Modelo
-Se mantiene la filosofía de la función de pérdida hibrida y la red de doble cabeza con reconstrucción de espectrogramas.
-
-- Tipo: **Regresión**  
-- Convolucional  
-- Arquitectura propia:
-  - Encoder: 3 capas
-  - Bottleneck
-  - Global pooling
-  - Decoder: 3 capas
-  - Recon head
+* **Página de Inicio**: Punto de entrada que permite al usuario cargar un modelo previamente entrenado o navegar directamente al panel de entrenamiento.
+* **Página de Entrenamiento**: Consola de control para generar o cargar el dataset, con ajustes detallados de hiperparámetros (épocas, *Learning Rate*, *batch size* y ponderación de la función de pérdida).
+* **Página de Test**: Entorno de validación para realizar predicciones sobre un único WAV, con herramientas para reproducir el audio generado, visualizar sus espectrogramas y exportar lotes de prueba para análisis FAD.
