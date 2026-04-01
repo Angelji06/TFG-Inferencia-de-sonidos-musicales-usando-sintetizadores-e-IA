@@ -102,3 +102,24 @@ MSE sobre parámetros es incorrecto debido a nula inyectividad, se plantea una f
   - Decoder: 3 capas
   - Recon head
 
+---
+## Prototipo 5 — FINAL: Modelo de sound matching de síntesis FM de 7 parámetros con 
+
+**Notebook:** `PrototipoIA4_Regresion.ipynb`
+
+MSE sobre parámetros es incorrecto debido a nula inyectividad, se plantea una función de pérdida hibrida que sigue teniendo en cuenta el MSE sobre parámetros (ponderado a 0.1) y sobretodo compara el espectrograma predicho con el original. Ahora la arquitectura de la CNN ya no es arbitraria.
+
+### Dataset
+- Modificado la función de generación, al subir el número de parámetros ya no se podía hacer un barrido, por lo que ahora se recibe el numero de muestras deseadas y se genera aleatoriamente dentro de unos rangos.
+
+### Modelo
+Se mantiene la filosofía de la función de pérdida hibrida y la red de doble cabeza con reconstrucción de espectrogramas.
+
+- Tipo: **Regresión**  
+- Convolucional  
+- Arquitectura propia:
+  - Encoder: 3 capas
+  - Bottleneck
+  - Global pooling
+  - Decoder: 3 capas
+  - Recon head
