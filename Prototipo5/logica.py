@@ -63,50 +63,54 @@ def procesar_espectrograma(waveform, sr=44100, device="cpu", spec_transform=None
 #==============================================================================================================
 
 GEN_PARAMS = {
-    "carrier": (100, 2000),       # Frecuencia portadora
-    "ratio": (0.05, 2),           # Relación de frecuencias entre la portadora y la moduladora
-    "index": (1, 10),             # Indice de modulación
-    "amp_attack": (0.01, 0.5),    # Envolvente amplitud
-    "amp_decay": (0.01, 1.0),    
-    "mod_attack": (0.01, 0.5),    # Envolvente modulación
-    "mod_decay": (0.01, 1.0)     
+    "carrier":      (100, 2000),   # Frecuencia portadora
+    "ratio":        (0.05, 2),     # Relación de frecuencias entre la portadora y la moduladora
+    "index":        (1, 10),       # Indice de modulación
+    "amp_attack":   (0.015, 1.9),  # Envolvente amplitud  (att + sus + dec libre entre 0.3s y 2.0s)
+    "amp_sustain":  (0.015, 1.9),
+    "amp_decay":    (0.015, 1.9),
+    "mod_attack":   (0.01, 1.9),   # Envolvente modulación (att + dec libre entre 0.2s y 2.0s)
+    "mod_decay":    (0.01, 1.9)
 }
 
 def get_gen_params():
     return GEN_PARAMS.copy()
 
-# Funcion para generar una envolvente sencilla (attack y decay, sin sustain ni releasee)
-def generar_envolvente(t, attack, decay):
+# Funcion para generar una envolvente con attack, sustain y decay
+def generar_envolvente(t, attack, sustain, decay):
     env = np.zeros_like(t, dtype=np.float32)
-    
-    # Fase de Ataque
+
+    # Fase de Ataque (0 → 1)
     idx_a = t <= attack
     if attack > 0:
         env[idx_a] = t[idx_a] / attack
     else:
         env[idx_a] = 1.0
-        
-    # Fase de Decaimiento
-    idx_d = (t > attack) & (t <= attack + decay)
+
+    # Fase de Sustain (mantiene 1.0)
+    idx_s = (t > attack) & (t <= attack + sustain)
+    env[idx_s] = 1.0
+
+    # Fase de Decaimiento (1 → 0)
+    idx_d = (t > attack + sustain) & (t <= attack + sustain + decay)
     if decay > 0:
-        env[idx_d] = 1.0 - (t[idx_d] - attack) / decay
-        
-    # (Lo que supera attack+decay se queda en 0.0)
+        env[idx_d] = 1.0 - (t[idx_d] - attack - sustain) / decay
+
     return env
 
 # Genera la señal de audio sintética usando fórmulas FM.
-def fm_synthesize(carrier, ratio, index, a_att, a_dec, m_att, m_dec, duration=2, sr=44100):
+def fm_synthesize(carrier, ratio, index, a_att, a_sus, a_dec, m_att, m_dec, duration=2, sr=44100):
     t = np.linspace(0, duration, int(sr * duration), endpoint=False).astype(np.float32)
-    
-    # Envolventes 
-    amp_env = generar_envolvente(t, a_att, a_dec)
-    mod_env = generar_envolvente(t, m_att, m_dec)
-    
+
+    # Envolventes
+    amp_env = generar_envolvente(t, a_att, a_sus, a_dec)      # amplitud: attack + sustain + decay
+    mod_env = generar_envolvente(t, m_att, 0.0, m_dec)        # modulación: sin sustain
+
     # Sintesis
     fm = carrier * ratio
     mod = np.sin(2 * np.pi * fm * t)
     car = amp_env * np.sin(2 * np.pi * carrier * t + (index * mod_env) * mod)
-    
+
     # sounddevice prefiere float32 para el audio
     return car.astype(np.float32), sr
 
@@ -124,7 +128,7 @@ def generar_wavs_FM(num_muestras=30000):   # conviene que este valor se pueda aj
     csv_buffer = []         # Buffer para el guardado en el csv
     buffer_flush = 1000 
     with open(csv_path, "w", newline="") as f_header:
-        csv.writer(f_header).writerow(["filename","carrier","ratio","index","amp_attack", "amp_decay", "mod_attack", "mod_decay"])
+        csv.writer(f_header).writerow(["filename","carrier","ratio","index","amp_attack","amp_sustain","amp_decay","mod_attack","mod_decay"])
 
     # params
     params = GEN_PARAMS
@@ -141,19 +145,27 @@ def generar_wavs_FM(num_muestras=30000):   # conviene que este valor se pueda aj
         c_real = np.random.uniform(*params["carrier"])
         r_real = np.random.uniform(*params["ratio"])
         i_real = np.random.uniform(*params["index"])
-        a_att  = np.random.uniform(*params["amp_attack"])
-        a_dec  = np.random.uniform(*params["amp_decay"])
-        m_att  = np.random.uniform(*params["mod_attack"])
-        m_dec  = np.random.uniform(*params["mod_decay"])
+
+        # Envolvente amplitud: duración total libre (0.3s – TIME), el resto del clip queda en silencio
+        total_amp = np.random.uniform(0.3, TIME)
+        a_fracs = np.random.uniform(0.05, 1.0, 3)  # 3 pesos aleatorios, mínimo 0.05 para evitar fases nulas
+        a_fracs /= a_fracs.sum()                    # normalizar → proporciones que suman 1
+        a_att, a_sus, a_dec = a_fracs * total_amp   # escalar al tiempo total: att + sus + dec = total_amp
+
+        # Envolvente modulación: duración total libre (0.2s – TIME)
+        total_mod = np.random.uniform(0.2, TIME)
+        m_frac = np.random.uniform(0.05, 0.95)  # proporción del attack; con 2 fases basta un número
+        m_att = m_frac * total_mod               # att = fracción del total
+        m_dec = (1.0 - m_frac) * total_mod      # dec = resto; att + dec = total_mod
 
         # Sintesis
-        x, _ = fm_synthesize(c_real, r_real, i_real, a_att, a_dec, m_att, m_dec, duration=TIME, sr=SR)
+        x, _ = fm_synthesize(c_real, r_real, i_real, a_att, a_sus, a_dec, m_att, m_dec, duration=TIME, sr=SR)
 
         # Guardado wav
         sf.write(file_path, x, SR, subtype='PCM_16')
 
         # Registrado en csv
-        csv_buffer.append([fname, c_real, r_real, i_real, a_att, a_dec, m_att, m_dec])
+        csv_buffer.append([fname, c_real, r_real, i_real, a_att, a_sus, a_dec, m_att, m_dec])
         if len(csv_buffer) >= buffer_flush:
             with open(csv_path, "a", newline="") as f:
                 csv.writer(f).writerows(csv_buffer)
@@ -197,9 +209,9 @@ def convertir_wavs_a_tensores(wav_folder, device):
     db_transform = torchaudio.transforms.AmplitudeToDB(stype='amplitude', top_db=80.0).to(device)
 
     # Transformación
-    for wav_file in wav_files:
+    for i, wav_file in enumerate(wav_files, start=1):
         # Carga el tensor onda en CPU
-        waveform, sr = torchaudio.load(os.path.join(wav_folder, wav_file))  
+        waveform, sr = torchaudio.load(os.path.join(wav_folder, wav_file))
 
         # Fade
         fade_samples = int(sr * 0.05)
@@ -215,6 +227,14 @@ def convertir_wavs_a_tensores(wav_folder, device):
         # Guardar tensor espectrograma
         out_name = wav_file.replace(".wav", ".pt")
         torch.save(spec, os.path.join(out_folder, out_name))
+
+        if i % 2000 == 0:
+            print(f"Convertidos {i}/ tensores...")
+
+    # Copiar labels.csv a la carpeta de tensores
+    src_csv = os.path.join(wav_folder, "labels.csv")
+    if os.path.exists(src_csv):
+        shutil.copy(src_csv, os.path.join(out_folder, "labels.csv"))
 
     # tiempo total y por fichero
     t_end = time.time()
@@ -286,7 +306,7 @@ def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3
 
     # --- Instanciar modelo ---
     print("Instanciando modelo!")
-    model = CNNRegressor5(7,1,32)
+    model = CNNRegressor5(8,1,32)
 
     criterion = HybridLoss(spec_weight=spec_w, sc_weight=sc_w, param_weight=param_w) 
 
@@ -325,104 +345,46 @@ def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3
 #=========================================== PRUEBA MODELO ====================================================
 #==============================================================================================================
 # ------------ INFERENCIA ------------
-# Función que, dado un modelo ya entrenado y la ruta de un wav, realiza su inferencia
-def hacer_inferencia(ruta_modelo, ruta_wav, device="cpu"):
-    # 1. Cargar modelo y configuración
-    model, means, stds, device = cargar_modelo_para_inferencia(ruta_modelo)
-
-    # 2. Procesar audio: leer WAV y calcular espectrograma como en entrenamiento
-    waveform, sr = torchaudio.load(ruta_wav)           # tensor en CPU
-
-    # 3. Procesar espectrograma: ya en dB y con la forma correcta
-    input_tensor = procesar_espectrograma(waveform, sr,device)
-
-    # 4) Inferencia
-    with torch.no_grad():
-        out = model(input_tensor)
-        if isinstance(out, (tuple, list)):
-            pred_params = out[0]
-        else:
-            pred_params = out
-
-    pred = pred_params.detach().cpu().numpy().flatten()  # (3,)
-
-    # 5) Desnormalizar usando stats guardadas en el checkpoint
-    if (means is None) or (stds is None):
-        raise RuntimeError("El checkpoint no contiene 'param_means'/'param_stds'. Reentrena guardando stats en el checkpoint.")
-
-    means = np.asarray(means, dtype=np.float32)
-    stds = np.asarray(stds, dtype=np.float32)
-    pred_raw = pred * stds + means
-
-    return pred_raw.tolist()
-
-# Las dos funciones siguientes son la anterior dividida en dos, para hacer más eficiente el bucle de generación de predicciones
+# Carga el modelo y las estadísticas de normalización desde el checkpoint.
+# Se llama una sola vez; el resultado se reutiliza en cada llamada a hacer_inferencia().
 def cargar_modelo_para_inferencia(ruta_modelo, device="cpu"):
-    """
-    Carga el modelo y las estadísticas UNA SOLA VEZ.
-    Devuelve el objeto model listo y las medias/desviaciones.
-    """
     if not os.path.exists(ruta_modelo):
         raise FileNotFoundError("No se encuentra el archivo del modelo.")
 
-    # 1) Normalizar device
     device = torch.device("cuda" if (device == "cuda" and torch.cuda.is_available()) else "cpu")
 
-    # 2) Instanciar arquitectura y cargar checkpoint
-    model = CNNRegressor5(n_params=7)
+    model = CNNRegressor5(n_params=8)
     ckpt = torch.load(ruta_modelo, map_location=device)
 
-    # soporte ambos formatos: checkpoint con 'state_dict' o antiguo state_dict directo
+    # Soporte para checkpoints nuevos {state_dict, means, stds} y antiguos (solo state_dict)
     if isinstance(ckpt, dict) and 'state_dict' in ckpt:
         state_dict = ckpt['state_dict']
-        means = ckpt.get('param_means', None)
-        stds = ckpt.get('param_stds', None)
+        means = np.asarray(ckpt['param_means'], dtype=np.float32)
+        stds  = np.asarray(ckpt['param_stds'],  dtype=np.float32)
     else:
-        # archivo antiguo que contenía solo state_dict
         state_dict = ckpt
-        means = None
-        stds = None
+        means = stds = None
 
     model.load_state_dict(state_dict)
     model.to(device)
     model.eval()
-    
-    # Preparamos las stats como numpy arrays aquí para no hacerlo en cada vuelta
-    if means is not None:
-        means = np.asarray(means, dtype=np.float32)
-    if stds is not None:
-        stds = np.asarray(stds, dtype=np.float32)
 
     print("Modelo cargado exitosamente en:", device)
-    
-    # Devolvemos todo lo que necesita la siguiente función
     return model, means, stds, device
 
-def hacer_inferencia_rapida(model, means, stds, ruta_wav, device):
-    """
-    Procesa un solo WAV usando un modelo YA cargado.
-    """
-    # 3) Procesar audio: leer WAV y calcular espectrograma como en entrenamiento
-    waveform, sr = torchaudio.load(ruta_wav)           # tensor en CPU
-    
+# Dado un modelo ya cargado y la ruta de un WAV, devuelve los 8 parámetros FM en escala real.
+def hacer_inferencia(model, means, stds, ruta_wav, device):
+    if means is None or stds is None:
+        raise RuntimeError("El checkpoint no contiene 'param_means'/'param_stds'. Reentrena guardando stats en el checkpoint.")
+
+    waveform, sr = torchaudio.load(ruta_wav)
     spec = procesar_espectrograma(waveform, sr, device)
 
-    # 4) Inferencia
     with torch.no_grad():
         out = model(spec)
-        if isinstance(out, (tuple, list)):
-            pred_params = out[0]
-        else:
-            pred_params = out
+        pred_params = out[0] if isinstance(out, (tuple, list)) else out
 
-    pred = pred_params.detach().cpu().numpy().flatten()  # (3,)
-
-    # 5) Desnormalizar usando stats QUE NOS HAN PASADO
-    if (means is None) or (stds is None):
-        raise RuntimeError("Error: 'means' o 'stds' son None. Revisa el checkpoint.")
-
-    pred_raw = pred * stds + means
-
+    pred_raw = pred_params.detach().cpu().numpy().flatten() * stds + means
     return pred_raw.tolist()
 
 # --------- REPRODUCCIÓN DE AUDIO ---------
@@ -444,17 +406,18 @@ def reproducir_wav(path):
 def reproducir_prediccion(params):
     # Desempaquetar parámetros (asegurando floats de Python)
     carrier = float(params[0])
-    ratio = float(params[1])
-    index = float(params[2])
-    a_att = float(params[3])
-    a_dec = float(params[4])
-    m_att = float(params[5])
-    m_dec = float(params[6])
-    
-    print(f"Reproduciendo predicción: C={carrier:.2f}, R={ratio:.2f}, I={index:.2f}, AmpAtt={a_att:.2f}, AmpDec={a_dec:.2f}, ModAtt={m_att:.2f}, ModDec={m_dec:.2f}")
+    ratio   = float(params[1])
+    index   = float(params[2])
+    a_att   = float(params[3])
+    a_sus   = float(params[4])
+    a_dec   = float(params[5])
+    m_att   = float(params[6])
+    m_dec   = float(params[7])
+
+    print(f"Reproduciendo predicción: C={carrier:.2f}, R={ratio:.2f}, I={index:.2f}, AmpAtt={a_att:.2f}, AmpSus={a_sus:.2f}, AmpDec={a_dec:.2f}, ModAtt={m_att:.2f}, ModDec={m_dec:.2f}")
 
     # 1. Sintetizar (generamos 2 segundos para escucharlo bien)
-    waveform, sr = fm_synthesize(carrier, ratio, index, a_att, a_dec, m_att, m_dec, duration=2.0)
+    waveform, sr = fm_synthesize(carrier, ratio, index, a_att, a_sus, a_dec, m_att, m_dec, duration=2.0)
     
     # 2. Reproducir
     play_audio(waveform, sr)
@@ -468,17 +431,42 @@ def prediccion_multiples_wav(path_modelo, path_entrada, path_salida):
     model, means, stds, device = cargar_modelo_para_inferencia(path_modelo, device="cuda")
 
     for ruta_wav_original in lista_wavs:
-        
-        prediccion = hacer_inferencia_rapida(model, means, stds, ruta_wav_original, device)
 
-        p_carrier, p_ratio, p_index, p_a_att, p_a_dec, p_m_att, p_m_dec = prediccion
+        prediccion = hacer_inferencia(model, means, stds, ruta_wav_original, device)
 
-        audio_prediccion, sr = fm_synthesize(p_carrier, p_ratio, p_index, p_a_att, p_a_dec, p_m_att, p_m_dec)
+        p_carrier, p_ratio, p_index, p_a_att, p_a_sus, p_a_dec, p_m_att, p_m_dec = prediccion
+
+        audio_prediccion, sr = fm_synthesize(p_carrier, p_ratio, p_index, p_a_att, p_a_sus, p_a_dec, p_m_att, p_m_dec)
 
         nombre_archivo = os.path.basename(ruta_wav_original) 
         ruta_guardado = os.path.join(path_salida, nombre_archivo)
 
         sf.write(ruta_guardado, audio_prediccion, sr)
+
+def generar_carpeta_prueba(tensor_folder, n=100):
+    """
+    Copia los primeros n tensores (.pt) y el labels.csv de tensor_folder
+    a una nueva carpeta <tensor_folder>_test<n>.
+    Devuelve la ruta de la carpeta generada.
+    """
+    files = sorted([f for f in os.listdir(tensor_folder) if f.endswith('.pt')])[:n]
+    out_folder = tensor_folder + f"_test{n}"
+    os.makedirs(out_folder, exist_ok=True)
+    for f in files:
+        shutil.copy(os.path.join(tensor_folder, f), os.path.join(out_folder, f))
+    src_csv = os.path.join(tensor_folder, "labels.csv")
+    if os.path.exists(src_csv):
+        shutil.copy(src_csv, os.path.join(out_folder, "labels.csv"))
+    print(f"Carpeta de prueba generada: {out_folder} ({len(files)} tensores)")
+    return out_folder
+
+# Evalúa el modelo sobre todos los tensores de tensor_folder. Usa el método evaluate de CNNRegressor5
+def evaluar_modelo(ruta_modelo, tensor_folder, device="cpu"):
+    model, _, _, device = cargar_modelo_para_inferencia(ruta_modelo, device)
+    dataset  = SpectrogramTensorDataset(tensor_folder)
+    test_loader = DataLoader(dataset, batch_size=32, shuffle=False)
+    metrics = model.evaluate(test_loader, device=str(device))
+    return metrics
 
 # Función que muestra los 4 espectrogramas
 def comparar_espectrogramas_4en1(wav_orig, sr_orig, params_pred, device="cpu"):

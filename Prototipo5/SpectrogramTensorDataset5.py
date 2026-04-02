@@ -8,12 +8,12 @@ import numpy as np
 # Clase hija de Dataset (pytorch)
 # Normaliza los valores para evitar que el carrier (el parámetro con valores más grandes) domine la pérdida
 class SpectrogramTensorDataset(Dataset):
-    def __init__(self, tensors_dir, param_cols=('carrier', 'ratio', 'index','amp_attack', 'amp_decay', 'mod_attack', 'mod_decay')):
+    def __init__(self, tensors_dir, param_cols=('carrier', 'ratio', 'index', 'amp_attack', 'amp_sustain', 'amp_decay', 'mod_attack', 'mod_decay')):
         self.tensors_dir = tensors_dir
         self.param_cols = list(param_cols)
 
-        # Localizar CSV (se asume la estructura: parent_dir/datasetFMwav/labels.csv)
-        labels_csv = os.path.join(os.path.dirname(tensors_dir), "datasetFMwav_v5", "labels.csv")
+        # Localizar CSV en la propia carpeta de tensores
+        labels_csv = os.path.join(tensors_dir, "labels.csv")
         if not os.path.exists(labels_csv):
             raise FileNotFoundError(f"labels.csv no encontrado en {labels_csv}")
         df = pd.read_csv(labels_csv)

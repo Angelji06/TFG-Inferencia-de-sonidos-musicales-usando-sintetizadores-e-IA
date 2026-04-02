@@ -60,7 +60,7 @@ class HybridLoss(nn.Module):
 #   - head spec: decoder (reconstrucción del espectrograma)
 # -------------------------
 class CNNRegressor5(nn.Module):
-    def __init__(self, n_params=7, input_channels=1, base_filters=32):
+    def __init__(self, n_params=8, input_channels=1, base_filters=32):
         super().__init__()
         # ENCODER -> Convierte el espectrograma (1, H, W) en una representación comprimida rica en características
         # Tensores espectrograma tal que: (Numero canales, Numero filas (frecuencia), Numero columnas (tiempo))
@@ -282,8 +282,8 @@ class CNNRegressor5(nn.Module):
         spec_loss_fn = nn.L1Loss(reduction='mean')
         param_mse_fn = nn.MSELoss(reduction='none')  # no usado directamente aquí, calculamos manualmente
 
-        last_pred_spec = None
-        last_batch_spec = None
+        example_specs = []      # primeros 5 espectrogramas reales
+        example_pred_specs = [] # primeros 5 espectrogramas reconstruidos
 
         with torch.no_grad():
             for batch in test_loader:
@@ -337,8 +337,11 @@ class CNNRegressor5(nn.Module):
                         pred_spec = F.interpolate(pred_spec, size=batch_spec.shape[2:], mode='bilinear', align_corners=False)
                     spec_loss = spec_loss_fn(pred_spec, batch_spec)
                     spec_losses.append(spec_loss.item())
-                    last_pred_spec = pred_spec.detach().cpu()
-                    last_batch_spec = batch_spec.detach().cpu()
+                    # Acumular hasta 5 ejemplos
+                    needed = 5 - len(example_specs)
+                    if needed > 0:
+                        example_specs.extend(batch_spec.detach().cpu()[:needed])
+                        example_pred_specs.extend(pred_spec.detach().cpu()[:needed])
 
         # Concatenar preds y trues
         if len(preds_list) == 0:
@@ -352,9 +355,9 @@ class CNNRegressor5(nn.Module):
         rmse_per_param = np.sqrt(mse_per_param)
 
         param_names = [
-            "carrier", "ratio", "index", 
-            "amp_att", "amp_dec", "mod_att", "mod_dec"
-        ] if preds.shape[1] == 7 else [f"p{i}" for i in range(preds.shape[1])]
+            "carrier", "ratio", "index",
+            "amp_att", "amp_sus", "amp_dec", "mod_att", "mod_dec"
+        ] if preds.shape[1] == 8 else [f"p{i}" for i in range(preds.shape[1])]
 
         # Imprimir resultados
         print("=== Resultados de evaluación ===")
@@ -387,23 +390,25 @@ class CNNRegressor5(nn.Module):
             plt.ylabel("Pred")
             plt.title(name)
         plt.tight_layout()
+        plt.savefig(os.path.join(save_dir, "scatter_params.png"), dpi=150)
         plt.show()
 
-        # Mostrar una reconstrucción de ejemplo (si el modelo devuelve pred_spec)
-        if last_pred_spec is not None and last_batch_spec is not None:
-            example_spec = last_batch_spec[0]      # primer ejemplo de la última batch
-            example_pred_spec = last_pred_spec[0]
-            def show_spec(tensor, title="spec"):
-                arr = tensor.squeeze(0).numpy()
-                plt.imshow(arr, origin='lower', aspect='auto')
-                plt.colorbar()
-                plt.title(title)
-                plt.xlabel("time")
-                plt.ylabel("freq")
-            plt.figure(figsize=(10,4))
-            plt.subplot(1,2,1); show_spec(example_spec, title="Target spec (example)")
-            plt.subplot(1,2,2); show_spec(example_pred_spec, title="Predicted spec (example)")
+        # Mostrar los primeros 5 pares target / reconstrucción
+        if example_specs:
+            n = len(example_specs)
+            fig, axs = plt.subplots(n, 2, figsize=(10, 3 * n))
+            if n == 1:
+                axs = [axs]  # asegurar lista de filas
+            for row, (spec_t, spec_p) in enumerate(zip(example_specs, example_pred_specs)):
+                for col, (tensor, title) in enumerate([(spec_t, f"Target #{row+1}"), (spec_p, f"Pred #{row+1}")]):
+                    arr = tensor.squeeze(0).numpy()
+                    im = axs[row][col].imshow(arr, origin='lower', aspect='auto')
+                    axs[row][col].set_title(title)
+                    axs[row][col].set_xlabel("time")
+                    axs[row][col].set_ylabel("freq")
+                    fig.colorbar(im, ax=axs[row][col], format='%+.0f dB')
             plt.tight_layout()
+            plt.savefig(os.path.join(save_dir, "spectrogram_example.png"), dpi=150)
             plt.show()
 
         print("Evaluación completada.")

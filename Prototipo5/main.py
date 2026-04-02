@@ -2,7 +2,7 @@ import os
 import glob
 import tkinter as tk
 from tkinter import filedialog, messagebox
-from logica import get_gen_params, generar_dataset, check_dataset, entrenar_modelo, reproducir_wav,reproducir_prediccion, hacer_inferencia, prediccion_multiples_wav, comparar_espectrogramas_4en1
+from logica import get_gen_params, generar_dataset, check_dataset, entrenar_modelo, reproducir_wav, reproducir_prediccion, cargar_modelo_para_inferencia, hacer_inferencia, prediccion_multiples_wav, comparar_espectrogramas_4en1, evaluar_modelo, generar_carpeta_prueba
 
 from Prototipo5 import CNNRegressor5
 import librosa
@@ -370,6 +370,8 @@ class App:
         tk.Button(action_frame, text="Reproducir síntesis", command=self._play_synth).pack(side="left", padx=6)
 
         tk.Button(action_frame, text="Visualizar Espectrogramas", command=self._ver_comparativa_espectrogramas,).pack(side="left", padx=6)
+        tk.Button(action_frame, text="Generar carpeta de prueba", bg="#fff9c4", command=self._generar_carpeta_prueba).pack(side="left", padx=6)
+        tk.Button(action_frame, text="Evaluar Modelo", bg="#e8f5e9", command=self._evaluar_modelo).pack(side="left", padx=6)
         
         tk.Button(action_frame, text="Volver", command=lambda: self.show_page(self.page_inicio)).pack(side="right", padx=6)
 
@@ -414,8 +416,9 @@ class App:
         if hasattr(self, 'root'): self.root.update_idletasks() 
 
         try:
-            # 1. Hacer inferencia
-            params = hacer_inferencia(self.pathModelo, self.test_wav_path, device = self.device_var.get())
+            # 1. Cargar modelo e inferir
+            model, means, stds, device = cargar_modelo_para_inferencia(self.pathModelo, self.device_var.get())
+            params = hacer_inferencia(model, means, stds, self.test_wav_path, device)
               
             # 2. GUARDAR DATOS PARA EL BOTÓN DE ESPECTROGRAMA
             self.last_prediction_params = params
@@ -432,19 +435,21 @@ class App:
                 val_fm = fila.iloc[0]['ratio']
                 val_i  = fila.iloc[0]['index']
                 val_aa = fila.iloc[0]['amp_attack']
+                val_as = fila.iloc[0]['amp_sustain']
                 val_ad = fila.iloc[0]['amp_decay']
                 val_ma = fila.iloc[0]['mod_attack']
                 val_md = fila.iloc[0]['mod_decay']
-                
+
                 texto_ori = (
                     f"Audio en Dataset Entrenamiento! Valores Originales: \n"
-                    f"Carrier (fc): {val_fc:.2f}\n"
+                    f"Carrier (fc):  {val_fc:.2f}\n"
                     f"Ratio (fm/fc): {val_fm:.2f}\n"
-                    f"Index (I):    {val_i:.2f}\n"
-                    f"Amp Attack:   {val_aa:.3f}\n"
-                    f"Amp Decay:    {val_ad:.3f}\n"
-                    f"Mod Attack:   {val_ma:.3f}\n"
-                    f"Mod Decay:    {val_md:.3f}\n\n"
+                    f"Index (I):     {val_i:.2f}\n"
+                    f"Amp Attack:    {val_aa:.3f}\n"
+                    f"Amp Sustain:   {val_as:.3f}\n"
+                    f"Amp Decay:     {val_ad:.3f}\n"
+                    f"Mod Attack:    {val_ma:.3f}\n"
+                    f"Mod Decay:     {val_md:.3f}\n\n"
                 )
                 self.result_text.insert(tk.END, texto_ori)
             else:
@@ -473,13 +478,14 @@ class App:
                 self.result_text.insert(tk.END, texto_ori)
 
             # Mostrar texto en pantalla
-            c, r, i, a_att, a_dec, m_att, m_dec = params
+            c, r, i, a_att, a_sus, a_dec, m_att, m_dec = params
             texto_pre = (
                 f"--- PREDICCIÓN ---\n"
                 f"Carrier (fc):  {c:.2f} Hz\n"
                 f"Ratio (fm/fc): {r:.2f}\n"
                 f"Index (I):     {i:.2f}\n"
                 f"Amp Attack:    {a_att:.3f} s\n"
+                f"Amp Sustain:   {a_sus:.3f} s\n"
                 f"Amp Decay:     {a_dec:.3f} s\n"
                 f"Mod Attack:    {m_att:.3f} s\n"
                 f"Mod Decay:     {m_dec:.3f} s\n"
@@ -498,6 +504,55 @@ class App:
             comparar_espectrogramas_4en1(self.ultimo_wav_orig, self.ultimo_sr_orig, self.last_prediction_params, self.device_var.get())
         else:
             messagebox.showwarning("Aviso", "Primero debes predecir un audio.")
+
+    def _generar_carpeta_prueba(self):
+        tensor_folder = filedialog.askdirectory(title="Selecciona la carpeta de tensores completa")
+        if not tensor_folder:
+            return
+        try:
+            out = generar_carpeta_prueba(tensor_folder, n=100)
+            self.result_text.delete("1.0", tk.END)
+            self.result_text.insert(tk.END, f"Carpeta de prueba generada:\n{out}\n\n(100 tensores + labels.csv copiados)")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo generar la carpeta:\n{e}")
+
+    def _evaluar_modelo(self):
+        if not self.model_trained or not self.pathModelo:
+            messagebox.showwarning("Aviso", "No hay ningún modelo cargado.")
+            return
+
+        tensor_folder = filedialog.askdirectory(title="Selecciona carpeta con tensores (.pt) para evaluar")
+        if not tensor_folder:
+            return
+
+        self.result_text.delete("1.0", tk.END)
+        self.result_text.insert(tk.END, "Evaluando modelo... (los gráficos aparecerán en ventanas separadas)\n")
+        self.root.update_idletasks()
+
+        try:
+            metrics = evaluar_modelo(self.pathModelo, tensor_folder, device=self.device_var.get())
+
+            lines = ["=== MÉTRICAS DE EVALUACIÓN ===\n"]
+            lines.append(f"Muestras evaluadas: {metrics['n_samples']}\n\n")
+            lines.append(f"{'Parámetro':<12} {'MSE':>10} {'RMSE':>10} {'MAE':>10}\n")
+            lines.append("-" * 46 + "\n")
+            for name, mse, rmse, mae in zip(
+                metrics['param_names'],
+                metrics['mse_per_param'],
+                metrics['rmse_per_param'],
+                metrics['mae_per_param']
+            ):
+                lines.append(f"{name:<12} {mse:>10.6f} {rmse:>10.6f} {mae:>10.6f}\n")
+
+            if metrics['avg_spec_l1'] is not None:
+                lines.append(f"\nL1 espectral media: {metrics['avg_spec_l1']:.6f}\n")
+
+            lines.append(f"\nCSV guardado en: {metrics['csv_path']}\n")
+            self.result_text.insert(tk.END, "".join(lines))
+
+        except Exception as e:
+            self.result_text.insert(tk.END, f"ERROR:\n{str(e)}\n")
+            print(f"ERROR evaluación: {e}")
 
     def _play_synth(self):
         reproducir_prediccion(self.last_prediction_params)
