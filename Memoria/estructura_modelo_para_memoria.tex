@@ -1,0 +1,50 @@
+\documentclass[12pt, a4paper]{article}
+
+% Paquetes esenciales para español, matemáticas y gráficos
+\usepackage[utf8]{inputenc}
+\usepackage[spanish, es-tabla]{babel}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{a4paper, margin=2.5cm}
+
+% Información del documento
+\title{\textbf{Memoria: Arquitectura y Modelado}}
+\author{David Cendejas Rodríguez y Ángel Jiménez Izquierdo \\ \textit{Borrador para reunión con experto}}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este documento detalla la justificación teórica, el tratamiento de datos y la estructura interna utilizada en el desarrollo de la red neuronal predictiva para la inferencia de parámetros de síntesis FM.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Arquitectura y Modelado de la Red Neuronal}
+
+\subsection{Exploración de Paradigmas: Clasificación vs. Regresión}
+\subsubsection{Enfoque de Clasificación}
+\subsubsection{Enfoque de Regresión}
+
+\subsection{El Problema de la Inyectividad y la Necesidad de una Arquitectura Compleja}
+
+\subsection{Pipeline de Datos y Preprocesamiento del Dataset}
+% Aquí hablarás de la generación aleatoria, el paso a espectrogramas y la normalización Z-score.
+
+\subsection{Diseño de la Arquitectura Propuesta (CNN de Doble Cabeza)}
+\subsubsection{Codificador (Encoder)}
+\subsubsection{Rama de Inferencia Numérica (Parameter Head)}
+\subsubsection{Rama de Reconstrucción (Decoder Head)}
+
+\subsection{Formulación de la Función de Pérdida Híbrida}
+\subsubsection{Pérdida en el Dominio de Parámetros (SmoothL1)}
+\subsubsection{Pérdida en el Dominio Espectral (L1 + Convergencia Espectral)}
+
+\subsection{Justificación del Stack Tecnológico y Librerías Utilizadas}
+
+\end{document}
