@@ -29,12 +29,93 @@ Este documento detalla la justificación teórica, el tratamiento de datos y la 
 
 \subsection{Exploración de Paradigmas: Clasificación vs. Regresión}
 \subsubsection{Enfoque de Clasificación}
+La clasificación es el paso previo natural a la búsqueda de un modelo de inferencia de parámetros.
+De esta manera, se puede comprobar de forma práctica que la red neuronal procesa el audio adecuadamente
+y es capaz de conservar su información acústica fundamental.
+
+El \textbf{Prototipo 1} es una prueba de concepto para la primera aproximación al aprendizaje automático aplicado al audio.
+En él se utiliza un dataset reducido, construido con la librería NumPy, de alrededor de 50 archivos \textit{.wav} de un segundo de duración.
+Estos audios se generan sintéticamente
+con frecuencias aleatorias y formas de onda básicas (\textit{sine}, \textit{square}, \textit{sawtooth}, \textit{triangle} y \textit{noise}).
+
+En la fase de preprocesamiento y entrenamiento, desarrollada utilizando TensorFlow, se opta por
+no aportar a la red formas de audio crudo. En su lugar, se extraen las características calculando
+los Coeficientes Cepstrales en las Frecuencias de Mel (MFCC) de cada muestra. El modelo tiene el objetivo de clasificar 
+y asociar la matriz de coeficientes con la etiqueta correspondiente a su tipo de onda. A pesar de esto, 
+al plantear una arquitectura básica no convolucional, la red neuronal carece de los mecanismos para
+realizar una interpretación correcta de los patrones bidimensionales de los MFCC. Como consecuencia, el 
+modelo arroja una precisión muy baja. 
+
+El \textbf{Prototipo 2} se basa en el \textbf{Prototipo 1}. Sigue atendiendo al objetivo de la clasificación, pero tiene 
+características que difieren del anterior. Esta vez, los audios se convierten a espectrogramas \textit{.png}
+mediante el uso de la librería de \textit{librosa}. Esto conlleva un menor coste computacional y de almacenamiento.
+Al tratarse realmente de imágenes, se pueden utilizar modelos preentrenados de visión, encargados de clasificar imágenes.
+
+Para el entrenamiento, se hace uso de \textbf{ResNet34 preentrenada} vía \textit{fastAI}. Para su adaptación, se utilizan \textbf{DataBlocks},
+una herramienta de \textit{fastAI} mediante la cual se especifican que las entradas son las imágenes (espectrogramas) y las salidas
+son las categorías (tipo de onda). Asimismo, se etiqueta obteniendo la categoría a partir del nombre archivo y se divide
+destinando un 80\% de las imágenes para entrenar y un 20\% para validación.
+
+Como resultado de utilizar una red convolucional y la arquitectura externa \textbf{ResNet34}, el modelo obtuvo una buena precisión, especialmente 
+identificando ondas puras dentro del rango entrenado. 
+
 \subsubsection{Enfoque de Regresión}
+Al plantear un salto hacia la síntesis paramétrica continua, fue necesario tomar una decisión
+de diseño fundamental: la elección del motor de síntesis. Tras la evaluación de distintas alternativas, 
+se optó por centrar el proyecto en la síntesis por Modulación de Frecuencia (FM). Esta técnica presenta
+ventajas claras para el aprendizaje automático. A diferencia de la síntesis aditiva, que requiere decenas
+de osciladores simultáneos, la síntesis FM es muy eficiente, consiguiendo generar timbres complejos
+a partir de un número reducido de parámetros. De esta forma, se puede comenzar utilizando, por ejemplo, 
+la frecuencia portadora, el ratio y el índice de modulación, y luego ampliar el número de variables para
+conseguir sonidos más complejos. Estas características acotan la dimensionalidad del problema predictivo, 
+haciéndolo viable para la red neuronal.   
+
+Si bien con la clasificación queda validada la extracción de características acústicas, una vez tomada 
+esta última decisión, deja de ser útil. Para la inferencia de parámetros de la síntesis FM, resulta 
+obligatoria la evolución hacia una arquitectura de regresión.
+
+Para el \textbf{Prototipo 3} se genera un dataset mediano de aproximadamente 15000 muestras, construido 
+mediante un barrido de parámetros en un sintetizador FM de \textbf{pyo}. Para la reducción de la carga computacional
+y la optimización del espacio, se sustituye \textbf{librosa} por la librería de \textit{torchaudio}. Esta permite
+transformar los archivos de audio (\textit{.wav}) en tensores de espectrogramas (\textit{.pt}),
+asociados mediante el uso de un (\textit{.csv}) a sus valores numéricos. El 80\% del conjunto de datos se destina 
+a entrenamiento y el otro 20\% a validación.
+
+El entrenamiento se implementa mediante \textbf{PyTorch}. Se diseña una arquitectura convolucional 
+propia (SmallCNNRegressor). La red neuronal se compone de dos bloques principales:
+uno de extracción de características y una cabeza de regresión. 
+
+El primer bloque recibe los espectrogramas en forma de tensores de un único canal (lo que equivaldría a 
+imágenes en escala de grises) y los procesa en otros tres bloques convolucionales. Cada uno de estos aplica
+kernels de tamaño 3x3 (o núcleos convolucionales) que se deslizan sobre la matriz del espectrograma
+para extraer características espaciales, detectando así patrones visuales en la representación espectral del sonido.
+A esto le sigue una función de activación no lineal \textbf{ReLU} y una capa de reducción espacial (\textbf{Max Pooling}). 
+El último bloque convolucional termina en una capa de agrupamiento (\textbf{Adaptive Average Pooling}), que comprime los
+mapas de características a una matriz 4x4.
+
+El siguiente paso es la cabeza de regresión, en donde la información espacio-temporal del espectrograma
+(extraída en el bloque anterior), se pasa a un vector de una única dimensión y atraviesa dos capas
+completamente conectadas (\textbf{Perceptrón Multicapa}). La primera, comprime la información a 128 neuronas,
+y la segunda, saca el vector por una dimensión de salida de tamaño 3, que se corresponde con los tres parámetros
+del sintetizador: frecuencia portadora, ratio y el índice de modulación.
+
+El modelo optimiza el proceso de los espectrogramas mediante el algoritmo Adam, utilizando el Error Cuadrático
+Medio (MSELoss) como función de pérdida. Y, en cuanto al ciclo de entrenamiento, este se configuró con 
+una duración de 5 épocas (\textit{epochs}). En este prototipo se decidió no hacer una búsqueda extensa
+de hiperparámetros al tratarse de un prototipo intermedio, con un fin de experimentación inicial 
+con la regresión.
+
+A pesar de esto, se puede observar una precisión muy limitada en los resultados experimentales.
+Se consigue mantener un MSE bajo en el \textit{Ratio} e \textit{Index}, pero el error en el
+\textit{Carrier} resulta desproporcionado, debido a operar en la escala de miles de hercios. 
+De este prototipo se puede sacar la conclusión de que el minimizar el error matemático sobre los
+parámetros no garantiza la similitud acústica del sonido generado. 
+
 
 \subsection{El Problema de la Inyectividad y la Necesidad de una Arquitectura Compleja}
 
 \subsection{Pipeline de Datos y Preprocesamiento del Dataset}
-% Aquí hablarás de la generación aleatoria, el paso a espectrogramas y la normalización Z-score.
+
 
 \subsection{Diseño de la Arquitectura Propuesta (CNN de Doble Cabeza)}
 \subsubsection{Codificador (Encoder)}
