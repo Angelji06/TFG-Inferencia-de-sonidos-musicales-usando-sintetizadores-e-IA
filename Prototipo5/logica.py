@@ -229,7 +229,7 @@ def convertir_wavs_a_tensores(wav_folder, device):
         torch.save(spec, os.path.join(out_folder, out_name))
 
         if i % 2000 == 0:
-            print(f"Convertidos {i}/ tensores...")
+            print(f"Convertidos {i} tensores...")
 
     # Copiar labels.csv a la carpeta de tensores
     src_csv = os.path.join(wav_folder, "labels.csv")
