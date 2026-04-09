@@ -3,6 +3,7 @@ import glob
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from logica import get_gen_params, generar_dataset, check_dataset, entrenar_modelo, reproducir_wav, reproducir_prediccion, cargar_modelo_para_inferencia, hacer_inferencia, prediccion_multiples_wav, comparar_espectrogramas_4en1, evaluar_modelo, generar_carpeta_prueba
+from FMsynth8 import FMSynth8Window
 
 from Prototipo5 import CNNRegressor5
 import librosa
@@ -372,7 +373,12 @@ class App:
         tk.Button(action_frame, text="Visualizar Espectrogramas", command=self._ver_comparativa_espectrogramas,).pack(side="left", padx=6)
         tk.Button(action_frame, text="Generar carpeta de prueba", bg="#fff9c4", command=self._generar_carpeta_prueba).pack(side="left", padx=6)
         tk.Button(action_frame, text="Evaluar Modelo", bg="#e8f5e9", command=self._evaluar_modelo).pack(side="left", padx=6)
-        
+
+        self.btn_fmsynth = tk.Button(action_frame, text="Abrir en FMSynth8",
+                                     bg="#e3f2fd", state="disabled",
+                                     command=self._abrir_fmsynth)
+        self.btn_fmsynth.pack(side="left", padx=6)
+
         tk.Button(action_frame, text="Volver", command=lambda: self.show_page(self.page_inicio)).pack(side="right", padx=6)
 
         # 5. Área de Resultados
@@ -393,6 +399,19 @@ class App:
         nombre = getattr(self, "nombreModelo", "Ninguno")
         if hasattr(self, "label_model_test_var"):
             self.label_model_test_var.set(nombre)
+        if hasattr(self, "btn_fmsynth"):
+            has_pred = getattr(self, "last_prediction_params", None) is not None
+            self.btn_fmsynth.config(state="normal" if has_pred else "disabled")
+
+    def _abrir_fmsynth(self):
+        # Si ya hay una ventana abierta, traerla al frente
+        if hasattr(self, "_fmsynth_win") and self._fmsynth_win.winfo_exists():
+            self._fmsynth_win.focus()
+            return
+        self._fmsynth_win = FMSynth8Window(
+            self.root,
+            initial_params=self.last_prediction_params,
+            original_params=getattr(self, "last_original_params", None))
 
     def _seleccionar_wav(self):
         path = filedialog.askopenfilename(title="Selecciona WAV", filetypes=[("WAV files", "*.wav"), ("All", "*.*")])
@@ -401,9 +420,10 @@ class App:
         self.test_wav_path = path
         self.label_wav_selected.config(text=f"WAV: {os.path.basename(path)}")
         self.btn_predict.config(state="normal")
-        
+
         # Limpiar resultados anteriores
         self.last_prediction_params = None
+        self.last_original_params = None
         self.result_text.delete("1.0", tk.END)
 
     def _predecir_wav(self):
@@ -420,9 +440,10 @@ class App:
             model, means, stds, device = cargar_modelo_para_inferencia(self.pathModelo, self.device_var.get())
             params = hacer_inferencia(model, means, stds, self.test_wav_path, device)
               
-            # 2. GUARDAR DATOS PARA EL BOTÓN DE ESPECTROGRAMA
+            # 2. GUARDAR DATOS PARA EL BOTÓN DE ESPECTROGRAMA Y FMSYNTH8
             self.last_prediction_params = params
             self.ultimo_wav_orig, self.ultimo_sr_orig = librosa.load(self.test_wav_path, sr=44100)
+            self.btn_fmsynth.config(state="normal")
 
             # Comprobar si el audio está dentro del conjunto de entrenamiento
             nombre = os.path.basename(self.test_wav_path) 
@@ -440,6 +461,8 @@ class App:
                 val_ma = fila.iloc[0]['mod_attack']
                 val_md = fila.iloc[0]['mod_decay']
 
+                self.last_original_params = [val_fc, val_fm, val_i, val_aa, val_as, val_ad, val_ma, val_md]
+
                 texto_ori = (
                     f"Audio en Dataset Entrenamiento! Valores Originales: \n"
                     f"Carrier (fc):  {val_fc:.2f}\n"
@@ -453,6 +476,7 @@ class App:
                 )
                 self.result_text.insert(tk.END, texto_ori)
             else:
+                self.last_original_params = None
                 GENparams = get_gen_params() # Devuelve la copia de GEN_PARAMS
 
                 c_min, c_max = GENparams['carrier'][0], GENparams['carrier'][1]
