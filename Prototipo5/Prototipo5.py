@@ -258,7 +258,7 @@ class CNNRegressor5(nn.Module):
                 print("Entrenamiento finalizado. Se han restaurado los pesos de la mejor época.")
 
             return history #Retorna: history dict con listas 'total', 'spec', 'params' (valores medios por época)
-    
+
     # Función que evalúa el modelo
     def evaluate(self, test_loader, device='cpu', save_dir="eval_results"):
         """
@@ -424,3 +424,137 @@ class CNNRegressor5(nn.Module):
             'csv_path': csv_path
         }
         return metrics
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Arquitectura simple: solo encoder → regresión de parámetros, sin decoder.
+#
+# Diferencia respecto a CNNRegressor5:
+#   - No tiene decoder ni cabeza de reconstrucción (dec1/dec2/dec3/recon_head)
+#   - forward() devuelve solo el tensor de parámetros (no una tupla)
+#   - La función de pérdida es únicamente SmoothL1 sobre los parámetros
+#   - Sin regularización espectral → entrena más rápido pero pierde la
+#     señal de gradiente que fuerza al encoder a capturar toda la estructura
+#     del espectrograma, no solo lo relevante para los parámetros
+# ─────────────────────────────────────────────────────────────────────────────
+class CNNRegressorSimple(nn.Module):
+    def __init__(self, n_params=8, input_channels=1, base_filters=32):
+        super().__init__()
+
+        # ENCODER — idéntico al de CNNRegressor5
+        self.enc1 = nn.Sequential(
+            nn.Conv2d(input_channels, base_filters, kernel_size=3, padding=1),
+            nn.BatchNorm2d(base_filters),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(2)
+        )
+        self.enc2 = nn.Sequential(
+            nn.Conv2d(base_filters, base_filters*2, kernel_size=3, padding=1),
+            nn.BatchNorm2d(base_filters*2),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(2)
+        )
+        self.enc3 = nn.Sequential(
+            nn.Conv2d(base_filters*2, base_filters*4, kernel_size=3, padding=1),
+            nn.BatchNorm2d(base_filters*4),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(2)
+        )
+
+        # BOTTLENECK — idéntico al de CNNRegressor5
+        self.bottleneck = nn.Sequential(
+            nn.Conv2d(base_filters*4, base_filters*8, kernel_size=3, padding=1),
+            nn.BatchNorm2d(base_filters*8),
+            nn.ReLU(inplace=True),
+        )
+
+        # CABEZA DE REGRESIÓN — igual que en CNNRegressor5
+        self.global_pool = nn.AdaptiveAvgPool2d((1, 1))
+        self.fc_params = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(base_filters*8, 64),
+            nn.ReLU(inplace=True),
+            nn.Linear(64, n_params)     # 8 salidas FM
+        )
+
+    def forward(self, x):
+        e1 = self.enc1(x)
+        e2 = self.enc2(e1)
+        e3 = self.enc3(e2)
+        b  = self.bottleneck(e3)
+        return self.fc_params(self.global_pool(b))  # (B, n_params)
+
+    def fit(self, train_loader, val_loader=None, device='cpu', epochs=10, lr=1e-3,
+            print_every_batches=50, criterion=None, optimizer=None):
+        """
+        Entrena usando solo pérdida sobre parámetros (SmoothL1).
+        El argumento criterion se acepta por compatibilidad de firma con
+        CNNRegressor5.fit() pero se ignora: aquí siempre se usa SmoothL1Loss.
+        """
+        self.to(device)
+        loss_fn   = nn.SmoothL1Loss()
+        optimizer = optimizer or optim.Adam(self.parameters(), lr=lr)
+
+        history = {'total': [], 'params': [], 'val_total': []}
+
+        best_val_loss  = float('inf')
+        best_state_dict = None
+
+        for epoch in range(epochs):
+            self.train()
+            running_params = 0.0
+            n_batches = 0
+
+            for batch_idx, (batch_spec, batch_params) in enumerate(train_loader):
+                batch_spec   = batch_spec.to(device)
+                batch_params = batch_params.to(device)
+
+                optimizer.zero_grad()
+                pred_params = self(batch_spec)
+                loss = loss_fn(pred_params, batch_params)
+                loss.backward()
+                optimizer.step()
+
+                running_params += loss.item()
+                n_batches += 1
+
+                if print_every_batches and print_every_batches > 0:
+                    if (batch_idx + 1) % print_every_batches == 0:
+                        avg = running_params / n_batches
+                        print(f" Epoch {epoch+1}/{epochs}  Batch {batch_idx+1}  Avg params loss: {avg:.6f}")
+
+            avg_params = running_params / max(1, n_batches)
+            history['total'].append(avg_params)
+            history['params'].append(avg_params)
+
+            msg_val = ""
+            if val_loader is not None:
+                self.eval()
+                val_running = 0.0
+                n_val = 0
+                with torch.no_grad():
+                    for v_spec, v_params in val_loader:
+                        v_spec   = v_spec.to(device)
+                        v_params = v_params.to(device)
+                        v_loss   = loss_fn(self(v_spec), v_params)
+                        val_running += v_loss.item()
+                        n_val += 1
+                avg_val = val_running / max(1, n_val)
+                history['val_total'].append(avg_val)
+                msg_val = f" | Val Loss: {avg_val:.6f}"
+                if avg_val < best_val_loss:
+                    best_val_loss   = avg_val
+                    best_state_dict = self.state_dict()
+                    msg_val += " (*)"
+
+            print(f"Epoch {epoch+1}/{epochs}  Params loss: {avg_params:.6f}{msg_val}")
+
+        if best_state_dict is not None:
+            self.load_state_dict(best_state_dict)
+            print("Entrenamiento finalizado. Se han restaurado los pesos de la mejor época.")
+
+        return history
+
+    def evaluate(self, test_loader, device='cpu', save_dir="eval_results"):
+        """Mismo método que CNNRegressor5.evaluate() — reutiliza la lógica completa."""
+        return CNNRegressor5.evaluate(self, test_loader, device=device, save_dir=save_dir)

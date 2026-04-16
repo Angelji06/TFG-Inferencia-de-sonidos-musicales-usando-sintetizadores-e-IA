@@ -17,7 +17,7 @@ import librosa
 import librosa.display
 
 from SpectrogramTensorDataset5 import SpectrogramTensorDataset
-from Prototipo5 import CNNRegressor5, HybridLoss 
+from Prototipo5 import CNNRegressor5, CNNRegressorSimple, HybridLoss
 
 # Función que convierte una onda en espectrograma
 def procesar_espectrograma(waveform, sr=44100, device="cpu", spec_transform=None, db_transform=None, mode='stft'):
@@ -308,7 +308,7 @@ def check_dataset(path):
 #==============================================================================================================
 
 # Función encargada de instanciar y entrenar el modelo
-def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3, device="cuda", print_every_batches=100, spec_w=1.0, sc_w=0.5, param_w=0.05):
+def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3, device="cuda", print_every_batches=100, spec_w=1.0, sc_w=0.5, param_w=0.05, arch='full'):
     # dirs
     start = time.time()  
     tensors_dir = dataset_obj.get("ruta") 
@@ -321,11 +321,14 @@ def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3
     dataset = SpectrogramTensorDataset(tensors_dir)
     train_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
-    # --- Instanciar modelo ---
-    print("Instanciando modelo!")
-    model = CNNRegressor5(8,1,32)
-
-    criterion = HybridLoss(spec_weight=spec_w, sc_weight=sc_w, param_weight=param_w) 
+    # --- Instanciar modelo según arquitectura ---
+    print(f"Instanciando modelo ({arch})!")
+    if arch == 'simple':
+        model = CNNRegressorSimple(8, 1, 32)
+        criterion = None   # CNNRegressorSimple.fit() usa SmoothL1 internamente
+    else:
+        model = CNNRegressor5(8, 1, 32)
+        criterion = HybridLoss(spec_weight=spec_w, sc_weight=sc_w, param_weight=param_w)
 
     # --- Entrenamiento ---
     print(f"Entrenando modelo!       Usando {device}")
@@ -340,17 +343,18 @@ def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3
     # --- Guardar modelo ---
     save_path = os.path.join(save_dir, nombreModelo)
 
-    # -- Guardar stats y modo de espectrograma ---
-    stats = dataset.get_stats()  # {'means': array, 'stds': array}
+    # -- Guardar stats, modo de espectrograma y arquitectura ---
+    stats = dataset.get_stats()
     spec_mode = dataset_obj.get('spec_mode', 'stft')
     checkpoint = {
         'state_dict': model.state_dict(),
         'param_means': stats['means'],
         'param_stds': stats['stds'],
-        'spec_mode': spec_mode
+        'spec_mode': spec_mode,
+        'arch': arch
     }
     torch.save(checkpoint, save_path)
-    print(f"Modo de espectrograma guardado en checkpoint: {spec_mode}")
+    print(f"Checkpoint guardado  |  espectrograma: {spec_mode}  |  arquitectura: {arch}")
 
     end = time.time()
     elapsed = end - start
@@ -376,22 +380,30 @@ def cargar_modelo_para_inferencia(ruta_modelo, device="cpu"):
     model = CNNRegressor5(n_params=8)
     ckpt = torch.load(ruta_modelo, map_location=device)
 
-    # Soporte para checkpoints nuevos {state_dict, means, stds, spec_mode} y antiguos (solo state_dict)
+    # Soporte para checkpoints nuevos {state_dict, means, stds, spec_mode, arch} y antiguos
     if isinstance(ckpt, dict) and 'state_dict' in ckpt:
         state_dict = ckpt['state_dict']
         means     = np.asarray(ckpt['param_means'], dtype=np.float32)
         stds      = np.asarray(ckpt['param_stds'],  dtype=np.float32)
-        spec_mode = ckpt.get('spec_mode', 'stft')   # modelos antiguos → stft por defecto
+        spec_mode = ckpt.get('spec_mode', 'stft')
+        arch      = ckpt.get('arch', 'full')
     else:
         state_dict = ckpt
         means = stds = None
         spec_mode = 'stft'
+        arch = 'full'
+
+    # Instanciar la arquitectura correcta
+    if arch == 'simple':
+        model = CNNRegressorSimple(n_params=8)
+    else:
+        model = CNNRegressor5(n_params=8)
 
     model.load_state_dict(state_dict)
     model.to(device)
     model.eval()
 
-    print(f"Modelo cargado en: {device}  |  modo espectrograma: {spec_mode}")
+    print(f"Modelo cargado en: {device}  |  espectrograma: {spec_mode}  |  arquitectura: {arch}")
     return model, means, stds, device, spec_mode
 
 # Dado un modelo ya cargado y la ruta de un WAV, devuelve los 8 parámetros FM en escala real.

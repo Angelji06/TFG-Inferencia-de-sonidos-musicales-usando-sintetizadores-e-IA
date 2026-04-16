@@ -70,7 +70,7 @@ class Voice:
         mod_attack, mod_decay               — envolvente de modulación (segundos)
     """
 
-    def __init__(self, freq: float, params: dict):
+    def __init__(self, freq: float, params: dict, gate_mode: bool = False):
         self.freq  = float(freq)
         self.ratio = float(params['ratio'])
         self.index = float(params['index'])
@@ -86,8 +86,51 @@ class Voice:
         # El engine elimina la voz cuando done=True
         self.done: bool = False
 
-        # Duración total de la envolvente de amplitud + pequeño margen
-        self._end: float = self.a_att + self.a_sus + self.a_dec + 0.05
+        # Modo gate: el sustain dura mientras se mantiene la tecla pulsada
+        self.gate_mode: bool = gate_mode
+        self._gate_open: bool = True        # False cuando se suelta la tecla
+        self._decay_start_t: float = None   # Se fija en el hilo de audio al cerrar el gate
+
+        # En modo normal la duración es fija; en gate se calcula dinámicamente
+        self._end: float = self.a_att + self.a_sus + self.a_dec + 0.05 if not gate_mode else None
+
+    def gate_off(self) -> None:
+        """Llamado desde el engine cuando se suelta la tecla en modo gate."""
+        self._gate_open = False
+        # _decay_start_t se fija en generate() desde el hilo de audio para
+        # evitar condiciones de carrera con self.t
+
+    def _amp_envelope_gate(self, t: np.ndarray) -> np.ndarray:
+        """
+        Envolvente de amplitud controlada por gate:
+          · Mientras el gate está abierto: attack → sustain indefinido a 1.0
+          · Tras gate_off: decay a partir del momento de la liberación
+        """
+        # Registrar el tiempo de inicio del decay en el hilo de audio
+        if not self._gate_open and self._decay_start_t is None:
+            self._decay_start_t = self.t
+
+        env = np.zeros_like(t, dtype=np.float32)
+
+        if self._gate_open or self._decay_start_t is None:
+            # Attack
+            idx_a = t <= self.a_att
+            env[idx_a] = (t[idx_a] / self.a_att) if self.a_att > 0 else 1.0
+            # Sustain indefinido
+            env[t > self.a_att] = 1.0
+        else:
+            dt = self._decay_start_t
+            # Antes del gate_off: attack + sustain
+            idx_pre = t <= dt
+            idx_a   = idx_pre & (t <= self.a_att)
+            env[idx_a] = (t[idx_a] / self.a_att) if self.a_att > 0 else 1.0
+            env[idx_pre & (t > self.a_att)] = 1.0
+            # Decay tras gate_off
+            idx_d = (~idx_pre) & (t <= dt + self.a_dec)
+            if self.a_dec > 0:
+                env[idx_d] = 1.0 - (t[idx_d] - dt) / self.a_dec
+
+        return np.clip(env, 0.0, 1.0)
 
     def generate(self, n_frames: int) -> np.ndarray:
         """
@@ -97,22 +140,32 @@ class Voice:
         # Vector de tiempo absoluto para este bloque
         t = np.arange(n_frames, dtype=np.float32) / SR + self.t
 
-        # Envolventes (reutiliza la función del dataset)
-        amp_env = generar_envolvente(t, self.a_att, self.a_sus, self.a_dec)
-        mod_env = generar_envolvente(t, self.m_att, 0.0,       self.m_dec)
+        # Envolvente de amplitud: modo gate o modo fijo
+        if self.gate_mode:
+            amp_env = self._amp_envelope_gate(t)
+        else:
+            amp_env = generar_envolvente(t, self.a_att, self.a_sus, self.a_dec)
+
+        mod_env = generar_envolvente(t, self.m_att, 0.0, self.m_dec)
 
         # Síntesis FM:  out(t) = amp_env(t) · sin( 2π·fc·t + I·mod_env(t)·sin( 2π·fm·t ) )
-        fm_freq = self.freq * self.ratio
+        fm_freq   = self.freq * self.ratio
         modulator = np.sin(2.0 * np.pi * fm_freq * t)
         samples   = amp_env * np.sin(
             2.0 * np.pi * self.freq * t + self.index * mod_env * modulator
         )
 
-        # Avance de tiempo (garantiza continuidad de fase en el siguiente bloque)
+        # Avance de tiempo
         self.t += n_frames / SR
 
-        if self.t >= self._end:
-            self.done = True
+        # Condición de fin
+        if self.gate_mode:
+            if not self._gate_open and self._decay_start_t is not None:
+                if self.t >= self._decay_start_t + self.a_dec + 0.05:
+                    self.done = True
+        else:
+            if self.t >= self._end:
+                self.done = True
 
         return samples.astype(np.float32)
 
@@ -172,23 +225,24 @@ class FMSynth8Engine:
 
     # ── Control de notas ─────────────────────────────────────────────────
 
-    def note_on(self, key: str, freq: float, params: dict):
+    def note_on(self, key: str, freq: float, params: dict, gate_mode: bool = False):
         """
         Activa una nota para la tecla indicada.
         Si ya había una voz con esa tecla, la reemplaza.
         """
         with self._lock:
-            self._voices[key] = Voice(freq, params)
+            self._voices[key] = Voice(freq, params, gate_mode=gate_mode)
 
     def note_off(self, key: str):
         """
         Señal de tecla soltada.
-        Las voces mueren por envolvente (comportamiento de sintetizador FM real).
-        Descomenta el cuerpo si prefieres corte inmediato al soltar la tecla.
+        · Modo normal: la voz muere por su envolvente (no se hace nada).
+        · Modo gate:   se cierra el gate y la voz entra en fase de decay.
         """
-        # with self._lock:
-        #     self._voices.pop(key, None)
-        pass
+        with self._lock:
+            voice = self._voices.get(key)
+            if voice is not None and voice.gate_mode:
+                voice.gate_off()
 
     # ── Grabación ────────────────────────────────────────────────────────
 
@@ -332,8 +386,9 @@ class FMSynth8Window(tk.Toplevel):
         self.title('FMSynth8 — Sintetizador FM')
         self.resizable(True, True)
 
-        self._octave = 0    # desplazamiento de octava actual
-        self._held   = set()  # teclas actualmente pulsadas
+        self._octave    = 0      # desplazamiento de octava actual
+        self._held      = set()  # teclas actualmente pulsadas
+        self._gate_mode = False  # True → sustain controlado por duración de pulsación
 
         self._prediction_params = initial_params
         self._original_params   = original_params
@@ -393,6 +448,10 @@ class FMSynth8Window(tk.Toplevel):
                   command=self._randomize).pack(side='left', padx=4)
         tk.Button(cf, text='Reset', width=8,
                   command=self._reset).pack(side='left', padx=4)
+
+        self._btn_gate = tk.Button(cf, text='Sustain: slider', width=16,
+                                   bg='#f0f0f0', command=self._toggle_gate_mode)
+        self._btn_gate.pack(side='left', padx=(16, 4))
 
         # Botones para cargar predicción / original
         self._btn_pred = tk.Button(
@@ -513,7 +572,7 @@ class FMSynth8Window(tk.Toplevel):
         if key in KEY_TO_SEMITONE and key not in self._held:
             self._held.add(key)
             freq = key_to_freq(key, self._octave)
-            self._engine.note_on(key, freq, self._get_params())
+            self._engine.note_on(key, freq, self._get_params(), gate_mode=self._gate_mode)
             self._set_key_color(key, True)
 
     def _on_key_release(self, event):
@@ -534,6 +593,13 @@ class FMSynth8Window(tk.Toplevel):
         if self._octave > -3:
             self._octave -= 1
             self._oct_label.config(text=str(self._octave))
+
+    def _toggle_gate_mode(self):
+        self._gate_mode = not self._gate_mode
+        if self._gate_mode:
+            self._btn_gate.config(text='Sustain: pulsación', bg='#aee8a0')
+        else:
+            self._btn_gate.config(text='Sustain: slider', bg='#f0f0f0')
 
     def _randomize(self):
         import random

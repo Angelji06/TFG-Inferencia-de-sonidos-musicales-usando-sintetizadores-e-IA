@@ -158,6 +158,13 @@ class App:
         spec_menu.grid(row=0, column=3, sticky="w", padx=4, pady=4)
         tk.Label(device_frame, text="(stft = lineal  |  mel = perceptual)", fg="#888", font=("Arial", 8)).grid(row=0, column=4, sticky="w", padx=4)
 
+        tk.Label(device_frame, text="Arquitectura:").grid(row=1, column=0, sticky="e", padx=4, pady=4)
+        self.arch_var = tk.StringVar(value="full")
+        arch_menu = tk.OptionMenu(device_frame, self.arch_var, "full", "simple")
+        arch_menu.config(width=8)
+        arch_menu.grid(row=1, column=1, sticky="w", padx=4, pady=4)
+        tk.Label(device_frame, text="(full = encoder+decoder  |  simple = solo encoder)", fg="#888", font=("Arial", 8)).grid(row=1, column=2, columnspan=3, sticky="w", padx=4)
+
         # Sección superior: generar / cargar dataset
         top_frame = tk.LabelFrame(p, text="Dataset (generar o cargar)", padx=8, pady=8)
         top_frame.pack(fill="x", padx=6, pady=(4,10))
@@ -323,7 +330,7 @@ class App:
         self.btn_cargar_ds.config(state="disabled")
 
         try:
-            result = entrenar_modelo(self.nombreModelo, self.dataset_obj, epochs=epochs, lr=lr, batch_size=batch_size, device=device, print_every_batches=print_every, spec_w=spec_w, sc_w=sc_w, param_w=param_w)
+            result = entrenar_modelo(self.nombreModelo, self.dataset_obj, epochs=epochs, lr=lr, batch_size=batch_size, device=device, print_every_batches=print_every, spec_w=spec_w, sc_w=sc_w, param_w=param_w, arch=self.arch_var.get())
             
             self.pathModelo = result
             self.nombreModelo = os.path.basename(result)
