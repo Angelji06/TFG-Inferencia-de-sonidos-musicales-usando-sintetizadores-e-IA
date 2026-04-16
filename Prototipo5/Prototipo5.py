@@ -101,7 +101,7 @@ class CNNRegressor5(nn.Module):
             nn.Flatten(),
             nn.Linear(base_filters*8, 64),              # Conecta los 256 detectores de sonido con 64 neuronas intermedias
             nn.ReLU(inplace=True),
-            nn.Linear(64, n_params)                     # Conecta las 64 neuronas intermedias a las 7 salidas
+            nn.Linear(64, n_params)                     # Conecta las 64 neuronas intermedias a las 8 salidas
         )
 
         # DECODER -> su misión es reconstruir el espectrograma original a partir de la representación comprimida del bottleneck.
@@ -259,7 +259,7 @@ class CNNRegressor5(nn.Module):
 
             return history #Retorna: history dict con listas 'total', 'spec', 'params' (valores medios por época)
     
-    #???
+    # Función que evalúa el modelo
     def evaluate(self, test_loader, device='cpu', save_dir="eval_results"):
         """
         Evalúa el modelo sobre test_loader siguiendo la celda que proporcionaste.
@@ -424,17 +424,3 @@ class CNNRegressor5(nn.Module):
             'csv_path': csv_path
         }
         return metrics
-
-    #???
-    @staticmethod
-    def load(path="cnn_spectrogram.pth", device="cpu", n_params=7, input_channels=1, base_filters=32):
-        """
-        Carga un state_dict y devuelve una instancia en modo eval().
-        """
-        model = CNNRegressor5(n_params=n_params, input_channels=input_channels, base_filters=base_filters)
-        state = torch.load(path, map_location=device)
-        model.load_state_dict(state)
-        model.to(device)
-        model.eval()
-        print(f"Modelo cargado desde: {path}")
-        return model

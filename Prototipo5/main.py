@@ -40,6 +40,9 @@ class App:
         self.train_device = "cuda" if torch.cuda.is_available() else "cpu"
         self.train_print_every = 50
 
+        # Modo de espectrograma del modelo cargado (se determina desde el checkpoint)
+        self.model_spec_mode = 'stft'
+
         # Páginas
         self.page_inicio = tk.Frame(root)
         self.page_entrenamiento = tk.Frame(root)
@@ -148,6 +151,13 @@ class App:
         device_menu.config(width=8)
         device_menu.grid(row=0, column=1, sticky="w", padx=4, pady=4)
 
+        tk.Label(device_frame, text="Espectrograma:").grid(row=0, column=2, sticky="e", padx=(20, 4), pady=4)
+        self.spec_mode_var = tk.StringVar(value="stft")
+        spec_menu = tk.OptionMenu(device_frame, self.spec_mode_var, "stft", "mel")
+        spec_menu.config(width=6)
+        spec_menu.grid(row=0, column=3, sticky="w", padx=4, pady=4)
+        tk.Label(device_frame, text="(stft = lineal  |  mel = perceptual)", fg="#888", font=("Arial", 8)).grid(row=0, column=4, sticky="w", padx=4)
+
         # Sección superior: generar / cargar dataset
         top_frame = tk.LabelFrame(p, text="Dataset (generar o cargar)", padx=8, pady=8)
         top_frame.pack(fill="x", padx=6, pady=(4,10))
@@ -251,7 +261,7 @@ class App:
 
     def _generar_dataset(self):
         try:
-            ds = generar_dataset(self.device_var.get())
+            ds = generar_dataset(self.device_var.get(), self.spec_mode_var.get())
             self.dataset_obj = ds
             self.pathDataset = ds.get('ruta')
 
@@ -270,6 +280,7 @@ class App:
             ds = check_dataset(path)
             self.dataset_obj = ds
             self.pathDataset = path
+            self.spec_mode_var.set(ds.get('spec_mode', 'stft'))
 
             self.refresh_entrenamiento_page()
 
@@ -436,9 +447,10 @@ class App:
         if hasattr(self, 'root'): self.root.update_idletasks() 
 
         try:
-            # 1. Cargar modelo e inferir
-            model, means, stds, device = cargar_modelo_para_inferencia(self.pathModelo, self.device_var.get())
-            params = hacer_inferencia(model, means, stds, self.test_wav_path, device)
+            # 1. Cargar modelo e inferir (el modo de espectrograma viene del checkpoint)
+            model, means, stds, device, spec_mode = cargar_modelo_para_inferencia(self.pathModelo, self.device_var.get())
+            self.model_spec_mode = spec_mode
+            params = hacer_inferencia(model, means, stds, self.test_wav_path, device, mode=spec_mode)
               
             # 2. GUARDAR DATOS PARA EL BOTÓN DE ESPECTROGRAMA Y FMSYNTH8
             self.last_prediction_params = params
@@ -483,6 +495,7 @@ class App:
                 r_min, r_max = GENparams['ratio'][0], GENparams['ratio'][1]
                 i_min, i_max = GENparams['index'][0], GENparams['index'][1]
                 aa_min, aa_max = GENparams['amp_attack'][0], GENparams['amp_attack'][1]
+                as_min, as_max = GENparams['amp_sustain'][0], GENparams['amp_sustain'][1]
                 ad_min, ad_max = GENparams['amp_decay'][0], GENparams['amp_decay'][1]
                 ma_min, ma_max = GENparams['mod_attack'][0], GENparams['mod_attack'][1]
                 md_min, md_max = GENparams['mod_decay'][0], GENparams['mod_decay'][1]
@@ -490,13 +503,14 @@ class App:
                 texto_ori = (
                     f"Audio NO en Dataset Entrenamiento!\n"
                     f"Recuerda el Dominio (Rango de entrenamiento):\n"
-                    f"Carrier (Fc): {c_min} - {c_max} Hz\n"
-                    f"Ratio (h):    {r_min} - {r_max}\n"
-                    f"Index (I):    {i_min} - {i_max}\n"
-                    f"Amp Attack:   {aa_min} - {aa_max} s\n"
-                    f"Amp Decay:    {ad_min} - {ad_max} s\n"
-                    f"Mod Attack:   {ma_min} - {ma_max} s\n"
-                    f"Mod Decay:    {md_min} - {md_max} s\n\n"
+                    f"Carrier (Fc):  {c_min} - {c_max} Hz\n"
+                    f"Ratio (h):     {r_min} - {r_max}\n"
+                    f"Index (I):     {i_min} - {i_max}\n"
+                    f"Amp Attack:    {aa_min} - {aa_max} s\n"
+                    f"Amp Sustain:   {as_min} - {as_max} s\n"
+                    f"Amp Decay:     {ad_min} - {ad_max} s\n"
+                    f"Mod Attack:    {ma_min} - {ma_max} s\n"
+                    f"Mod Decay:     {md_min} - {md_max} s\n\n"
                 )
 
                 self.result_text.insert(tk.END, texto_ori)
@@ -525,7 +539,7 @@ class App:
 
     def _ver_comparativa_espectrogramas(self):
         if hasattr(self, 'last_prediction_params'):
-            comparar_espectrogramas_4en1(self.ultimo_wav_orig, self.ultimo_sr_orig, self.last_prediction_params, self.device_var.get())
+            comparar_espectrogramas_4en1(self.ultimo_wav_orig, self.ultimo_sr_orig, self.last_prediction_params, self.device_var.get(), mode=self.model_spec_mode)
         else:
             messagebox.showwarning("Aviso", "Primero debes predecir un audio.")
 

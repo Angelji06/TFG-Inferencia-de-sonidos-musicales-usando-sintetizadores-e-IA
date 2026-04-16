@@ -20,43 +20,48 @@ from SpectrogramTensorDataset5 import SpectrogramTensorDataset
 from Prototipo5 import CNNRegressor5, HybridLoss 
 
 # Función que convierte una onda en espectrograma
-def procesar_espectrograma(waveform, sr=44100, device="cpu", spec_transform=None, db_transform=None):
+def procesar_espectrograma(waveform, sr=44100, device="cpu", spec_transform=None, db_transform=None, mode='stft'):
     """
-    Abstracción total: Normalización -> STFT -> Magnitud -> DB.
-    Garantiza que el tensor tenga forma (1, Freq, Tiempo) para el modelo.
+    Normalización -> Espectrograma (STFT lineal o Mel) -> dB.
+    Garantiza que el tensor tenga forma (1, 1, Freq, Tiempo) para el modelo.
+
+    mode='stft' : 513 bins lineales (0–22050 Hz)
+    mode='mel'  : 128 bandas Mel (escala logarítmica perceptual)
     """
     # 1. Asegurar formato Tensor y Device
     if not torch.is_tensor(waveform):
         waveform = torch.from_numpy(waveform).float()
-    
     waveform = waveform.to(device)
 
     # 2. Normalización de pico (Peak Normalization)
     waveform = waveform / waveform.abs().max().clamp(min=1e-8)
 
-    # 3. Configuración de Transformada idéntica a entrenamiento (Instanciada solo si no se proporcionan por parámetro)
-    if spec_transform is None:
-        spec_transform = torchaudio.transforms.Spectrogram(
-            n_fft=1024, hop_length=256, power=None, return_complex=True
-        ).to(device)
-    
+    # 3. Transformada a dB (instanciada solo si no se proporciona por parámetro)
     if db_transform is None:
         db_transform = torchaudio.transforms.AmplitudeToDB(
             stype='amplitude', top_db=80.0
         ).to(device)
 
-    # 4. Cálculo
-    spec_complex = spec_transform(waveform)
-    mag = spec_complex.abs()
-    spec_db = db_transform(mag) # Resultado en dB
+    if mode == 'mel':
+        if spec_transform is None:
+            spec_transform = torchaudio.transforms.MelSpectrogram(
+                sample_rate=sr, n_fft=1024, hop_length=256, n_mels=128, power=1.0
+            ).to(device)
+        spec_db = db_transform(spec_transform(waveform))   # (mel_bins, T) -> dB
+    else:   # stft
+        if spec_transform is None:
+            spec_transform = torchaudio.transforms.Spectrogram(
+                n_fft=1024, hop_length=256, power=None, return_complex=True
+            ).to(device)
+        spec_db = db_transform(spec_transform(waveform).abs())  # (freq_bins, T) -> dB
 
-    # 5. Ajuste de dimensiones para CNN (Batch=1, Canal=1, F, T)
-    if spec_db.dim() == 2: # Si es (F, T)
-        spec_db = spec_db.unsqueeze(0) 
-    if spec_db.dim() == 3: # Si es (C, F, T)
+    # 4. Ajuste de dimensiones para CNN (Batch=1, Canal=1, F, T)
+    if spec_db.dim() == 2:
+        spec_db = spec_db.unsqueeze(0)
+    if spec_db.dim() == 3:
         spec_db = spec_db.unsqueeze(0)
 
-    return spec_db # Retorna (1, 1, Freq, Tiempo)
+    return spec_db  # (1, 1, Freq, Tiempo)
 
 #==============================================================================================================
 #=================================== GENERACION DE DATASET ====================================================
@@ -134,7 +139,7 @@ def generar_wavs_FM(num_muestras=30000):   # conviene que este valor se pueda aj
     params = GEN_PARAMS
     SR, TIME = 44100, 2 #subo un poquito la duración para que se noten bien las envolventes
     
-    # --- ITERACIÓN PRINCIPAL ---  El prototipo5 ya no funciona con rejilla + jitter, pues esto no es viable con 7 parámetros. Asi que se generan aleatoriamente.
+    # --- ITERACIÓN PRINCIPAL ---  El prototipo5 ya no funciona con rejilla + jitter, pues esto no es viable con 8 parámetros. Asi que se generan aleatoriamente.
     print(f"=== GENERACIÓN DE {num_muestras} WAVS ALEATORIOS (fase 1/2) ===")
     g = 0
     for g in range(1, num_muestras + 1):
@@ -190,27 +195,33 @@ def generar_wavs_FM(num_muestras=30000):   # conviene que este valor se pueda aj
     return out_path
 
 # 2. CONVERSIÓN WAV → TENSORES PYTORCH
-def convertir_wavs_a_tensores(wav_folder, device):
+def convertir_wavs_a_tensores(wav_folder, device, mode='stft'):
     # dirs
-    t_start = time.time()  
+    t_start = time.time()
     main_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    out_folder = os.path.join(main_dir, "Datasets", "datasetFMespec_torchaudio_v5")
+    out_folder = os.path.join(main_dir, "Datasets", f"datasetFMespec_torchaudio_v5_{mode}")
     if os.path.exists(out_folder):
         shutil.rmtree(out_folder)
     os.makedirs(out_folder)
     wav_files = [f for f in os.listdir(wav_folder) if f.endswith(".wav")]
     n_wavs = len(wav_files)
 
-    print("=== CONVERSIÓN WAV → TENSOR (fase 2/2) ===")
+    print(f"=== CONVERSIÓN WAV → TENSOR {mode.upper()} (fase 2/2) ===")
     print("WAV encontrados:", n_wavs)
 
-    # Crear el transform UNA VEZ (STFT)
-    spec_transform = torchaudio.transforms.Spectrogram(n_fft=1024, hop_length=256, power=None, return_complex=True).to(device)
+    # Crear el transform UNA VEZ según el modo
     db_transform = torchaudio.transforms.AmplitudeToDB(stype='amplitude', top_db=80.0).to(device)
+    if mode == 'mel':
+        spec_transform = torchaudio.transforms.MelSpectrogram(
+            sample_rate=44100, n_fft=1024, hop_length=256, n_mels=128, power=1.0
+        ).to(device)
+    else:
+        spec_transform = torchaudio.transforms.Spectrogram(
+            n_fft=1024, hop_length=256, power=None, return_complex=True
+        ).to(device)
 
     # Transformación
     for i, wav_file in enumerate(wav_files, start=1):
-        # Carga el tensor onda en CPU
         waveform, sr = torchaudio.load(os.path.join(wav_folder, wav_file))
 
         # Fade
@@ -222,21 +233,21 @@ def convertir_wavs_a_tensores(wav_folder, device):
             waveform[:, -fade_samples:] *= fade_out
 
         # Guardamos solo el tensor (C, F, T), quitando la dimensión de batch
-        spec = procesar_espectrograma(waveform, sr, device, spec_transform, db_transform).squeeze(0)
+        spec = procesar_espectrograma(waveform, sr, device, spec_transform, db_transform, mode=mode).squeeze(0)
 
-        # Guardar tensor espectrograma
         out_name = wav_file.replace(".wav", ".pt")
         torch.save(spec, os.path.join(out_folder, out_name))
 
         if i % 2000 == 0:
             print(f"Convertidos {i} tensores...")
 
-    # Copiar labels.csv a la carpeta de tensores
+    # Copiar labels.csv y guardar spec_mode.txt
     src_csv = os.path.join(wav_folder, "labels.csv")
     if os.path.exists(src_csv):
         shutil.copy(src_csv, os.path.join(out_folder, "labels.csv"))
+    with open(os.path.join(out_folder, "spec_mode.txt"), "w") as f:
+        f.write(mode)
 
-    # tiempo total y por fichero
     t_end = time.time()
     elapsed = t_end - t_start
     per_file = elapsed / n_wavs if n_wavs > 0 else 0.0
@@ -247,23 +258,23 @@ def convertir_wavs_a_tensores(wav_folder, device):
     return out_folder
 
 # FUNCIÓN PRINCIPAL
-def generar_dataset(device):
+def generar_dataset(device, mode='stft'):
     start = time.time()
 
     wav_folder = generar_wavs_FM()
-    tensor_folder = convertir_wavs_a_tensores(wav_folder, device)   #Le paso el device para acelerar la transformacion a tensor
+    tensor_folder = convertir_wavs_a_tensores(wav_folder, device, mode=mode)
 
     end = time.time()
     elapsed = end - start
     h, rem = divmod(elapsed, 3600)
     m, s = divmod(rem, 60)
-    print(f"=== DATASET COMPLETO GENERADO en {int(h)}h {int(m)}m {s:.2f}s ===")
+    print(f"=== DATASET COMPLETO GENERADO ({mode.upper()}) en {int(h)}h {int(m)}m {s:.2f}s ===")
 
-    # Para que el front lo trate igual que cargar_dataset
     return {
         "tipo": "carpeta_tensores",
         "ruta": tensor_folder,
-        "tensores": [f for f in os.listdir(tensor_folder) if f.endswith(".pt")]
+        "tensores": [f for f in os.listdir(tensor_folder) if f.endswith(".pt")],
+        "spec_mode": mode
     }
 
 #==============================================================================================================
@@ -272,7 +283,6 @@ def generar_dataset(device):
 
 # Busca la carpeta y se asegura de que contiene tensores
 def check_dataset(path):
-    import os
     if not os.path.isdir(path):
         raise ValueError("Se esperaba una carpeta, no un archivo.")
 
@@ -284,7 +294,14 @@ def check_dataset(path):
     if not tensores:
         raise ValueError("No se encontraron tensores en la carpeta.")
 
-    return {"tipo": "carpeta_tensores", "ruta": path, "tensores": tensores}
+    # Leer el modo de espectrograma (datasets antiguos no tienen este fichero → stft por defecto)
+    mode_file = os.path.join(path, "spec_mode.txt")
+    spec_mode = 'stft'
+    if os.path.exists(mode_file):
+        with open(mode_file) as f:
+            spec_mode = f.read().strip()
+
+    return {"tipo": "carpeta_tensores", "ruta": path, "tensores": tensores, "spec_mode": spec_mode}
 
 #==============================================================================================================
 #==================================== ENTRENAMIENTO MODELO ====================================================
@@ -321,16 +338,19 @@ def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3
     history = model.fit(train_loader, val_loader=val_loader, device=device, epochs=epochs, lr=lr, print_every_batches=print_every_batches, criterion=criterion)
 
     # --- Guardar modelo ---
-    save_path = os.path.join(save_dir , nombreModelo)
+    save_path = os.path.join(save_dir, nombreModelo)
 
-    # -- Guardar stats ---
+    # -- Guardar stats y modo de espectrograma ---
     stats = dataset.get_stats()  # {'means': array, 'stds': array}
+    spec_mode = dataset_obj.get('spec_mode', 'stft')
     checkpoint = {
         'state_dict': model.state_dict(),
         'param_means': stats['means'],
-        'param_stds': stats['stds']
+        'param_stds': stats['stds'],
+        'spec_mode': spec_mode
     }
     torch.save(checkpoint, save_path)
+    print(f"Modo de espectrograma guardado en checkpoint: {spec_mode}")
 
     end = time.time()
     elapsed = end - start
@@ -356,29 +376,31 @@ def cargar_modelo_para_inferencia(ruta_modelo, device="cpu"):
     model = CNNRegressor5(n_params=8)
     ckpt = torch.load(ruta_modelo, map_location=device)
 
-    # Soporte para checkpoints nuevos {state_dict, means, stds} y antiguos (solo state_dict)
+    # Soporte para checkpoints nuevos {state_dict, means, stds, spec_mode} y antiguos (solo state_dict)
     if isinstance(ckpt, dict) and 'state_dict' in ckpt:
         state_dict = ckpt['state_dict']
-        means = np.asarray(ckpt['param_means'], dtype=np.float32)
-        stds  = np.asarray(ckpt['param_stds'],  dtype=np.float32)
+        means     = np.asarray(ckpt['param_means'], dtype=np.float32)
+        stds      = np.asarray(ckpt['param_stds'],  dtype=np.float32)
+        spec_mode = ckpt.get('spec_mode', 'stft')   # modelos antiguos → stft por defecto
     else:
         state_dict = ckpt
         means = stds = None
+        spec_mode = 'stft'
 
     model.load_state_dict(state_dict)
     model.to(device)
     model.eval()
 
-    print("Modelo cargado exitosamente en:", device)
-    return model, means, stds, device
+    print(f"Modelo cargado en: {device}  |  modo espectrograma: {spec_mode}")
+    return model, means, stds, device, spec_mode
 
 # Dado un modelo ya cargado y la ruta de un WAV, devuelve los 8 parámetros FM en escala real.
-def hacer_inferencia(model, means, stds, ruta_wav, device):
+def hacer_inferencia(model, means, stds, ruta_wav, device, mode='stft'):
     if means is None or stds is None:
         raise RuntimeError("El checkpoint no contiene 'param_means'/'param_stds'. Reentrena guardando stats en el checkpoint.")
 
     waveform, sr = torchaudio.load(ruta_wav)
-    spec = procesar_espectrograma(waveform, sr, device)
+    spec = procesar_espectrograma(waveform, sr, device, mode=mode)
 
     with torch.no_grad():
         out = model(spec)
@@ -425,14 +447,13 @@ def reproducir_prediccion(params):
 def prediccion_multiples_wav(path_modelo, path_entrada, path_salida):
     os.makedirs(path_salida, exist_ok=True)
 
-
     lista_wavs = glob.glob(os.path.join(path_entrada, "*.wav"))
     print(f"hay {len(lista_wavs)} wavs. Empezando a procesar...")
-    model, means, stds, device = cargar_modelo_para_inferencia(path_modelo, device="cuda")
+    model, means, stds, device, spec_mode = cargar_modelo_para_inferencia(path_modelo, device="cuda")
 
     for ruta_wav_original in lista_wavs:
 
-        prediccion = hacer_inferencia(model, means, stds, ruta_wav_original, device)
+        prediccion = hacer_inferencia(model, means, stds, ruta_wav_original, device, mode=spec_mode)
 
         p_carrier, p_ratio, p_index, p_a_att, p_a_sus, p_a_dec, p_m_att, p_m_dec = prediccion
 
@@ -443,6 +464,7 @@ def prediccion_multiples_wav(path_modelo, path_entrada, path_salida):
 
         sf.write(ruta_guardado, audio_prediccion, sr)
 
+# Genera una carpeta con los primeros n tensores y sus etiquetas, esto es para evaluar el modelo sobre un conjunto pequeño
 def generar_carpeta_prueba(tensor_folder, n=100):
     """
     Copia los primeros n tensores (.pt) y el labels.csv de tensor_folder
@@ -462,53 +484,53 @@ def generar_carpeta_prueba(tensor_folder, n=100):
 
 # Evalúa el modelo sobre todos los tensores de tensor_folder. Usa el método evaluate de CNNRegressor5
 def evaluar_modelo(ruta_modelo, tensor_folder, device="cpu"):
-    model, _, _, device = cargar_modelo_para_inferencia(ruta_modelo, device)
+    model, _, _, device, _ = cargar_modelo_para_inferencia(ruta_modelo, device)
     dataset  = SpectrogramTensorDataset(tensor_folder)
     test_loader = DataLoader(dataset, batch_size=32, shuffle=False)
     metrics = model.evaluate(test_loader, device=str(device))
     return metrics
 
 # Función que muestra los 4 espectrogramas
-def comparar_espectrogramas_4en1(wav_orig, sr_orig, params_pred, device="cpu"):
+def comparar_espectrogramas_4en1(wav_orig, sr_orig, params_pred, device="cpu", mode='stft'):
     # 1. Sintetizar la predicción
     wav_pred, sr_pred = fm_synthesize(*[float(p) for p in params_pred], duration=2.0)
 
-    # 2. Obtener matrices numéricas
-    s_orig_tensor = procesar_espectrograma(wav_orig, sr_orig, device).cpu().squeeze()
-    s_pred_tensor = procesar_espectrograma(wav_pred, sr_pred, device).cpu().squeeze()
+    # 2. Obtener matrices numéricas (mismo modo que el modelo)
+    s_orig_tensor = procesar_espectrograma(wav_orig, sr_orig, device, mode=mode).cpu().squeeze()
+    s_pred_tensor = procesar_espectrograma(wav_pred, sr_pred, device, mode=mode).cpu().squeeze()
+
+    mode_label = "Mel (log freq)" if mode == 'mel' else "STFT (freq lineal)"
 
     s_orig = s_orig_tensor.numpy()
     s_pred = s_pred_tensor.numpy()
 
     fig, axs = plt.subplots(2, 2, figsize=(14, 9))
-    fig.suptitle('Comparativa de Espectrogramas: Original vs Predicción', fontsize=16, fontweight='bold')
+    fig.suptitle(f'Comparativa de Espectrogramas: Original vs Predicción  [{mode_label}]', fontsize=16, fontweight='bold')
 
     # --- FILA 0: ORIGINAL ---
-    # Librosa Log
+    # Eje de frecuencia logarítmico (perceptual)
     librosa.display.specshow(s_orig, y_axis='log', x_axis='time', sr=sr_orig, hop_length=256, cmap='inferno', ax=axs[0, 0])
-    axs[0, 0].set_title("Original: Escala Logarítmica")
-    axs[0, 0].set_xlabel("Tiempo (s)") # <--- Unidad: Segundos
+    axs[0, 0].set_title("Original: eje frecuencia logarítmico (Hz)")
+    axs[0, 0].set_xlabel("Tiempo (s)")
     axs[0, 0].set_ylabel("Frecuencia (Hz)")
 
-    # Torchaudio Lineal
+    # Eje de frecuencia lineal (bins)
     im1 = axs[0, 1].imshow(s_orig, origin='lower', aspect='auto', cmap='inferno')
-    axs[0, 1].set_title("Original: Escala Lineal")
-    axs[0, 1].set_xlabel("Tiempo (Frames / STFT Windows)") # <--- Unidad: Frames
-    axs[0, 1].set_ylabel("Bins de Frecuencia (0-512)")
+    axs[0, 1].set_title("Original: eje frecuencia lineal (bins)")
+    axs[0, 1].set_xlabel("Tiempo (frames STFT)")
+    axs[0, 1].set_ylabel("Bins de frecuencia")
     fig.colorbar(im1, ax=axs[0, 1], format='%+2.0f dB')
 
     # --- FILA 1: PREDICCIÓN ---
-    # Librosa Log
     librosa.display.specshow(s_pred, y_axis='log', x_axis='time', sr=sr_pred, hop_length=256, cmap='inferno', ax=axs[1, 0])
-    axs[1, 0].set_title("Predicción: Escala Logarítmica")
+    axs[1, 0].set_title("Predicción: eje frecuencia logarítmico (Hz)")
     axs[1, 0].set_xlabel("Tiempo (s)")
     axs[1, 0].set_ylabel("Frecuencia (Hz)")
 
-    # Torchaudio Lineal
     im2 = axs[1, 1].imshow(s_pred, origin='lower', aspect='auto', cmap='inferno')
-    axs[1, 1].set_title("Predicción: Escala Lineal")
-    axs[1, 1].set_xlabel("Tiempo (Frames / STFT Windows)")
-    axs[1, 1].set_ylabel("Bins de Frecuencia (0-512)")
+    axs[1, 1].set_title("Predicción: eje frecuencia lineal (bins)")
+    axs[1, 1].set_xlabel("Tiempo (frames STFT)")
+    axs[1, 1].set_ylabel("Bins de frecuencia")
     fig.colorbar(im2, ax=axs[1, 1], format='%+2.0f dB')
 
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])

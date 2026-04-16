@@ -303,7 +303,7 @@ class FMSynth8Window(tk.Toplevel):
     Sintetizador FM interactivo con teclado QWERTY.
 
     Abre una ventana Toplevel con:
-      • 7 sliders de parámetros FM (ratio, index, envolventes)
+      • 7 sliders de parámetros FM (ratio, index, amp_attack, amp_sustain, amp_decay, mod_attack, mod_decay)
       • Controles de octava y botones Aleatorio/Reset
       • Piano visual que resalta las teclas pulsadas
       • (Fase 3) Panel de inferencia con el modelo CNN
@@ -572,14 +572,3 @@ class FMSynth8Window(tk.Toplevel):
         self._engine.stop()
         self.destroy()
 
-
-# ─────────────────────────── Prueba standalone ─────────────────────────────
-
-if __name__ == '__main__':
-    # Prueba standalone: abre la ventana sin modelo cargado.
-    # Ejecutar con:  python FMsynth8.py
-    root = tk.Tk()
-    root.withdraw()                         # oculta la ventana raíz vacía
-    win = FMSynth8Window(root)
-    win.protocol('WM_DELETE_WINDOW', lambda: (win._on_close(), root.destroy()))
-    root.mainloop()
