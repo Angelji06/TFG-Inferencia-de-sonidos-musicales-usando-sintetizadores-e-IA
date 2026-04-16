@@ -113,18 +113,123 @@ parámetros no garantiza la similitud acústica del sonido generado.
 
 
 \subsection{El Problema de la Inyectividad y la Necesidad de una Arquitectura Compleja}
+El \textbf{Prototipo 3} contiene una limitación fundamental muy relevante en la sintesís FM:
+su inyectividad es nula. Esto quiere decir que diferentes combinaciones de parámetros pueden dar lugar
+a sonidos idénticos. Un ejemplo, radical pero que explica muy bien este resultado, es un caso en el que
+el índice de modulación sea 0. En ese caso, no es verdaderamente relevante el valor del ratio, sin embargo, 
+la función de pérdida, implementada con \textbf{MSE}, penaliza gravemente que este difiera del original. 
+Este obstáculo hace que se tenga que replantear la función de pérdida.
 
-\subsection{Pipeline de Datos y Preprocesamiento del Dataset}
+\subsubsection{Prototipo 4: Red Convolucional de Doble Cabeza}
+El \textbf{Prototipo 4} se diseña para solucionar el problema de la inyectividad, tratando de asegurar
+que la inferencia de parámetros se corresponda con la fidelidad acústica. Este modelo se basa en una 
+arquitectura convolucional de doble cabeza (\textbf{Encoder-Decoder}).
+
+En cuanto al preprocesamiento del conjunto de datos, se implementa una mejora para evitar que la diferencia 
+tan grande entre las escalas de difentes parámetros (como la frecuencia portadora frente al ratio) comprometa
+el cálculo del gradiente. Los tensores se normalizan estadísticamente (\textbf{Z-score}), restando la media y 
+dividiendo por la desviación estándar de cada parámetro. 
+
+La topología de la red (CNNRegressor4), consta de un procesamiento dividido en varias fases:
+
+Primero se pasa por un Codificador (\textbf{Encoder}), el cual consta de una secuencia de tres bloques
+convolucionales que convierten el espectrograma inicial en una representación comprimida, extrayendo así sus 
+características fundamentales. Para ello, cada bloque aplica núcleos (kernels) de 3x3. Posteriormente, 
+pasa por una capa de normalización por lotes (Batch Normalization), que estabiliza y acelera el entrenamiento, y 
+una activación no lineal ReLU. Finalmente, se aplica una reducción espacial en cada bloque (Max Pooling).
+Con todo esto, la matriz se ha reducido a una octava parte de su tamaño original y la profundidad de la red
+ha incrementado de 1 a 128 canales. Como resultado, se obtiene una representación comprimida
+rica en características acústicas.
+
+Al salir del \textbf{Encoder}, el flujo de datos atraviesa lo que se denomina como
+cuello de botella (\textbf{Bottleneck}). Este bloque convolucional no
+aplica una reducción espacial, manteniendo estables las dimensiones de la matriz. Su función es duplicar el número
+de canales (profundidad del tensor), pasando de 128 a 256 canales. Esto se hace con la finalidad de 
+mezclar los patrones que el \textbf{Encoder} ha extraído previamente, creando una representación
+densa y unificada.
+
+Después se pasa por la fase de Inferencia Numérica, donde ocurre la regresión de los parámetros del sintetizador FM
+(frecuencia portadora, ratio e índice). Se aplica una capa de agrupamiento global (Adaptive Average Pooling) ya que los 
+parámetros describen el sonido completo y no un punto temporal concreto en el espectrograma.
+Para ello, se calcula la media de todas las posiciones de cada canal, quedándose con un único
+número como resumen por canal. Finalmente, el vector unidimensional, resultado del proceso anterior,
+atraviesa un \textbf{Perceptrón Multicapa}, que lo proyecta hacia las tres neuronas de salida.
+
+Por último, se encuentra la fase de Reconstrucción (\textbf{Decoder}), la cual se encarga de reconstruir 
+el espectrograma original a partir de la representación comprimida del \textbf{Bottleneck}. 
+Como el \textbf{Encoder} comprime tres veces, el \textbf{Decoder} descomprime tres veces. Para ello,
+utiliza tres capas convolucionales transpuestas (ConvTranspose2d).
+
+El motivo para utilizar el \textbf{Decoder} es como método de regularización forzada del \textbf{Encoder}.
+En el caso en el que el codificador borre información importante, como armónicos o patrones temporales, que no afecte directamente a los parámetros
+de la regresión, el (\textbf{Decoder}) no será capaz de redibujar correctamente el espectrograma, disparando así
+el error en la función de pérdida híbrida. Aparte, si el \textbf{Bottleneck} no guarda suficiente información, ocurrirá lo mismo.
+Todo esto fuerza, mediante el cálculo de gradientes, a que las capas iniciales aprendan a conservar el timbre y la representación
+del sonido.
+
+\subsubsection{Prototipo 4: Función de Pérdida Híbrida}
+Con el objetivo de solucionar el problema de la inyectividad, se consolida el uso de utilizando
+Función de Pérdida Híbrida, abandonando el Error Cuadrático Medio (MSE). Esta función evalúa la pérdida
+de dos formas simultáneamente, dándole prioridad a la similitud y convergencia de espectrogramas (pérdida y convergencia espectral)
+y dejando en segundo plano la similitud de los parámetros (pérdida paramétrica).
+
+Por un lado tenemos la \textbf{Pérdida y Convergencia Espectral}. Estas funciones son las principales
+para la composición del error, teniendo mucho más peso que la pérdida paramétrica, y estando encargadas de asegurar
+que un sonido generado sea acústicamente similar al original. 
+
+La \textbf{pérdida espectral} se calcula mediante el Error Cuadrático Medio (\textbf{L1 Loss}), el cual mide la diferencia directa entre 
+espectrogramas (píxel a píxel) en escala logarítmica (dB), siendo la métrica de mayor peso para el error. Con esto se garantiza unos picos de energía y
+formas generales que coincidan en tiempo y frecuencia.
+
+En cuanto a la \textbf{convergencia espectral}, es un refuerzo (tiene un peso bajo) para la pérdida espectral, que compara las magnitudes de forma relativa con la norma de
+Frobenius, capturando la estrutura global del espectro (como los armónicos y la energía). Estas caractarísticas 
+son muy relevantes para encontrar una representación fiel al timbre original. 
+
+Por último se encuentra la \textbf{Pérdida Paramétrica}, aplicada mediante \textbf{SmoothL1}. Esta penaliza las diferencias en los parámetros
+del sintetizador, por lo que no se elimina totalmente la regresión numérica de los parámetros, pero se le un peso
+considerablemente bajo. 
+
+La ponderación de los pesos en la función de pérdida híbrida es fundamental para el correcto aprendizaje del Modelo
+y también para solucionar el problema de la inyectividad. Se le otorga un peso completo (1.0) a la pérdida espectral,
+un peso medio (0.5) a la convergencia espectral y un peso muy bajo (0.05) a la pérdida paramétrica. De esta manera, en 
+el caso de que la red infiera una serie de parámetros que difieran considerablemente de los parámetros originales, si sus 
+espectrogramas son muy similares (y, por tanto, su tiembre también lo es), el error será mínimo. El modelo debe memorizar números
+exactos, si no que analiza la imagen del sonido, su espectrograma.
+
+\subsection{Prototipo 5: Modelo Final y Expansión Paramétrica (Envolventes)}
+Las predicciones del \textbf{Prototipo 4} consiguen replicar detalladamente el timbre. Sin embargo,
+los sonidos generados en esta etapa están muy alejados de las aplicaciones reales del \textbf{Sound Matching}. 
+Por esta razón, se propone un nuevo modelo en el que se explora
+un espacio de parámetros mayor, ampliando la dimensionalidad de 3 a 8 parámetros. A las variables
+fundamentales (frecuencia portadora, ratio e índice), se le añaden las envolventes temporales: 
+la envolvente de amplitud (\textit{attack, decay} y \textit{sustain}) y la envolvente del índice de 
+modulación (\textit{attack} y \textit{decay}).
+
+Son precisamente estas caractarísticas del \textbf{Prototipo 5}, por las que es necesario una nueva 
+forma de generación del dataset. La ampliación de 3 a 8 parámetros hace computacional inviable generar
+el dataset mediante un barrido de combinaciones posibles. Para dar solución a esta limitación, se genera el dataset
+por muestreo aleatorio. 
+
+\subsubsection{Generación del Dataset Aleatorio}
+Para ello, el sistema genera un número (N) de muestras de audios con valores continuos aleatorios,
+en base a unos rangos de valores específicos para cada parámetro. 
+
+En primer lugar, se sintetizan los N archivos \textit{.wav} mediante la librería \textbf{NumPy} y la formulación matemática de la FM. 
+Se define una frecuencia de muestreo \textit{sample rate} de 44100 Hz
+y un tiempo de duración de audio de 2 segundos. Se 
+incrementa el tiempo de duración (de 1 a 2 segundos) con el fin de asegurar un margen temporal
+necesario para analizar y percibir las variaciones en el sonido provocadas por las envolventes. 
+Estas envolventes se generan sobre un vector de tiempo unificado. 
+
+Posteriormente, los audios generados \textit{.wav} se convierten a tensores nativos de \textit{PyTorch}. Se cargan mediante \textit{torchaudio} y
+se les aplica un suavizado de amplitud en los extremos (\textit{fade-in} y \textit{fade-out}) con el objetivo de 
+evitar chasquidos o artefactos indeseados. Finalmente, se generan las dos transformaciones principales:
+de audio a espectrograma y de amplitud lineal a logarítmica (dB). Esta función una
+normalización de pico, calcula la STFT, extrae la magnitud y realiza su conversión a decibelios. 
+
+\subsubsection{Adaptación de la Arquitectura (CNNRegressor5)}
 
 
-\subsection{Diseño de la Arquitectura Propuesta (CNN de Doble Cabeza)}
-\subsubsection{Codificador (Encoder)}
-\subsubsection{Rama de Inferencia Numérica (Parameter Head)}
-\subsubsection{Rama de Reconstrucción (Decoder Head)}
-
-\subsection{Formulación de la Función de Pérdida Híbrida}
-\subsubsection{Pérdida en el Dominio de Parámetros (SmoothL1)}
-\subsubsection{Pérdida en el Dominio Espectral (L1 + Convergencia Espectral)}
 
 \subsection{Justificación del Stack Tecnológico y Librerías Utilizadas}
 
