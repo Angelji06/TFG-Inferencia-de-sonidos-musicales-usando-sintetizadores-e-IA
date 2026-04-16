@@ -135,3 +135,59 @@ Con los mismos datos de entrenamiento, misma arquitectura base y único factor v
 | B | STFT | simple | SmoothL1 |
 | C | Mel | full | HybridLoss |
 | D | Mel | simple | SmoothL1 |
+
+---
+
+## 7. Bibliotecas principales
+
+| Biblioteca | Versión | Dónde se usa |
+|---|---|---|
+| `torch` | 2.5.1 | Definición del modelo, capas CNN, funciones de pérdida, optimizador Adam, backpropagation y guardado de checkpoints |
+| `torchaudio` | 2.5.1 | Carga de WAV, transformadas `Spectrogram`, `MelSpectrogram`, `AmplitudeToDB` |
+| `librosa` | 0.11.0 | Carga de audio en inferencia, visualización de espectrogramas con eje logarítmico (`specshow`) |
+| `numpy` | 2.2.6 | Síntesis FM, generación de envolventes, operaciones con arrays en evaluación y desnormalización |
+| `sounddevice` | 0.5.3 | Reproducción de audio en tiempo real y stream del sintetizador interactivo |
+| `soundfile` | 0.13.1 | Escritura de WAVs del dataset y lectura para reproducción |
+| `matplotlib` | 3.10.8 | Gráficas de evaluación y ventana de comparación de espectrogramas |
+| `scikit-learn` | 1.7.2 | Dependencia transitiva de librosa (no usado directamente en el código principal) |
+| `tkinter` | 8.6.13 | GUI completa: páginas de inicio, entrenamiento y test; sintetizador interactivo |
+| `ffmpeg` | ≥8.0 | Backend de torchaudio para decodificación de audio; instalado vía conda para garantizar compatibilidad en Windows |
+
+---
+
+## 8. Funciones más relevantes
+
+### `logica.py`
+
+| Función | Descripción |
+|---|---|
+| `generar_envolvente(t, attack, sustain, decay)` | Genera una envolvente ADSR como array numpy. Usada tanto en la síntesis del dataset como en el sintetizador interactivo en tiempo real. |
+| `fm_synthesize(carrier, ratio, index, a_att, a_sus, a_dec, m_att, m_dec)` | Síntesis FM completa: calcula las dos envolventes y genera la señal. Punto central del proyecto — define el espacio sonoro que el modelo aprende a invertir. |
+| `procesar_espectrograma(waveform, sr, device, ..., mode)` | Convierte una forma de onda en tensor dB listo para el modelo. Soporta modos `stft` (513 bins lineales) y `mel` (128 bandas perceptuales). Garantiza forma `(1, 1, F, T)`. |
+| `generar_wavs_FM(num_muestras)` | Genera el dataset completo de WAVs con parámetros aleatorios uniformes y guarda `labels.csv`. |
+| `convertir_wavs_a_tensores(wav_folder, device, mode)` | Convierte cada WAV a tensor espectrograma y lo guarda como `.pt`. Guarda también `spec_mode.txt` para que el dataset sea autocontenido. |
+| `entrenar_modelo(nombreModelo, dataset_obj, ..., arch)` | Orquesta el entrenamiento completo: instancia modelo y pérdida según `arch`, divide train/val, llama a `fit()` y guarda el checkpoint. |
+| `cargar_modelo_para_inferencia(ruta_modelo, device)` | Carga el checkpoint, detecta arquitectura y modo de espectrograma, e instancia la clase correcta. Retrocompatible con checkpoints antiguos. |
+| `hacer_inferencia(model, means, stds, ruta_wav, device, mode)` | Carga un WAV, lo convierte al espectrograma correcto y devuelve los 8 parámetros FM en escala real (desnormalizados). |
+| `comparar_espectrogramas_4en1(wav_orig, sr_orig, params_pred, device, mode)` | Genera 4 paneles: original y predicción con eje de frecuencia logarítmico y lineal. El título indica el modo de espectrograma usado. |
+| `evaluar_modelo(ruta_modelo, tensor_folder, device)` | Evalúa el modelo sobre un conjunto de tensores precalculados. Delega en `CNNRegressor5.evaluate()`. |
+
+### `Prototipo5.py`
+
+**`CNNRegressor5`** — arquitectura completa con reconstrucción espectral. El encoder comprime el espectrograma en tres etapas (Conv2d + BN + ReLU + MaxPool2d) hasta `(256, F/8, T/8)`. Desde el bottleneck se bifurca en dos cabezas: una de regresión (GlobalAvgPool + FC → 8 parámetros) y un decoder simétrico (ConvTranspose2d ×3) que reconstruye el espectrograma original. La reconstrucción actúa como regularización: obliga al encoder a capturar toda la estructura del espectrograma, no solo lo mínimo para predecir los parámetros.
+
+**`CNNRegressorSimple`** — arquitectura reducida sin decoder. Mismo encoder y bottleneck que `CNNRegressor5`, pero sin las capas de reconstrucción. Solo existe la cabeza de regresión. Al eliminar la señal de gradiente espectral, el encoder aprende únicamente lo necesario para minimizar el error paramétrico, lo que puede llevar a representaciones menos ricas.
+
+**`HybridLoss`** — función de pérdida de tres términos usada exclusivamente con `CNNRegressor5`:
+
+```
+L = w_spec · L1(spec_pred, spec_real)
+  + w_sc   · ‖spec_pred − spec_real‖_F / ‖spec_real‖_F
+  + w_param · SmoothL1(params_pred, params_real)
+```
+
+El término de **spectral convergence** mide el error relativo en magnitud (norma de Frobenius), capturando la estructura global del espectro independientemente de su escala absoluta. Los pesos por defecto (`w_spec=1.0`, `w_sc=0.5`, `w_param=0.05`) priorizan la fidelidad espectral sobre la precisión paramétrica, bajo la hipótesis de que espectrogramas similares implican parámetros similares.
+
+### `SpectrogramTensorDataset5.py`
+
+**`SpectrogramTensorDataset`** — clase `Dataset` de PyTorch que sirve pares `(espectrograma, parámetros)` al DataLoader durante el entrenamiento. Al inicializarse, lee `labels.csv`, calcula la media y desviación estándar de cada uno de los 8 parámetros sobre todo el dataset y normaliza las etiquetas en memoria (Z-score). Los tensores `.pt` se cargan del disco bajo demanda en `__getitem__`, asegurando forma `(1, F, T)`. Expone `get_stats()` para que los valores de normalización se guarden en el checkpoint y estén disponibles en inferencia.
