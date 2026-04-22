@@ -32,7 +32,7 @@ class SpectrogramTensorDataset(Dataset):
         keys = df["filename"].astype(str).str.strip().apply(
             lambda f: os.path.splitext(f)[0].lower()
         )
-        vals_norm = (vals - self.param_means) / self.param_stds  # (N, n_params) normalizado
+        vals_norm = (vals - self.param_means) / self.param_stds  # Z score 
         self.labels = dict(zip(keys, vals_norm))
 
         # listar .pt en tensors_dir
