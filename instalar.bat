@@ -1,4 +1,7 @@
 @echo off
+:: ============================================================
+:: INSTALADOR PARA WINDOWS
+:: ============================================================
 setlocal EnableDelayedExpansion
 title Instalador - Predictor de parametros FM
 

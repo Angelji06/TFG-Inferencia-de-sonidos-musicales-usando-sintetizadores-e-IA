@@ -1,23 +1,21 @@
-import time
+import csv
+import glob
 import os
 import shutil
 import time
-import math
-import itertools
-import csv
-import glob
+import librosa
+import librosa.display
+import matplotlib.pyplot as plt
+import numpy as np
+import sounddevice as sd
+import soundfile as sf
 import torch
 import torchaudio
 from torch.utils.data import DataLoader, random_split
-import numpy as np
-import soundfile as sf
-import sounddevice as sd
-import matplotlib.pyplot as plt
-import librosa         
-import librosa.display
 
-from SpectrogramTensorDataset5 import SpectrogramTensorDataset
-from Prototipo5 import CNNRegressor5, CNNRegressorSimple, HybridLoss
+from dataset import SpectrogramTensorDataset
+from losses import HybridLoss, MultiScaleSpectralLoss
+from models import CNNRegressor5, CNNRegressorSimple
 
 # Función que convierte una onda en espectrograma
 def procesar_espectrograma(waveform, sr=44100, device="cpu", spec_transform=None, db_transform=None, mode='stft'):
@@ -63,9 +61,9 @@ def procesar_espectrograma(waveform, sr=44100, device="cpu", spec_transform=None
 
     return spec_db  # (1, 1, Freq, Tiempo)
 
-#==============================================================================================================
-#=================================== GENERACION DE DATASET ====================================================
-#==============================================================================================================
+# ──────────────────────────────────────────────────────────────────────────────
+# GENERACIÓN DE DATASET
+# ──────────────────────────────────────────────────────────────────────────────
 
 GEN_PARAMS = {
     "carrier":      (100, 2000),   # Frecuencia portadora
@@ -186,7 +184,7 @@ def generar_wavs_FM(num_muestras=30000):   # conviene que este valor se pueda aj
 
     t_end = time.time()
     elapsed = t_end - t_start
-    per_file = elapsed / g if g > 0 else 0.0
+    per_file = elapsed / g
     h, rem = divmod(elapsed, 3600)
     m, s = divmod(rem, 60)
     print(f"WAVs generados: {g}; carpeta: {out_path}")
@@ -277,9 +275,9 @@ def generar_dataset(device, mode='stft'):
         "spec_mode": mode
     }
 
-#==============================================================================================================
-#=============================== CARGA DATASET YA EXISTENTE ===================================================
-#==============================================================================================================
+# ──────────────────────────────────────────────────────────────────────────────
+# CARGA DE DATASET EXISTENTE
+# ──────────────────────────────────────────────────────────────────────────────
 
 # Busca la carpeta y se asegura de que contiene tensores
 def check_dataset(path):
@@ -303,12 +301,12 @@ def check_dataset(path):
 
     return {"tipo": "carpeta_tensores", "ruta": path, "tensores": tensores, "spec_mode": spec_mode}
 
-#==============================================================================================================
-#==================================== ENTRENAMIENTO MODELO ====================================================
-#==============================================================================================================
+# ──────────────────────────────────────────────────────────────────────────────
+# ENTRENAMIENTO DEL MODELO
+# ──────────────────────────────────────────────────────────────────────────────
 
 # Función encargada de instanciar y entrenar el modelo
-def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3, device="cuda", print_every_batches=100, spec_w=1.0, sc_w=0.5, param_w=0.05, arch='full'):
+def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3, device="cuda", print_every_batches=100, spec_w=1.0, sc_w=0.5, param_w=0.05, arch='full', loss_fn='hybrid'):
     # dirs
     start = time.time()  
     tensors_dir = dataset_obj.get("ruta") 
@@ -317,9 +315,8 @@ def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3
     save_dir = os.path.join(root_dir, "models")    # Te crea una carpeta models un nivel arriba (carpeta del proyecto)
     os.makedirs(save_dir, exist_ok=True)
 
-    # --- Dataset y DataLoader ---
+    # --- Dataset ---
     dataset = SpectrogramTensorDataset(tensors_dir)
-    train_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
     # --- Instanciar modelo según arquitectura ---
     print(f"Instanciando modelo ({arch})!")
@@ -328,22 +325,28 @@ def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3
         criterion = None   # CNNRegressorSimple.fit() usa SmoothL1 internamente
     else:
         model = CNNRegressor5(8, 1, 32)
-        criterion = HybridLoss(spec_weight=spec_w, sc_weight=sc_w, param_weight=param_w)
+        if loss_fn == 'multiscale':
+            criterion = MultiScaleSpectralLoss(param_weight=param_w)
+        else:
+            criterion = HybridLoss(spec_weight=spec_w, sc_weight=sc_w, param_weight=param_w)
 
     # --- Entrenamiento ---
     print(f"Entrenando modelo!       Usando {device}")
-    train_size = int(len(dataset) * 0.8)    # 80% train, 20% val
-    val_size = len(dataset) - train_size
-    train_dataset, val_dataset = random_split(dataset, [train_size, val_size])  # Lo dividimos aleatoriamente
+    # Split 70/15/15 con semilla fija para reproducibilidad
+    generator = torch.Generator().manual_seed(42)
+    train_size = int(len(dataset) * 0.70)
+    val_size   = int(len(dataset) * 0.15)
+    test_size  = len(dataset) - train_size - val_size
+    train_dataset, val_dataset, test_dataset = random_split(dataset, [train_size, val_size, test_size], generator=generator)
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+    val_loader   = DataLoader(val_dataset,   batch_size=batch_size, shuffle=False)
 
     history = model.fit(train_loader, val_loader=val_loader, device=device, epochs=epochs, lr=lr, print_every_batches=print_every_batches, criterion=criterion)
 
     # --- Guardar modelo ---
     save_path = os.path.join(save_dir, nombreModelo)
 
-    # -- Guardar stats, modo de espectrograma y arquitectura ---
+    # -- Guardar CHECKPOINT stats, modo de espectrograma y arquitectura ---
     stats = dataset.get_stats()
     spec_mode = dataset_obj.get('spec_mode', 'stft')
     checkpoint = {
@@ -351,7 +354,8 @@ def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3
         'param_means': stats['means'],
         'param_stds': stats['stds'],
         'spec_mode': spec_mode,
-        'arch': arch
+        'arch': arch,
+        'test_indices': list(test_dataset.indices),
     }
     torch.save(checkpoint, save_path)
     print(f"Checkpoint guardado  |  espectrograma: {spec_mode}  |  arquitectura: {arch}")
@@ -365,10 +369,9 @@ def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3
 
     return save_path  #Retorna: path completo al archivo .pth guardado (string).
 
-#==============================================================================================================
-#=========================================== PRUEBA MODELO ====================================================
-#==============================================================================================================
-# ------------ INFERENCIA ------------
+# ──────────────────────────────────────────────────────────────────────────────
+# INFERENCIA
+# ──────────────────────────────────────────────────────────────────────────────
 # Carga el modelo y las estadísticas de normalización desde el checkpoint.
 # Se llama una sola vez; el resultado se reutiliza en cada llamada a hacer_inferencia().
 def cargar_modelo_para_inferencia(ruta_modelo, device="cpu"):
@@ -377,21 +380,13 @@ def cargar_modelo_para_inferencia(ruta_modelo, device="cpu"):
 
     device = torch.device("cuda" if (device == "cuda" and torch.cuda.is_available()) else "cpu")
 
-    model = CNNRegressor5(n_params=8)
     ckpt = torch.load(ruta_modelo, map_location=device)
 
-    # Soporte para checkpoints nuevos {state_dict, means, stds, spec_mode, arch} y antiguos
-    if isinstance(ckpt, dict) and 'state_dict' in ckpt:
-        state_dict = ckpt['state_dict']
-        means     = np.asarray(ckpt['param_means'], dtype=np.float32)
-        stds      = np.asarray(ckpt['param_stds'],  dtype=np.float32)
-        spec_mode = ckpt.get('spec_mode', 'stft')
-        arch      = ckpt.get('arch', 'full')
-    else:
-        state_dict = ckpt
-        means = stds = None
-        spec_mode = 'stft'
-        arch = 'full'
+    state_dict = ckpt['state_dict']
+    means      = np.asarray(ckpt['param_means'], dtype=np.float32)
+    stds       = np.asarray(ckpt['param_stds'],  dtype=np.float32)
+    spec_mode  = ckpt.get('spec_mode', 'stft')
+    arch       = ckpt.get('arch', 'full')
 
     # Instanciar la arquitectura correcta
     if arch == 'simple':
@@ -408,9 +403,6 @@ def cargar_modelo_para_inferencia(ruta_modelo, device="cpu"):
 
 # Dado un modelo ya cargado y la ruta de un WAV, devuelve los 8 parámetros FM en escala real.
 def hacer_inferencia(model, means, stds, ruta_wav, device, mode='stft'):
-    if means is None or stds is None:
-        raise RuntimeError("El checkpoint no contiene 'param_means'/'param_stds'. Reentrena guardando stats en el checkpoint.")
-
     waveform, sr = torchaudio.load(ruta_wav)
     spec = procesar_espectrograma(waveform, sr, device, mode=mode)
 
@@ -421,7 +413,6 @@ def hacer_inferencia(model, means, stds, ruta_wav, device, mode='stft'):
     pred_raw = pred_params.detach().cpu().numpy().flatten() * stds + means
     return pred_raw.tolist()
 
-# --------- REPRODUCCIÓN DE AUDIO ---------
 # Reproduce audio usando soundevice
 def play_audio(waveform, sr):
     arr = np.asarray(waveform, dtype=np.float32)
@@ -476,31 +467,102 @@ def prediccion_multiples_wav(path_modelo, path_entrada, path_salida):
 
         sf.write(ruta_guardado, audio_prediccion, sr)
 
-# Genera una carpeta con los primeros n tensores y sus etiquetas, esto es para evaluar el modelo sobre un conjunto pequeño
-def generar_carpeta_prueba(tensor_folder, n=100):
-    """
-    Copia los primeros n tensores (.pt) y el labels.csv de tensor_folder
-    a una nueva carpeta <tensor_folder>_test<n>.
-    Devuelve la ruta de la carpeta generada.
-    """
-    files = sorted([f for f in os.listdir(tensor_folder) if f.endswith('.pt')])[:n]
-    out_folder = tensor_folder + f"_test{n}"
-    os.makedirs(out_folder, exist_ok=True)
-    for f in files:
-        shutil.copy(os.path.join(tensor_folder, f), os.path.join(out_folder, f))
-    src_csv = os.path.join(tensor_folder, "labels.csv")
-    if os.path.exists(src_csv):
-        shutil.copy(src_csv, os.path.join(out_folder, "labels.csv"))
-    print(f"Carpeta de prueba generada: {out_folder} ({len(files)} tensores)")
-    return out_folder
+# ──────────────────────────────────────────────────────────────────────────────
+# EVALUACIÓN
+# ──────────────────────────────────────────────────────────────────────────────
 
-# Evalúa el modelo sobre todos los tensores de tensor_folder. Usa el método evaluate de CNNRegressor5
+# Evalúa el modelo sobre el test set guardado en el checkpoint. Usa el método evaluate de CNNRegressor5
 def evaluar_modelo(ruta_modelo, tensor_folder, device="cpu"):
-    model, _, _, device, _ = cargar_modelo_para_inferencia(ruta_modelo, device)
-    dataset  = SpectrogramTensorDataset(tensor_folder)
-    test_loader = DataLoader(dataset, batch_size=32, shuffle=False)
-    metrics = model.evaluate(test_loader, device=str(device))
+    from torch.utils.data import Subset
+    model, means, stds, device, _ = cargar_modelo_para_inferencia(ruta_modelo, device)
+    ckpt = torch.load(ruta_modelo, map_location='cpu')
+    test_indices = ckpt['test_indices']
+    dataset = SpectrogramTensorDataset(tensor_folder)
+    test_dataset = Subset(dataset, test_indices)
+    print(f"Evaluando sobre test set ({len(test_indices)} muestras, separadas antes del entrenamiento)")
+    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+    metrics = model.evaluate(test_loader, device=str(device), means=means, stds=stds)
     return metrics
+
+# Sonidos FM representativos que cubren el espacio tímbrico del sintetizador:
+# distintos carriers (graves→agudos), ratios (armónicos e inarmónicos),
+# índices (limpio→ruidoso) y envolventes (percusivo, pad, pluck).
+BENCHMARK_SOUNDS = [
+    {"name": "bajo_limpio",       "params": [100,  1.0, 1.0, 0.01, 0.50, 0.50, 0.01, 0.50]},
+    {"name": "bajo_rico",         "params": [100,  2.0, 8.0, 0.01, 0.40, 0.60, 0.01, 0.40]},
+    {"name": "medio_armonico",    "params": [440,  1.0, 3.0, 0.05, 0.40, 0.50, 0.05, 0.40]},
+    {"name": "medio_inarmonico",  "params": [440,  1.5, 5.0, 0.05, 0.30, 0.60, 0.05, 0.30]},
+    {"name": "agudo_limpio",      "params": [1200, 1.0, 1.0, 0.01, 0.30, 0.40, 0.01, 0.30]},
+    {"name": "agudo_ruidoso",     "params": [1200, 2.7, 9.5, 0.01, 0.20, 0.30, 0.01, 0.20]},
+    {"name": "percusivo",         "params": [300,  1.0, 5.0, 0.01, 0.05, 0.20, 0.01, 0.10]},
+    {"name": "pad_lento",         "params": [300,  1.0, 2.0, 0.80, 0.80, 0.40, 0.60, 0.40]},
+    {"name": "pluck",             "params": [600,  2.0, 4.0, 0.01, 0.10, 0.80, 0.01, 0.60]},
+    {"name": "muy_bajo",          "params": [100,  0.5, 3.0, 0.02, 0.40, 0.50, 0.02, 0.40]},
+    {"name": "muy_agudo",         "params": [1800, 1.0, 2.0, 0.02, 0.30, 0.40, 0.02, 0.30]},
+    {"name": "indice_maximo",     "params": [500,  1.0, 9.5, 0.05, 0.40, 0.50, 0.05, 0.40]},
+]
+
+PARAM_NAMES = ["carrier", "ratio", "index", "amp_att", "amp_sus", "amp_dec", "mod_att", "mod_dec"]
+
+# Sintetiza cada sonido del benchmark, infiere sus parámetros y compara el audio
+# re-sintetizado con el original mediante L1 sobre espectrograma mel.
+# Guarda los WAVs originales y predichos en una carpeta benchmark/.
+def evaluar_benchmark_diverso(ruta_modelo, device="cpu"):
+    model, means, stds, device, spec_mode = cargar_modelo_para_inferencia(ruta_modelo, device)
+
+    # Carpeta benchmark junto al script (se sobreescribe si ya existe)
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    benchmark_dir = os.path.join(script_dir, "benchmark")
+    if os.path.exists(benchmark_dir):
+        shutil.rmtree(benchmark_dir)
+    os.makedirs(benchmark_dir)
+
+    results = []
+    print(f"\n=== BENCHMARK DIVERSO ({len(BENCHMARK_SOUNDS)} sonidos) ===\n")
+
+    for idx, sound in enumerate(BENCHMARK_SOUNDS, start=1):
+        true_params = sound["params"]
+        name = f"{idx:02d}_{sound['name']}"
+
+        # Sintetizar audio original
+        audio_orig, sr = fm_synthesize(*true_params, duration=2.0)
+        waveform = torch.from_numpy(audio_orig).unsqueeze(0)
+
+        # Inferencia con el modo de espectrograma del modelo
+        spec = procesar_espectrograma(waveform, sr, str(device), mode=spec_mode)
+        with torch.no_grad():
+            out = model(spec)
+            pred_norm = out[0] if isinstance(out, (tuple, list)) else out
+        pred_params = (pred_norm.cpu().numpy().flatten() * stds + means).tolist()
+
+        # Re-sintetizar con los parámetros predichos
+        audio_pred, sr_pred = fm_synthesize(*[float(p) for p in pred_params], duration=2.0)
+
+        # Guardar ambos WAVs
+        sf.write(os.path.join(benchmark_dir, f"{name}_original.wav"),   audio_orig, sr,      subtype='PCM_16')
+        sf.write(os.path.join(benchmark_dir, f"{name}_prediccion.wav"), audio_pred, sr_pred, subtype='PCM_16')
+
+        # L1 mel entre original y re-síntesis (métrica perceptual)
+        waveform_pred = torch.from_numpy(audio_pred).unsqueeze(0)
+        spec_orig_mel = procesar_espectrograma(waveform,      sr,      str(device), mode='mel')
+        spec_pred_mel = procesar_espectrograma(waveform_pred, sr_pred, str(device), mode='mel')
+        mel_l1 = torch.mean(torch.abs(spec_orig_mel - spec_pred_mel)).item()
+
+        # MAE por parámetro
+        param_mae = {n: abs(t - p) for n, t, p in zip(PARAM_NAMES, true_params, pred_params)}
+
+        results.append({
+            "name":        name,
+            "true_params": true_params,
+            "pred_params": pred_params,
+            "param_mae":   param_mae,
+            "mel_l1":      mel_l1,
+        })
+        print(f"  {name:<20} mel_L1={mel_l1:.4f}  |  " +
+              "  ".join(f"{n}={v:.3f}" for n, v in param_mae.items()))
+
+    print(f"\nAudios guardados en: {benchmark_dir}")
+    return results, benchmark_dir
 
 # Función que muestra los 4 espectrogramas
 def comparar_espectrogramas_4en1(wav_orig, sr_orig, params_pred, device="cpu", mode='stft'):

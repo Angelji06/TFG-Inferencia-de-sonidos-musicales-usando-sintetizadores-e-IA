@@ -1,10 +1,13 @@
 import os
+import numpy as np
+import pandas as pd
 import torch
 from torch.utils.data import Dataset
-import pandas as pd
-import torchaudio
-import numpy as np
 
+
+# ──────────────────────────────────────────────────────────────────────────────
+# SPECTROGRAM TENSOR DATASET
+# ──────────────────────────────────────────────────────────────────────────────
 # Clase hija de Dataset (pytorch)
 # Normaliza los valores para evitar que el carrier (el parámetro con valores más grandes) domine la pérdida
 class SpectrogramTensorDataset(Dataset):
@@ -25,15 +28,12 @@ class SpectrogramTensorDataset(Dataset):
         stds[stds == 0] = 1.0   # evitar división por 0
         self.param_stds = stds
 
-        # Itera los nombres de los archivos, los guarda en raw y luego normaliza
-        self.labels = {}
-        for _, row in df.iterrows():
-            key = os.path.splitext(str(row["filename"]).strip())[0].lower()
-            raw = np.array([float(row[c]) for c in self.param_cols], dtype=np.float32)
-            norm = (raw - self.param_means) / self.param_stds
-
-            self.labels[key] = norm
-
+        # Normalizar todos los parámetros de golpe (vectorizado) y construir el diccionario
+        keys = df["filename"].astype(str).str.strip().apply(
+            lambda f: os.path.splitext(f)[0].lower()
+        )
+        vals_norm = (vals - self.param_means) / self.param_stds  # (N, n_params) normalizado
+        self.labels = dict(zip(keys, vals_norm))
 
         # listar .pt en tensors_dir
         files = [f for f in os.listdir(tensors_dir) if f.lower().endswith('.pt')]
@@ -49,35 +49,35 @@ class SpectrogramTensorDataset(Dataset):
     def __getitem__(self, idx):
         # En base al indice que recibe, busca su nombre
         fname = self.files[idx]
-        key = os.path.splitext(fname)[0].lower()  
+        key = os.path.splitext(fname)[0].lower()
 
-        # Construye su ruta al .pt original y lo carga 
+        # Construye su ruta al .pt original y lo carga
         spec_path = os.path.join(self.tensors_dir, fname)
-        spectrogram = torch.load(spec_path, map_location="cpu").float()  #Es mejor tenerlos en CPU en este momento, luego pasaremos a GPU
+        spectrogram = torch.load(spec_path, map_location="cpu").float()  # Es mejor tenerlos en CPU en este momento, luego pasaremos a GPU
 
         # Asegurar forma (C,H,W) donde C es 1, importante pues waveform_to_spectrogram_tensor() devuelve un tensor (freq_bins, time_frames), sin canal!!
         if spectrogram.dim() == 2:
-            spectrogram = spectrogram.unsqueeze(0)  
+            spectrogram = spectrogram.unsqueeze(0)
 
         # Obtener parámetros normalizados
         if key not in self.labels:
             raise KeyError(f"Etiqueta no encontrada para {key}")
         params = torch.tensor(self.labels[key], dtype=torch.float32)
 
-        return spectrogram, params 
+        return spectrogram, params
 
     # Desnormaliza un vector de parámetros
     def denormalize(self, params_norm):
-        if isinstance(params_norm, torch.Tensor):   # Si es tensorr pytorch
+        if isinstance(params_norm, torch.Tensor):   # Si es tensor pytorch
             device = params_norm.device
             dtype = params_norm.dtype
             mean_t = torch.from_numpy(self.param_means).to(device=device, dtype=dtype)
             std_t = torch.from_numpy(self.param_stds).to(device=device, dtype=dtype)
             return params_norm * std_t + mean_t
-        else:                                       # Si es array numpy
+        else:                                        # Si es array numpy
             arr = np.asarray(params_norm, dtype=np.float32)
             return arr * self.param_stds + self.param_means
 
-    # Obtener las medias y desviaciones estándar 
+    # Obtener las medias y desviaciones estándar
     def get_stats(self):
         return {'means': self.param_means.copy(), 'stds': self.param_stds.copy()}

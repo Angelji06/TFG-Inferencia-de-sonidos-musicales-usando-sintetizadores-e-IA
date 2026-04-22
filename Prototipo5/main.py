@@ -1,19 +1,14 @@
 import os
-import glob
 import tkinter as tk
 from tkinter import filedialog, messagebox
-from logica import get_gen_params, generar_dataset, check_dataset, entrenar_modelo, reproducir_wav, reproducir_prediccion, cargar_modelo_para_inferencia, hacer_inferencia, prediccion_multiples_wav, comparar_espectrogramas_4en1, evaluar_modelo, generar_carpeta_prueba
-from FMsynth8 import FMSynth8Window
-
-from Prototipo5 import CNNRegressor5
 import librosa
 import numpy as np
-import torch
 import pandas as pd
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import librosa.display
-#import simpleaudio as sa
+import torch
+
+from FMsynth8 import FMSynth8Window
+from logica import get_gen_params, generar_dataset, check_dataset, entrenar_modelo, reproducir_wav, reproducir_prediccion, cargar_modelo_para_inferencia, hacer_inferencia, prediccion_multiples_wav, comparar_espectrogramas_4en1, evaluar_modelo, evaluar_benchmark_diverso, PARAM_NAMES
+from models import CNNRegressor5
  
 class App:
     def __init__(self, root):
@@ -57,8 +52,7 @@ class App:
     def show_page(self, page):
         self.refresh_inicio_status()
         self.refresh_entrenamiento_page()
-        if hasattr(self, "refresh_test_page"):
-            self.refresh_test_page()
+        self.refresh_test_page()
         # ocultar todas y mostrar la solicitada
         for p in (self.page_inicio, self.page_entrenamiento, self.page_test):
             p.pack_forget()
@@ -101,7 +95,7 @@ class App:
     def refresh_inicio_status(self):
         """Actualiza el texto de las dos etiquetas de inicio."""
         etiquetaDataset = self.pathDataset if self.dataset_obj is not None else "Ninguno"
-        etiquetaModelo  = getattr(self, "nombreModelo", None) if self.model_trained else None
+        etiquetaModelo  = self.nombreModelo if self.model_trained else None
         etiquetaModelo  = etiquetaModelo or "Ninguno"
 
         self.dataset_status_var.set(f"Dataset: {etiquetaDataset}")
@@ -152,7 +146,7 @@ class App:
         device_menu.grid(row=0, column=1, sticky="w", padx=4, pady=4)
 
         tk.Label(device_frame, text="Espectrograma:").grid(row=0, column=2, sticky="e", padx=(20, 4), pady=4)
-        self.spec_mode_var = tk.StringVar(value="stft")
+        self.spec_mode_var = tk.StringVar(value="mel")
         spec_menu = tk.OptionMenu(device_frame, self.spec_mode_var, "stft", "mel")
         spec_menu.config(width=6)
         spec_menu.grid(row=0, column=3, sticky="w", padx=4, pady=4)
@@ -164,6 +158,13 @@ class App:
         arch_menu.config(width=8)
         arch_menu.grid(row=1, column=1, sticky="w", padx=4, pady=4)
         tk.Label(device_frame, text="(full = encoder+decoder  |  simple = solo encoder)", fg="#888", font=("Arial", 8)).grid(row=1, column=2, columnspan=3, sticky="w", padx=4)
+
+        tk.Label(device_frame, text="Función de pérdida:").grid(row=2, column=0, sticky="e", padx=4, pady=4)
+        self.loss_fn_var = tk.StringVar(value="hybrid")
+        loss_menu = tk.OptionMenu(device_frame, self.loss_fn_var, "hybrid", "multiscale")
+        loss_menu.config(width=10)
+        loss_menu.grid(row=2, column=1, sticky="w", padx=4, pady=4)
+        tk.Label(device_frame, text="(hybrid = L1+SC  |  multiscale = multi-escala DDSP  |  solo con arch=full)", fg="#888", font=("Arial", 8)).grid(row=2, column=2, columnspan=3, sticky="w", padx=4)
 
         # Sección superior: generar / cargar dataset
         top_frame = tk.LabelFrame(p, text="Dataset (generar o cargar)", padx=8, pady=8)
@@ -259,7 +260,7 @@ class App:
             self.btn_entrenar.config(state="normal")
 
         # --- Estado entrenamiento/modelo ---
-        if not getattr(self, "model_trained", False):
+        if not self.model_trained:
             self.modelo_status_var.set("Modelo: Ninguno")
             self.btn_ir_test.config(state="disabled")
         else:
@@ -330,7 +331,7 @@ class App:
         self.btn_cargar_ds.config(state="disabled")
 
         try:
-            result = entrenar_modelo(self.nombreModelo, self.dataset_obj, epochs=epochs, lr=lr, batch_size=batch_size, device=device, print_every_batches=print_every, spec_w=spec_w, sc_w=sc_w, param_w=param_w, arch=self.arch_var.get())
+            result = entrenar_modelo(self.nombreModelo, self.dataset_obj, epochs=epochs, lr=lr, batch_size=batch_size, device=device, print_every_batches=print_every, spec_w=spec_w, sc_w=sc_w, param_w=param_w, arch=self.arch_var.get(), loss_fn=self.loss_fn_var.get())
             
             self.pathModelo = result
             self.nombreModelo = os.path.basename(result)
@@ -354,56 +355,59 @@ class App:
 
     def _build_test(self):
         p = self.page_test
-        tk.Label(p, text="Test", font=("Arial", 18)).pack(pady=(12,8))
-        tk.Label(p, text="Selecciona un WAV, pulsa 'Predecir WAV' y luego reproduce.", font=("Arial", 12)).pack(pady=(0,12))
+        tk.Label(p, text="Test", font=("Arial", 18)).pack(pady=(12,4))
 
-        frame = tk.Frame(p)
-        frame.pack(fill="both", expand=True, padx=8, pady=8)
-
-        # 1. Info Modelo
-        model_frame = tk.Frame(frame)
-        model_frame.pack(fill="x", pady=6)
+        # Modelo cargado
+        model_frame = tk.Frame(p)
+        model_frame.pack(fill="x", padx=12, pady=(0,6))
         tk.Label(model_frame, text="Modelo cargado:").pack(side="left", padx=(0,4))
-        # Usamos un Label dinámico para poder actualizar su texto si cambia el modelo
         self.label_model_test_var = tk.StringVar(value="Ninguno")
         tk.Label(model_frame, textvariable=self.label_model_test_var).pack(side="left", padx=4)
 
-        # 2. Selección de WAV
-        wav_frame = tk.Frame(frame)
-        wav_frame.pack(fill="x", pady=6)
-        tk.Button(wav_frame, text="Seleccionar WAV", command=self._seleccionar_wav).pack(side="left", padx=6)
+        # Columnas izquierda / derecha
+        cols = tk.Frame(p)
+        cols.pack(fill="both", expand=True, padx=8, pady=4)
+        cols.columnconfigure(0, weight=1)
+        cols.columnconfigure(1, weight=1)
+
+        # ── Izquierda: Inferencia individual ──────────────────────────────────
+        left = tk.LabelFrame(cols, text="Inferencia individual", padx=8, pady=8)
+        left.grid(row=0, column=0, sticky="nsew", padx=(0,4), pady=2)
+
+        wav_frame = tk.Frame(left)
+        wav_frame.pack(fill="x", pady=4)
+        tk.Button(wav_frame, text="Seleccionar WAV", command=self._seleccionar_wav).pack(side="left", padx=4)
         self.label_wav_selected = tk.Label(wav_frame, text="WAV: Ninguno")
-        self.label_wav_selected.pack(side="left", padx=6)
+        self.label_wav_selected.pack(side="left", padx=4)
 
-        # Llama a la función para generar el lote de wavs para FAD
-        tk.Button(wav_frame, text="Generar Eval Set (FAD)", bg="#e1f5fe", command=self._predecir_2000_wavs).pack(side="right", padx=6)
+        self.btn_predict = tk.Button(left, text="Predecir WAV", state="disabled", command=self._predecir_wav)
+        self.btn_predict.pack(fill="x", pady=2)
 
-        # 4. Botones de Acción
-        action_frame = tk.Frame(frame)
-        action_frame.pack(fill="x", pady=(8,6))
-        
-        self.btn_predict = tk.Button(action_frame, text="Predecir WAV", state="disabled", command=self._predecir_wav)
-        self.btn_predict.pack(side="left", padx=6)
-        
-        tk.Button(action_frame, text="Reproducir original", command=self._play_original).pack(side="left", padx=6)
-        tk.Button(action_frame, text="Reproducir síntesis", command=self._play_synth).pack(side="left", padx=6)
+        play_frame = tk.Frame(left)
+        play_frame.pack(fill="x", pady=2)
+        tk.Button(play_frame, text="Reproducir original", command=self._play_original).pack(side="left", padx=4)
+        tk.Button(play_frame, text="Reproducir síntesis", command=self._play_synth).pack(side="left", padx=4)
 
-        tk.Button(action_frame, text="Visualizar Espectrogramas", command=self._ver_comparativa_espectrogramas,).pack(side="left", padx=6)
-        tk.Button(action_frame, text="Generar carpeta de prueba", bg="#fff9c4", command=self._generar_carpeta_prueba).pack(side="left", padx=6)
-        tk.Button(action_frame, text="Evaluar Modelo", bg="#e8f5e9", command=self._evaluar_modelo).pack(side="left", padx=6)
+        tk.Button(left, text="Visualizar Espectrogramas", command=self._ver_comparativa_espectrogramas).pack(fill="x", pady=2)
 
-        self.btn_fmsynth = tk.Button(action_frame, text="Abrir en FMSynth8",
-                                     bg="#e3f2fd", state="disabled",
-                                     command=self._abrir_fmsynth)
-        self.btn_fmsynth.pack(side="left", padx=6)
+        self.btn_fmsynth = tk.Button(left, text="Abrir en FMSynth8", bg="#e3f2fd", state="disabled", command=self._abrir_fmsynth)
+        self.btn_fmsynth.pack(fill="x", pady=2)
 
-        tk.Button(action_frame, text="Volver", command=lambda: self.show_page(self.page_inicio)).pack(side="right", padx=6)
+        # ── Derecha: Evaluación general ───────────────────────────────────────
+        right = tk.LabelFrame(cols, text="Evaluación general", padx=8, pady=8)
+        right.grid(row=0, column=1, sticky="nsew", padx=(4,0), pady=2)
 
-        # 5. Área de Resultados
-        res_frame = tk.LabelFrame(frame, text="Resultado")
-        res_frame.pack(fill="both", expand=True, pady=6)
-        self.result_text = tk.Text(res_frame, height=12)
+        tk.Button(right, text="Evaluar Modelo", bg="#e8f5e9", command=self._evaluar_modelo).pack(fill="x", pady=2)
+        tk.Button(right, text="Benchmark diverso", bg="#f3e5f5", command=self._evaluar_benchmark).pack(fill="x", pady=2)
+        tk.Button(right, text="Generar Eval Set (FAD)", bg="#e1f5fe", command=self._predecir_2000_wavs).pack(fill="x", pady=2)
+
+        # ── Resultado (compartido) ────────────────────────────────────────────
+        res_frame = tk.LabelFrame(p, text="Resultado", padx=4, pady=4)
+        res_frame.pack(fill="both", expand=True, padx=8, pady=4)
+        self.result_text = tk.Text(res_frame, height=10)
         self.result_text.pack(fill="both", expand=True)
+
+        tk.Button(p, text="Volver", command=lambda: self.show_page(self.page_inicio)).pack(pady=6)
 
         # Estado interno para reproducción
         self.test_wav_path = None
@@ -414,12 +418,8 @@ class App:
 
     def refresh_test_page(self):
         """Actualiza la etiqueta del modelo en la página de test."""
-        nombre = getattr(self, "nombreModelo", "Ninguno")
-        if hasattr(self, "label_model_test_var"):
-            self.label_model_test_var.set(nombre)
-        if hasattr(self, "btn_fmsynth"):
-            has_pred = getattr(self, "last_prediction_params", None) is not None
-            self.btn_fmsynth.config(state="normal" if has_pred else "disabled")
+        self.label_model_test_var.set(self.nombreModelo or "Ninguno")
+        self.btn_fmsynth.config(state="normal" if self.last_prediction_params is not None else "disabled")
 
     def _abrir_fmsynth(self):
         # Si ya hay una ventana abierta, traerla al frente
@@ -451,7 +451,7 @@ class App:
         self.result_text.insert(tk.END, "Procesando inferencia...\n")
         
         # Refresco visual
-        if hasattr(self, 'root'): self.root.update_idletasks() 
+        self.root.update_idletasks()
 
         try:
             # 1. Cargar modelo e inferir (el modo de espectrograma viene del checkpoint)
@@ -545,28 +545,13 @@ class App:
             self.btn_predict.config(state="normal")
 
     def _ver_comparativa_espectrogramas(self):
-        if hasattr(self, 'last_prediction_params'):
+        if self.last_prediction_params is not None:
             comparar_espectrogramas_4en1(self.ultimo_wav_orig, self.ultimo_sr_orig, self.last_prediction_params, self.device_var.get(), mode=self.model_spec_mode)
         else:
             messagebox.showwarning("Aviso", "Primero debes predecir un audio.")
 
-    def _generar_carpeta_prueba(self):
-        tensor_folder = filedialog.askdirectory(title="Selecciona la carpeta de tensores completa")
-        if not tensor_folder:
-            return
-        try:
-            out = generar_carpeta_prueba(tensor_folder, n=100)
-            self.result_text.delete("1.0", tk.END)
-            self.result_text.insert(tk.END, f"Carpeta de prueba generada:\n{out}\n\n(100 tensores + labels.csv copiados)")
-        except Exception as e:
-            messagebox.showerror("Error", f"No se pudo generar la carpeta:\n{e}")
-
     def _evaluar_modelo(self):
-        if not self.model_trained or not self.pathModelo:
-            messagebox.showwarning("Aviso", "No hay ningún modelo cargado.")
-            return
-
-        tensor_folder = filedialog.askdirectory(title="Selecciona carpeta con tensores (.pt) para evaluar")
+        tensor_folder = filedialog.askdirectory(title="Selecciona la misma carpeta de tensores usada para entrenar")
         if not tensor_folder:
             return
 
@@ -598,6 +583,31 @@ class App:
         except Exception as e:
             self.result_text.insert(tk.END, f"ERROR:\n{str(e)}\n")
             print(f"ERROR evaluación: {e}")
+
+    def _evaluar_benchmark(self):
+        self.result_text.delete("1.0", tk.END)
+        self.result_text.insert(tk.END, "Ejecutando benchmark diverso...\n")
+        self.root.update_idletasks()
+
+        try:
+            results, benchmark_dir = evaluar_benchmark_diverso(self.pathModelo, device=self.device_var.get())
+
+            lines = [f"=== BENCHMARK DIVERSO ===\nAudios guardados en: {benchmark_dir}\n\n"]
+            header = f"{'Sonido':<20} {'mel_L1':>8}  " + "  ".join(f"{n:>8}" for n in PARAM_NAMES) + "\n"
+            lines.append(header)
+            lines.append("-" * len(header) + "\n")
+            for r in results:
+                mae_vals = "  ".join(f"{r['param_mae'][n]:>8.3f}" for n in PARAM_NAMES)
+                lines.append(f"{r['name']:<20} {r['mel_l1']:>8.4f}  {mae_vals}\n")
+
+            avg_mel = sum(r['mel_l1'] for r in results) / len(results)
+            lines.append(f"\nmel_L1 medio: {avg_mel:.4f}\n")
+            self.result_text.insert(tk.END, "".join(lines))
+
+        except Exception as e:
+            self.result_text.insert(tk.END, f"ERROR:\n{str(e)}\n")
+            print(f"ERROR benchmark: {e}")
+
 
     def _play_synth(self):
         reproducir_prediccion(self.last_prediction_params)

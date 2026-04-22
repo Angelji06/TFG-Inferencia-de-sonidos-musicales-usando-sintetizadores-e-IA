@@ -1,40 +1,43 @@
 name: audio_gpu
 channels:
-  - conda-forge
   - pytorch
+  - nvidia
+  - conda-forge
 dependencies:
   # --- Python ---
   - python=3.10
 
-  # --- PyTorch (CPU - compatible con cualquier maquina sin GPU) ---
-  # Para GPU con CUDA 12.1, sustituir estas 4 lineas por:
-  #   conda install pytorch=2.5.1 torchaudio=2.5.1 torchvision=0.20.1 pytorch-cuda=12.1 -c pytorch -c nvidia
+  # --- PyTorch (GPU con CUDA 12.1 - requiere tarjeta NVIDIA compatible) ---
+  # Para CPU (máquinas sin GPU), sustituir las 4 líneas siguientes por:
+  #   - pytorch=2.5.1
+  #   - torchaudio=2.5.1
+  #   - torchvision=0.20.1
+  #   - cpuonly
   - pytorch=2.5.1
   - torchaudio=2.5.1
   - torchvision=0.20.1
-  - cpuonly
+  - pytorch-cuda=12.1
 
-  # --- Audio: ffmpeg + librosa (instalados via conda para evitar conflictos de binarios en Windows) ---
-  - ffmpeg>=8.0                # Sin pin exacto: conda elige la build disponible
+  # --- Audio ---
+  - ffmpeg>=6.0
   - librosa=0.11.0
-  - numba=0.62.1              # Dependencia de librosa para JIT
+  - numba=0.62.1
 
-  # --- Numerica y ciencia de datos ---
+  # --- Numérica y ciencia de datos ---
   - numpy=2.2.6
   - scipy=1.15.2
   - scikit-learn=1.7.2
 
-  # --- Visualizacion ---
+  # --- Visualización ---
   - matplotlib=3.10.8
 
   # --- GUI ---
   - tk=8.6.13
 
-  # --- Pip (wheels que funcionan mejor en Windows que las versiones conda) ---
+  # --- Pip ---
   - pip
   - pip:
-    - soundfile==0.13.1      # Lectura/escritura WAV - binarios propios en Windows
-    - sounddevice==0.5.3     # Reproduccion de audio (PortAudio incluido en wheel)
-    - pandas==2.3.3          # Lectura de labels.csv
-    - openpyxl==3.1.5        # Backend de pandas para Excel
-    - torchcodec==0.9.0      # Codecs adicionales para torchaudio
+    - soundfile==0.13.1
+    - sounddevice==0.5.3
+    - pandas==2.3.3
+    - openpyxl==3.1.5

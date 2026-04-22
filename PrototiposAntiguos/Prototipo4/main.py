@@ -2,7 +2,7 @@ import os
 import glob
 import tkinter as tk
 from tkinter import filedialog, messagebox
-from logica import get_gen_params, generar_dataset, check_dataset, entrenar_modelo, fm_synthesize,play_audio,reproducir_wav,reproducir_prediccion, hacer_inferencia, mostrar_espectrograma, prediccion_multiples_wav
+from PrototiposAntiguos.Prototipo4.logica import get_gen_params, generar_dataset, check_dataset, entrenar_modelo, fm_synthesize,play_audio,reproducir_wav,reproducir_prediccion, hacer_inferencia, mostrar_espectrograma, prediccion_multiples_wav
 
 from Prototipo4 import CNNRegressor4
 import librosa

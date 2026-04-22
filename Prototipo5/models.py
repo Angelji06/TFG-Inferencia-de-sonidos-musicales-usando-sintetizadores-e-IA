@@ -1,68 +1,163 @@
 import os
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
 
-# Función de pérdida hibrida:
-#   1) Reconstrucción espectral (L1 en dB): 
-#        - Mide la diferencia directa entre espectrogramas
-#        - Es la parte principal de la pérdida
+from losses import HybridLoss
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# CNNRegressorSimple
+# ──────────────────────────────────────────────────────────────────────────────
+# Arquitectura base: encoder → bottleneck → regresión de los 8 parámetros FM.
+#   - forward() devuelve directamente el tensor de parámetros
+#   - La función de pérdida es SmoothL1 sobre los parámetros
+#   - Entrena rápido, pero el encoder solo aprende lo necesario para predecir
+#     parámetros, sin garantía de capturar la estructura completa del espectrograma
+
+# ──────────────────────────────────────────────────────────────────────────────
+# CNNRegressor5
+# ──────────────────────────────────────────────────────────────────────────────
+# Extensión de CNNRegressorSimple: añade un decoder que reconstruye el espectrograma.
+#   - head params: igual que en CNNRegressorSimple
+#   - head spec:   decoder que reconstruye el espectrograma de entrada
 #
-#   2) Spectral Convergence (SC):
-#        - Compara las magnitudes de forma relativa
-#        - Captura la estructura global del espectro (armónicos, energía)
-#        - Se usa con un peso bajo (mas como refuerzo)
-#
-#   3) Parámetros (SmoothL1):
-#        - Penaliza diferencias en los parámetros del sintetizador
-#        - Peso pequeño porque los parámetros son menos importantes y no siempre son únicos para un mismo espectrograma.
-class HybridLoss(nn.Module):
-    def __init__(self, spec_weight=1.0, sc_weight=0.5, param_weight=0.05, eps=1e-8):
+# El decoder actúa como regularizador: obliga al encoder a retener toda la
+# información del espectrograma y no solo la relevante para los parámetros.
+
+class CNNRegressorSimple(nn.Module):
+    def __init__(self, n_params=8, input_channels=1, base_filters=32):
         super().__init__()
-        self.spec_weight = spec_weight
-        self.sc_weight = sc_weight
-        self.param_weight = param_weight
-        self.eps = eps
 
-        self.l1 = nn.L1Loss()
-        self.param_loss = nn.SmoothL1Loss()
+        # ENCODER
+        self.enc1 = nn.Sequential(
+            nn.Conv2d(input_channels, base_filters, kernel_size=3, padding=1),
+            nn.BatchNorm2d(base_filters),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(2)
+        )
+        self.enc2 = nn.Sequential(
+            nn.Conv2d(base_filters, base_filters*2, kernel_size=3, padding=1),
+            nn.BatchNorm2d(base_filters*2),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(2)
+        )
+        self.enc3 = nn.Sequential(
+            nn.Conv2d(base_filters*2, base_filters*4, kernel_size=3, padding=1),
+            nn.BatchNorm2d(base_filters*4),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(2)
+        )
 
-    def spectral_convergence(self, pred_db, tgt_db):
-        pred_mag = 10 ** (pred_db / 20)                         # Espectrogramas de vuelta a escala lineal
-        tgt_mag = 10 ** (tgt_db / 20)
-        num = torch.norm(pred_mag - tgt_mag, p='fro')           # Norma de Frobenius en matriz diferencia (Raiz del sumatorio de cuadrados)
-        den = torch.norm(tgt_mag, p='fro').clamp(min=self.eps)  # Norma de Frobenius en matriz target
-        return num / den                                        # Error relativo
+        # BOTTLENECK
+        self.bottleneck = nn.Sequential(
+            nn.Conv2d(base_filters*4, base_filters*8, kernel_size=3, padding=1),
+            nn.BatchNorm2d(base_filters*8),
+            nn.ReLU(inplace=True),
+        )
 
-    def forward(self, pred_spec, tgt_spec, pred_params, tgt_params):
-        # 1) Pérdida espectral (diferencia entre espectrogramas)
-        loss_spec = self.l1(pred_spec, tgt_spec)
+        # CABEZA DE REGRESIÓN
+        self.global_pool = nn.AdaptiveAvgPool2d((1, 1))
+        self.fc_params = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(base_filters*8, 64),
+            nn.ReLU(inplace=True),
+            nn.Linear(64, n_params)     # 8 salidas FM
+        )
 
-        # 2) Convergencia espectral 
-        sc_loss = self.spectral_convergence(pred_spec, tgt_spec)
+    def forward(self, x):
+        e1 = self.enc1(x)
+        e2 = self.enc2(e1)
+        e3 = self.enc3(e2)
+        b  = self.bottleneck(e3)
+        return self.fc_params(self.global_pool(b))  # (B, n_params)
 
-        # 3) Pérdida paramétrica (bajo peso)
-        loss_params = self.param_loss(pred_params, tgt_params)
+    def fit(self, train_loader, val_loader=None, device='cpu', epochs=10, lr=1e-3,
+            print_every_batches=50, criterion=None, optimizer=None):
+        """
+        Entrena usando solo pérdida sobre parámetros (SmoothL1).
+        El argumento criterion se acepta para mantener compatibilidad de firma con
+        CNNRegressor5.fit(), que lo necesita para la pérdida espectral, pero aquí se ignora.
+        """
+        self.to(device)
+        loss_fn   = nn.SmoothL1Loss()
+        optimizer = optimizer or optim.Adam(self.parameters(), lr=lr)
 
-        # 4) Combinación de pérdidas
-        total = (self.spec_weight * loss_spec) + (self.sc_weight * sc_loss) + (self.param_weight * loss_params)
+        history = {'total': [], 'params': [], 'val_total': []}
 
-        return total, loss_spec.detach(), sc_loss.detach(), loss_params.detach()
+        best_val_loss  = float('inf')
+        best_state_dict = None
 
-# -------------------------
-# CNNRegressor
-# Un ejemplo simple: encoder -> latente -> two heads:
-#   - head params: regresión (3 valores)
-#   - head spec: decoder (reconstrucción del espectrograma)
-# -------------------------
+        for epoch in range(epochs):
+            self.train()
+            running_params = 0.0
+            n_batches = 0
+
+            for batch_idx, (batch_spec, batch_params) in enumerate(train_loader):
+                batch_spec   = batch_spec.to(device)
+                batch_params = batch_params.to(device)
+
+                optimizer.zero_grad()
+                pred_params = self(batch_spec)
+                loss = loss_fn(pred_params, batch_params)
+                loss.backward()
+                optimizer.step()
+
+                running_params += loss.item()
+                n_batches += 1
+
+                if print_every_batches and print_every_batches > 0:
+                    if (batch_idx + 1) % print_every_batches == 0:
+                        avg = running_params / n_batches
+                        print(f" Epoch {epoch+1}/{epochs}  Batch {batch_idx+1}  Avg params loss: {avg:.6f}")
+
+            avg_params = running_params / max(1, n_batches)
+            history['total'].append(avg_params)
+            history['params'].append(avg_params)
+
+            msg_val = ""
+            if val_loader is not None:
+                self.eval()
+                val_running = 0.0
+                n_val = 0
+                with torch.no_grad():
+                    for v_spec, v_params in val_loader:
+                        v_spec   = v_spec.to(device)
+                        v_params = v_params.to(device)
+                        v_loss   = loss_fn(self(v_spec), v_params)
+                        val_running += v_loss.item()
+                        n_val += 1
+                avg_val = val_running / max(1, n_val)
+                history['val_total'].append(avg_val)
+                msg_val = f" | Val Loss: {avg_val:.6f}"
+                if avg_val < best_val_loss:
+                    best_val_loss   = avg_val
+                    best_state_dict = self.state_dict()
+                    msg_val += " (*)"
+
+            print(f"Epoch {epoch+1}/{epochs}  Params loss: {avg_params:.6f}{msg_val}")
+
+        if best_state_dict is not None:
+            self.load_state_dict(best_state_dict)
+            print("Entrenamiento finalizado. Se han restaurado los pesos de la mejor época.")
+
+        return history
+
+    def evaluate(self, test_loader, device='cpu', save_dir="eval_results", means=None, stds=None):
+        """CNNRegressor5 amplía esta lógica de evaluación para soportar la reconstrucción del espectrograma."""
+        return CNNRegressor5.evaluate(self, test_loader, device=device, save_dir=save_dir, means=means, stds=stds)
+
+
+
 class CNNRegressor5(nn.Module):
     def __init__(self, n_params=8, input_channels=1, base_filters=32):
         super().__init__()
-        # ENCODER -> Convierte el espectrograma (1, H, W) en una representación comprimida rica en características
+        # ENCODER — igual que en CNNRegressorSimple
+        # Convierte el espectrograma (1, H, W) en una representación comprimida rica en características
         # Tensores espectrograma tal que: (Numero canales, Numero filas (frecuencia), Numero columnas (tiempo))
         # (1, H, W) -> (32, H/2,  W/2) -> (64, H/4,  W/4) -> (128, H/8, W/8)
         self.enc1 = nn.Sequential(
@@ -84,7 +179,8 @@ class CNNRegressor5(nn.Module):
             nn.MaxPool2d(2)  # H/8, W/8
         )
 
-        # BOTTLENECK -> Duplica el numero de canales manteniendo tamaño espacial
+        # BOTTLENECK — igual que en CNNRegressorSimple
+        # Duplica el numero de canales manteniendo tamaño espacial
         # (128, H/8, W/8) -> (256, H/8, W/8)
         # Basicamente sirve para mezclar los patrones que el encoder ha extraído
         self.bottleneck = nn.Sequential(
@@ -93,6 +189,7 @@ class CNNRegressor5(nn.Module):
             nn.ReLU(inplace=True),
         )
 
+        # CABEZA DE REGRESIÓN — igual que en CNNRegressorSimple
         # GLOBAL POOLING -> Para los parámetros (pues describen todo el sonido completo, no un punto concreto del espectrograma.)
         # Toma cada canal completo y hace la media de todas sus posiciones, quedándose con un único número que resume todo el canal.
         # (C, H, W)  →  (C, 1, 1)
@@ -107,10 +204,6 @@ class CNNRegressor5(nn.Module):
         # DECODER -> su misión es reconstruir el espectrograma original a partir de la representación comprimida del bottleneck.
         # El encoder comprimió tres veces, así que el decoder descomprime tres veces (transposed conv).
         # Si no se reconstruye, el encoder podría ignorar información importante que no afecta directamente a los parámetros.
-            # Si el encoder ignora armónicos → el decoder no podrá dibujarlos → pérdida alta → encoder aprende a captar armónicos.
-            # Si el encoder no aprende patrones temporales → el decoder produce ruido → pérdida alta → encoder aprende patrones temporales.
-            # Si el bottleneck no guarda suficiente información → reconstrucción borrosa → pérdida alta → más capacidad en canales.
-            # Si el decoder no sabe expandir bien → reconstrucción deformada → gradiente corrige sus filtros.
         self.dec1 = nn.Sequential(
             nn.ConvTranspose2d(base_filters*8, base_filters*4, kernel_size=2, stride=2),
             nn.BatchNorm2d(base_filters*4),
@@ -127,40 +220,42 @@ class CNNRegressor5(nn.Module):
             nn.ReLU(inplace=True),
         )
         # Última capa que convierte lo que sale del decoder en un tensor con la MISMA forma que el espectrograma original.
-        self.recon_head = nn.Sequential(   
+        self.recon_head = nn.Sequential(
             nn.Conv2d(base_filters, input_channels, kernel_size=3, padding=1),
         )
-    
+
     def forward(self, x):  # x: (B, 1, H, W)
         # Encoder
         e1 = self.enc1(x)
         e2 = self.enc2(e1)
         e3 = self.enc3(e2)
         b = self.bottleneck(e3)
-        
-        # Parámetros 
+
+        # Parámetros
         pooled = self.global_pool(b)  # (B, C, 1,1)
         params = self.fc_params(pooled)  # (B, n_params)
-        
+
         # Decoder
         d1 = self.dec1(b)
         d2 = self.dec2(d1)
         d3 = self.dec3(d2)
         recon = self.recon_head(d3)  # (B, 1, H, W)
 
-        # If the spatial dims don't match exactly (due to integer division), we can
-        # crop or pad recon to match x's H,W. We'll ensure it's the same shape:
+        # Si las dimensiones espaciales no coinciden exactamente (por divisiones enteras en MaxPool),
+        # se ajusta la reconstrucción al tamaño original mediante interpolación bilineal:
         if recon.shape[2:] != x.shape[2:]:
             recon = F.interpolate(recon, size=x.shape[2:], mode='bilinear', align_corners=False)
-        
+
         return params, recon
 
-    # Función que entrena el modelo
+    # ──────────────────────────────────────────────────────────────────────────
+    # ENTRENAMIENTO
+    # ──────────────────────────────────────────────────────────────────────────
     def fit(self, train_loader, val_loader=None, device='cpu', epochs=10, lr=1e-3, print_every_batches=50, criterion=None, optimizer=None):
             # - train_loader: DataLoader que devuelve (batch_spec, batch_params)
             # - criterion: instancia de HybridLoss (si None se crea una por defecto)
             # - optimizer: optimizador; si None se crea Adam con lr
-            
+
             self.to(device)
 
             # Lo implemento así para poder probar distintos criterios y optimizers
@@ -173,10 +268,8 @@ class CNNRegressor5(nn.Module):
             history = {'total': [],'spec': [],'params': [], 'val_total' : []}
 
             # Variable que guarda el mejor modelo
-
             best_val_loss = float('inf')
-            best_state = None
-
+            best_state_dict = None
 
             # Entrenamiento
             for epoch in range(epochs):
@@ -210,7 +303,6 @@ class CNNRegressor5(nn.Module):
                         if (batch_idx + 1) % print_every_batches == 0:
                             avg_total_sofar = running_total / max(1, n_batches)
                             avg_spec_sofar = running_spec / max(1, n_batches)
-                            avg_sc = running_sc / print_every_batches
                             avg_params_sofar = running_params / max(1, n_batches)
                             print(f" Epoch {epoch+1}/{epochs}  Batch {batch_idx+1}  Avg total so far: {avg_total_sofar:.6f}  Spec: {avg_spec_sofar:.6f}  Params: {avg_params_sofar:.6f}")
 
@@ -223,8 +315,8 @@ class CNNRegressor5(nn.Module):
                 history['params'].append(avg_params)
 
                 # Fase de validación
-
                 avg_val_loss = 0.0
+                msg_val = ""
 
                 if val_loader is not None:
                     self.eval()
@@ -234,13 +326,13 @@ class CNNRegressor5(nn.Module):
                         for v_spec, v_params in val_loader:
                             v_spec = v_spec.to(device)
                             v_params = v_params.to(device)
-                            
+
                             v_p, v_s = self(v_spec)
                             v_loss, _, _, _ = criterion(v_s, v_spec, v_p, v_params)
-                            
+
                             val_running += v_loss.item()
                             n_val += 1
-                
+
                     avg_val_loss = val_running / max(1, n_val)
                     history['val_total'].append(avg_val_loss)
                     msg_val = f" | Val Loss: {avg_val_loss:.6f}"
@@ -257,15 +349,19 @@ class CNNRegressor5(nn.Module):
                 self.load_state_dict(best_state_dict)
                 print("Entrenamiento finalizado. Se han restaurado los pesos de la mejor época.")
 
-            return history #Retorna: history dict con listas 'total', 'spec', 'params' (valores medios por época)
+            return history  # Retorna: history dict con listas 'total', 'spec', 'params' (valores medios por época)
 
-    # Función que evalúa el modelo
-    def evaluate(self, test_loader, device='cpu', save_dir="eval_results"):
+    # ──────────────────────────────────────────────────────────────────────────
+    # EVALUACIÓN
+    # ──────────────────────────────────────────────────────────────────────────
+    def evaluate(self, test_loader, device='cpu', save_dir="eval_results", means=None, stds=None):
         """
         Evalúa el modelo sobre test_loader siguiendo la celda que proporcionaste.
         - test_loader: DataLoader que devuelve batches con (spec, params) o (spec, audio, params)
         - device: 'cpu' o 'cuda'
         - save_dir: carpeta donde se guardará preds_vs_trues.csv (por defecto 'eval_results')
+        - means: array con las medias de entrenamiento (para desnormalizar la salida)
+        - stds: array con las desviaciones estándar de entrenamiento (para desnormalizar la salida)
         Retorna: dict con métricas y ruta del CSV.
         """
         os.makedirs(save_dir, exist_ok=True)
@@ -280,37 +376,25 @@ class CNNRegressor5(nn.Module):
         n_samples = 0
 
         spec_loss_fn = nn.L1Loss(reduction='mean')
-        param_mse_fn = nn.MSELoss(reduction='none')  # no usado directamente aquí, calculamos manualmente
 
         example_specs = []      # primeros 5 espectrogramas reales
         example_pred_specs = [] # primeros 5 espectrogramas reconstruidos
 
         with torch.no_grad():
             for batch in test_loader:
-                # Aceptamos batches de forma (spec, params) o (spec, audio, params)
-                if len(batch) == 2:
-                    batch_spec, batch_params = batch
-                elif len(batch) == 3:
-                    batch_spec, _, batch_params = batch
-                else:
-                    raise ValueError(f"Formato de batch inesperado: {len(batch)} elementos")
+                batch_spec, batch_params = batch
 
                 # mover a device
                 batch_spec = batch_spec.to(device)
                 batch_params = batch_params.to(device)
 
-                # Forward: el modelo puede devolver (params, recon) o solo params
+                # Forward: CNNRegressor5 devuelve (params, recon), CNNRegressorSimple devuelve params
                 out = self(batch_spec)
                 if isinstance(out, (tuple, list)):
-                    pred_params = out[0]
-                    pred_spec = out[1] if len(out) > 1 else None
+                    pred_params, pred_spec = out
                 else:
                     pred_params = out
                     pred_spec = None
-
-                # asegurar dim correcta
-                if pred_params.dim() == 1:
-                    pred_params = pred_params.unsqueeze(0)
 
                 B = pred_params.shape[0]
 
@@ -330,11 +414,8 @@ class CNNRegressor5(nn.Module):
 
                 n_samples += B
 
-                # pérdida espectrograma si hay pred_spec
+                # pérdida espectrograma si hay pred_spec (solo CNNRegressor5)
                 if pred_spec is not None:
-                    # asegurar misma shape
-                    if pred_spec.shape != batch_spec.shape:
-                        pred_spec = F.interpolate(pred_spec, size=batch_spec.shape[2:], mode='bilinear', align_corners=False)
                     spec_loss = spec_loss_fn(pred_spec, batch_spec)
                     spec_losses.append(spec_loss.item())
                     # Acumular hasta 5 ejemplos
@@ -343,11 +424,15 @@ class CNNRegressor5(nn.Module):
                         example_specs.extend(batch_spec.detach().cpu()[:needed])
                         example_pred_specs.extend(pred_spec.detach().cpu()[:needed])
 
-        # Concatenar preds y trues
-        if len(preds_list) == 0:
-            raise RuntimeError("No se obtuvieron predicciones (preds_list vacío). Revisa test_loader/model.")
         preds = torch.cat(preds_list, dim=0)
         trues = torch.cat(trues_list, dim=0)
+
+        # Desnormalizar a escala real si se proporcionan las estadísticas de entrenamiento
+        if means is not None and stds is not None:
+            means_t = torch.tensor(np.asarray(means, dtype=np.float32))
+            stds_t  = torch.tensor(np.asarray(stds,  dtype=np.float32))
+            preds = preds * stds_t + means_t
+            trues = trues * stds_t + means_t
 
         # Métricas por parámetro (mean)
         mse_per_param = (param_mse_sum / n_samples).numpy()
@@ -424,137 +509,3 @@ class CNNRegressor5(nn.Module):
             'csv_path': csv_path
         }
         return metrics
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Arquitectura simple: solo encoder → regresión de parámetros, sin decoder.
-#
-# Diferencia respecto a CNNRegressor5:
-#   - No tiene decoder ni cabeza de reconstrucción (dec1/dec2/dec3/recon_head)
-#   - forward() devuelve solo el tensor de parámetros (no una tupla)
-#   - La función de pérdida es únicamente SmoothL1 sobre los parámetros
-#   - Sin regularización espectral → entrena más rápido pero pierde la
-#     señal de gradiente que fuerza al encoder a capturar toda la estructura
-#     del espectrograma, no solo lo relevante para los parámetros
-# ─────────────────────────────────────────────────────────────────────────────
-class CNNRegressorSimple(nn.Module):
-    def __init__(self, n_params=8, input_channels=1, base_filters=32):
-        super().__init__()
-
-        # ENCODER — idéntico al de CNNRegressor5
-        self.enc1 = nn.Sequential(
-            nn.Conv2d(input_channels, base_filters, kernel_size=3, padding=1),
-            nn.BatchNorm2d(base_filters),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2)
-        )
-        self.enc2 = nn.Sequential(
-            nn.Conv2d(base_filters, base_filters*2, kernel_size=3, padding=1),
-            nn.BatchNorm2d(base_filters*2),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2)
-        )
-        self.enc3 = nn.Sequential(
-            nn.Conv2d(base_filters*2, base_filters*4, kernel_size=3, padding=1),
-            nn.BatchNorm2d(base_filters*4),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2)
-        )
-
-        # BOTTLENECK — idéntico al de CNNRegressor5
-        self.bottleneck = nn.Sequential(
-            nn.Conv2d(base_filters*4, base_filters*8, kernel_size=3, padding=1),
-            nn.BatchNorm2d(base_filters*8),
-            nn.ReLU(inplace=True),
-        )
-
-        # CABEZA DE REGRESIÓN — igual que en CNNRegressor5
-        self.global_pool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc_params = nn.Sequential(
-            nn.Flatten(),
-            nn.Linear(base_filters*8, 64),
-            nn.ReLU(inplace=True),
-            nn.Linear(64, n_params)     # 8 salidas FM
-        )
-
-    def forward(self, x):
-        e1 = self.enc1(x)
-        e2 = self.enc2(e1)
-        e3 = self.enc3(e2)
-        b  = self.bottleneck(e3)
-        return self.fc_params(self.global_pool(b))  # (B, n_params)
-
-    def fit(self, train_loader, val_loader=None, device='cpu', epochs=10, lr=1e-3,
-            print_every_batches=50, criterion=None, optimizer=None):
-        """
-        Entrena usando solo pérdida sobre parámetros (SmoothL1).
-        El argumento criterion se acepta por compatibilidad de firma con
-        CNNRegressor5.fit() pero se ignora: aquí siempre se usa SmoothL1Loss.
-        """
-        self.to(device)
-        loss_fn   = nn.SmoothL1Loss()
-        optimizer = optimizer or optim.Adam(self.parameters(), lr=lr)
-
-        history = {'total': [], 'params': [], 'val_total': []}
-
-        best_val_loss  = float('inf')
-        best_state_dict = None
-
-        for epoch in range(epochs):
-            self.train()
-            running_params = 0.0
-            n_batches = 0
-
-            for batch_idx, (batch_spec, batch_params) in enumerate(train_loader):
-                batch_spec   = batch_spec.to(device)
-                batch_params = batch_params.to(device)
-
-                optimizer.zero_grad()
-                pred_params = self(batch_spec)
-                loss = loss_fn(pred_params, batch_params)
-                loss.backward()
-                optimizer.step()
-
-                running_params += loss.item()
-                n_batches += 1
-
-                if print_every_batches and print_every_batches > 0:
-                    if (batch_idx + 1) % print_every_batches == 0:
-                        avg = running_params / n_batches
-                        print(f" Epoch {epoch+1}/{epochs}  Batch {batch_idx+1}  Avg params loss: {avg:.6f}")
-
-            avg_params = running_params / max(1, n_batches)
-            history['total'].append(avg_params)
-            history['params'].append(avg_params)
-
-            msg_val = ""
-            if val_loader is not None:
-                self.eval()
-                val_running = 0.0
-                n_val = 0
-                with torch.no_grad():
-                    for v_spec, v_params in val_loader:
-                        v_spec   = v_spec.to(device)
-                        v_params = v_params.to(device)
-                        v_loss   = loss_fn(self(v_spec), v_params)
-                        val_running += v_loss.item()
-                        n_val += 1
-                avg_val = val_running / max(1, n_val)
-                history['val_total'].append(avg_val)
-                msg_val = f" | Val Loss: {avg_val:.6f}"
-                if avg_val < best_val_loss:
-                    best_val_loss   = avg_val
-                    best_state_dict = self.state_dict()
-                    msg_val += " (*)"
-
-            print(f"Epoch {epoch+1}/{epochs}  Params loss: {avg_params:.6f}{msg_val}")
-
-        if best_state_dict is not None:
-            self.load_state_dict(best_state_dict)
-            print("Entrenamiento finalizado. Se han restaurado los pesos de la mejor época.")
-
-        return history
-
-    def evaluate(self, test_loader, device='cpu', save_dir="eval_results"):
-        """Mismo método que CNNRegressor5.evaluate() — reutiliza la lógica completa."""
-        return CNNRegressor5.evaluate(self, test_loader, device=device, save_dir=save_dir)

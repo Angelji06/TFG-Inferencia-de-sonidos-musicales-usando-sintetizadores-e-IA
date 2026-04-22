@@ -1,11 +1,3 @@
-"""
-FMsynth8.py — Sintetizador FM en tiempo real.
-
-Fase 1: motor de audio (FMSynth8Engine + Voice).         ✓
-Fase 2: ventana Tkinter (FMSynth8Window).                ✓
-Fase 3: integración con inferencia del modelo.           ← pendiente
-"""
-
 import threading
 import tkinter as tk
 from tkinter import ttk, messagebox

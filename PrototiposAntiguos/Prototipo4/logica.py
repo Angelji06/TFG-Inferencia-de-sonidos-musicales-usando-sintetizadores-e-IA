@@ -17,7 +17,7 @@ import librosa
 import librosa.display
 
 # importa tus componentes (ajusta los nombres/paths según tu proyecto)
-from SpectrogramTensorDataset4 import SpectrogramTensorDataset
+from PrototiposAntiguos.Prototipo4.SpectrogramTensorDataset4 import SpectrogramTensorDataset
 from Prototipo4 import CNNRegressor4, HybridLoss 
 
 #==============================================================================================================
