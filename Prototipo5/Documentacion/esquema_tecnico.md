@@ -127,14 +127,47 @@ Salidas generadas automáticamente:
 
 ## 6. Combinaciones posibles para comparar
 
-Con los mismos datos de entrenamiento, misma arquitectura base y único factor variable:
+### 6.1 Dimensiones del experimento
 
-| Modelo | Espectrograma | Arquitectura | Pérdida |
-|---|---|---|---|
-| A | STFT | full | HybridLoss |
-| B | STFT | simple | SmoothL1 |
-| C | Mel | full | HybridLoss |
-| D | Mel | simple | SmoothL1 |
+El espacio de búsqueda tiene tres ejes independientes:
+
+| Dimensión | Opción A | Opción B |
+|---|---|---|
+| **Espectrograma** | STFT lineal (513 bins, 0–22050 Hz) | Mel (128 bandas, escala log perceptual) |
+| **Arquitectura** | `CNNRegressorSimple` (encoder + regresión) | `CNNRegressor5` (encoder + decoder + regresión) |
+| **Loss** | `HybridLoss` (L1 espectral + SC + params) | `MultiScaleSpectralLoss` (6 escalas lin+log + params) |
+
+Una matriz 2×2×2 daría 8 combinaciones, pero existe una restricción de compatibilidad.
+
+### 6.2 Restricción arquitectura–loss
+
+`CNNRegressorSimple.fit()` ignora el argumento `criterion` y siempre usa `SmoothL1` sobre parámetros únicamente, ya que la arquitectura no produce `pred_spec` (no hay decoder). Por tanto, `HybridLoss` y `MultiScaleSpectralLoss` solo son aplicables con `CNNRegressor5`.
+
+Esto elimina 2 de las 8 combinaciones teóricas, dejando **6 pipelines válidos**:
+
+### 6.3 Pipelines válidos
+
+| ID | Espectrograma | Arquitectura | Loss | Descripción |
+|---|---|---|---|---|
+| **P1** | STFT lineal | `CNNRegressorSimple` | `SmoothL1` params | Baseline mínimo |
+| **P2** | Mel | `CNNRegressorSimple` | `SmoothL1` params | Baseline + percepción |
+| **P3** | STFT lineal | `CNNRegressor5` | `HybridLoss` | Decoder + SC en espacio lineal |
+| **P4** | Mel | `CNNRegressor5` | `HybridLoss` | Decoder + SC en espacio perceptual |
+| **P5** | STFT lineal | `CNNRegressor5` | `MultiScaleSpectralLoss` | Multi-escala temporal en espacio lineal |
+| **P6** | Mel | `CNNRegressor5` | `MultiScaleSpectralLoss` | Multi-escala temporal en espacio perceptual |
+
+Los 2 pipelines excluidos son `CNNRegressorSimple` + `HybridLoss` y `CNNRegressorSimple` + `MultiScaleSpectralLoss`, ambos inválidos por la razón anterior.
+
+### 6.4 Preguntas de investigación que responde cada comparación
+
+| Comparación | Variable aislada | Pregunta |
+|---|---|---|
+| P1 vs P2 | Espectrograma (simple) | ¿Mejora el Mel al baseline sin decoder? |
+| P3 vs P4 | Espectrograma (Hybrid) | ¿Mejora el Mel cuando hay reconstrucción espectral? |
+| P5 vs P6 | Espectrograma (MultiScale) | ¿Mejora el Mel con pérdida multi-escala? |
+| P3 vs P5 | Loss (STFT) | ¿Es mejor HybridLoss o MultiScaleSpectralLoss en espacio lineal? |
+| P4 vs P6 | Loss (Mel) | ¿Es mejor HybridLoss o MultiScaleSpectralLoss en espacio perceptual? |
+| P1/P2 vs P3–P6 | Arquitectura (decoder) | ¿Cuánto aporta el decoder como regularizador del encoder? |
 
 ---
 
@@ -171,23 +204,3 @@ Con los mismos datos de entrenamiento, misma arquitectura base y único factor v
 | `hacer_inferencia(model, means, stds, ruta_wav, device, mode)` | Carga un WAV, lo convierte al espectrograma correcto y devuelve los 8 parámetros FM en escala real (desnormalizados). |
 | `comparar_espectrogramas_4en1(wav_orig, sr_orig, params_pred, device, mode)` | Genera 4 paneles: original y predicción con eje de frecuencia logarítmico y lineal. El título indica el modo de espectrograma usado. |
 | `evaluar_modelo(ruta_modelo, tensor_folder, device)` | Evalúa el modelo sobre un conjunto de tensores precalculados. Delega en `CNNRegressor5.evaluate()`. |
-
-### `Prototipo5.py`
-
-**`CNNRegressor5`** — arquitectura completa con reconstrucción espectral. El encoder comprime el espectrograma en tres etapas (Conv2d + BN + ReLU + MaxPool2d) hasta `(256, F/8, T/8)`. Desde el bottleneck se bifurca en dos cabezas: una de regresión (GlobalAvgPool + FC → 8 parámetros) y un decoder simétrico (ConvTranspose2d ×3) que reconstruye el espectrograma original. La reconstrucción actúa como regularización: obliga al encoder a capturar toda la estructura del espectrograma, no solo lo mínimo para predecir los parámetros.
-
-**`CNNRegressorSimple`** — arquitectura reducida sin decoder. Mismo encoder y bottleneck que `CNNRegressor5`, pero sin las capas de reconstrucción. Solo existe la cabeza de regresión. Al eliminar la señal de gradiente espectral, el encoder aprende únicamente lo necesario para minimizar el error paramétrico, lo que puede llevar a representaciones menos ricas.
-
-**`HybridLoss`** — función de pérdida de tres términos usada exclusivamente con `CNNRegressor5`:
-
-```
-L = w_spec · L1(spec_pred, spec_real)
-  + w_sc   · ‖spec_pred − spec_real‖_F / ‖spec_real‖_F
-  + w_param · SmoothL1(params_pred, params_real)
-```
-
-El término de **spectral convergence** mide el error relativo en magnitud (norma de Frobenius), capturando la estructura global del espectro independientemente de su escala absoluta. Los pesos por defecto (`w_spec=1.0`, `w_sc=0.5`, `w_param=0.05`) priorizan la fidelidad espectral sobre la precisión paramétrica, bajo la hipótesis de que espectrogramas similares implican parámetros similares.
-
-### `SpectrogramTensorDataset5.py`
-
-**`SpectrogramTensorDataset`** — clase `Dataset` de PyTorch que sirve pares `(espectrograma, parámetros)` al DataLoader durante el entrenamiento. Al inicializarse, lee `labels.csv`, calcula la media y desviación estándar de cada uno de los 8 parámetros sobre todo el dataset y normaliza las etiquetas en memoria (Z-score). Los tensores `.pt` se cargan del disco bajo demanda en `__getitem__`, asegurando forma `(1, F, T)`. Expone `get_stats()` para que los valores de normalización se guarden en el checkpoint y estén disponibles en inferencia.

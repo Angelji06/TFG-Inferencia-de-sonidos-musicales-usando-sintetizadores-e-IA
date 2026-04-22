@@ -145,7 +145,7 @@ def generar_wavs_FM(num_muestras=30000):   # conviene que este valor se pueda aj
         file_path = os.path.join(out_path, fname)
 
         # Generación aleatoria uniforme dentro de los límites
-        c_real = np.random.uniform(*params["carrier"])
+        c_real = np.exp(np.random.uniform(np.log(params["carrier"][0]), np.log(params["carrier"][1])))
         r_real = np.random.uniform(*params["ratio"])
         i_real = np.random.uniform(*params["index"])
 
