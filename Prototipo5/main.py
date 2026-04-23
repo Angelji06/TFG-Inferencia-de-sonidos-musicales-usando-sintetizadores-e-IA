@@ -563,7 +563,19 @@ class App:
             metrics = evaluar_modelo(self.pathModelo, tensor_folder, device=self.device_var.get())
 
             lines = ["=== MÉTRICAS DE EVALUACIÓN ===\n"]
-            lines.append(f"Muestras evaluadas: {metrics['n_samples']}\n\n")
+            lines.append(f"Muestras test evaluadas: {metrics['n_samples']}\n\n")
+
+            # Métricas principales: dominio del audio
+            lines.append("── Métricas de audio (principales) ──\n")
+            if metrics.get('mel_l1_mean') is not None:
+                lines.append(f"  Mel L1  →  media: {metrics['mel_l1_mean']:.4f}  |  mediana: {metrics['mel_l1_median']:.4f}\n")
+                lines.append(f"  MCD     →  media: {metrics['mcd_mean']:.4f}  |  mediana: {metrics['mcd_median']:.4f}  dB\n")
+                lines.append(f"  (sobre {metrics['n_audio_samples']} muestras aleatorias del test)\n\n")
+            else:
+                lines.append("  (no calculadas)\n\n")
+
+            # Métricas secundarias: espacio de parámetros
+            lines.append("── Parámetros (diagnóstico — afectados por no-inyectividad FM) ──\n")
             lines.append(f"{'Parámetro':<12} {'MSE':>10} {'RMSE':>10} {'MAE':>10}\n")
             lines.append("-" * 46 + "\n")
             for name, mse, rmse, mae in zip(
@@ -575,7 +587,7 @@ class App:
                 lines.append(f"{name:<12} {mse:>10.6f} {rmse:>10.6f} {mae:>10.6f}\n")
 
             if metrics['avg_spec_l1'] is not None:
-                lines.append(f"\nL1 espectral media: {metrics['avg_spec_l1']:.6f}\n")
+                lines.append(f"\nL1 espectral decoder: {metrics['avg_spec_l1']:.6f}\n")
 
             lines.append(f"\nCSV guardado en: {metrics['csv_path']}\n")
             self.result_text.insert(tk.END, "".join(lines))
@@ -593,15 +605,26 @@ class App:
             results, benchmark_dir = evaluar_benchmark_diverso(self.pathModelo, device=self.device_var.get())
 
             lines = [f"=== BENCHMARK DIVERSO ===\nAudios guardados en: {benchmark_dir}\n\n"]
-            header = f"{'Sonido':<20} {'mel_L1':>8}  " + "  ".join(f"{n:>8}" for n in PARAM_NAMES) + "\n"
-            lines.append(header)
-            lines.append("-" * len(header) + "\n")
+
+            # Métricas de audio (principales)
+            lines.append("── Métricas de audio (principales) ──\n")
+            lines.append(f"{'Sonido':<22} {'Mel L1':>8}  {'MCD (dB)':>10}\n")
+            lines.append("-" * 44 + "\n")
+            for r in results:
+                lines.append(f"{r['name']:<22} {r['mel_l1']:>8.4f}  {r['mcd']:>10.4f}\n")
+            avg_mel = sum(r['mel_l1'] for r in results) / len(results)
+            avg_mcd = sum(r['mcd']    for r in results) / len(results)
+            lines.append("-" * 44 + "\n")
+            lines.append(f"{'MEDIA':<22} {avg_mel:>8.4f}  {avg_mcd:>10.4f}\n\n")
+
+            # param_mae (diagnóstico secundario)
+            lines.append("── param MAE (diagnóstico — afectado por no-inyectividad FM) ──\n")
+            header2 = f"{'Sonido':<22}  " + "  ".join(f"{n:>8}" for n in PARAM_NAMES) + "\n"
+            lines.append(header2)
+            lines.append("-" * len(header2) + "\n")
             for r in results:
                 mae_vals = "  ".join(f"{r['param_mae'][n]:>8.3f}" for n in PARAM_NAMES)
-                lines.append(f"{r['name']:<20} {r['mel_l1']:>8.4f}  {mae_vals}\n")
-
-            avg_mel = sum(r['mel_l1'] for r in results) / len(results)
-            lines.append(f"\nmel_L1 medio: {avg_mel:.4f}\n")
+                lines.append(f"{r['name']:<22}  {mae_vals}\n")
             self.result_text.insert(tk.END, "".join(lines))
 
         except Exception as e:

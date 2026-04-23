@@ -1,13 +1,11 @@
 import os
+import librosa
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
-
-from losses import HybridLoss
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -76,50 +74,49 @@ class CNNRegressorSimple(nn.Module):
         b  = self.bottleneck(e3)
         return self.fc_params(self.global_pool(b))  # (B, n_params)
 
-    def fit(self, train_loader, val_loader=None, device='cpu', epochs=10, lr=1e-3,
-            print_every_batches=50, criterion=None, optimizer=None):
-        """
-        Entrena usando solo pérdida sobre parámetros (SmoothL1).
-        El argumento criterion se acepta para mantener compatibilidad de firma con
-        CNNRegressor5.fit(), que lo necesita para la pérdida espectral, pero aquí se ignora.
-        """
+    def fit(self, train_loader, val_loader=None, device='cpu', epochs=10, print_every_batches=50, criterion=None, optimizer=None):
         self.to(device)
-        loss_fn   = nn.SmoothL1Loss()
-        optimizer = optimizer or optim.Adam(self.parameters(), lr=lr)
 
         history = {'total': [], 'params': [], 'val_total': []}
 
-        best_val_loss  = float('inf')
+        # Variable que guarda el mejor modelo
+        best_val_loss = float('inf')
         best_state_dict = None
 
+        # Entrenamiento
         for epoch in range(epochs):
             self.train()
             running_params = 0.0
             n_batches = 0
 
             for batch_idx, (batch_spec, batch_params) in enumerate(train_loader):
-                batch_spec   = batch_spec.to(device)
-                batch_params = batch_params.to(device)
+                # mover a device
+                batch_spec   = batch_spec.to(device)       # (B,1,H,W)
+                batch_params = batch_params.to(device)     # (B, n_params)
 
-                optimizer.zero_grad()
-                pred_params = self(batch_spec)
-                loss = loss_fn(pred_params, batch_params)
-                loss.backward()
-                optimizer.step()
+                optimizer.zero_grad()                          # Reset gradientes
+                pred_params = self(batch_spec)                 # Forward pass (solo params, sin decoder)
+                loss = criterion(pred_params, batch_params)    # SmoothL1 sobre los 8 parámetros
+                loss.backward()                                # Backprop
+                optimizer.step()                               # Descenso de gradientes
 
                 running_params += loss.item()
                 n_batches += 1
 
-                if print_every_batches and print_every_batches > 0:
+                # (opcional) print por batches si el usuario lo habilita mediante print_every_batches
+                if print_every_batches is not None and print_every_batches > 0:
                     if (batch_idx + 1) % print_every_batches == 0:
                         avg = running_params / n_batches
                         print(f" Epoch {epoch+1}/{epochs}  Batch {batch_idx+1}  Avg params loss: {avg:.6f}")
 
             avg_params = running_params / max(1, n_batches)
-            history['total'].append(avg_params)
+            history['total'].append(avg_params)   # total = params (no hay componente espectral)
             history['params'].append(avg_params)
 
+            # Fase de validación
+            avg_val_loss = 0.0
             msg_val = ""
+
             if val_loader is not None:
                 self.eval()
                 val_running = 0.0
@@ -128,14 +125,17 @@ class CNNRegressorSimple(nn.Module):
                     for v_spec, v_params in val_loader:
                         v_spec   = v_spec.to(device)
                         v_params = v_params.to(device)
-                        v_loss   = loss_fn(self(v_spec), v_params)
+                        v_loss   = criterion(self(v_spec), v_params)
                         val_running += v_loss.item()
                         n_val += 1
-                avg_val = val_running / max(1, n_val)
-                history['val_total'].append(avg_val)
-                msg_val = f" | Val Loss: {avg_val:.6f}"
-                if avg_val < best_val_loss:
-                    best_val_loss   = avg_val
+
+                avg_val_loss = val_running / max(1, n_val)
+                history['val_total'].append(avg_val_loss)
+                msg_val = f" | Val Loss: {avg_val_loss:.6f}"
+
+                # Guardar el mejor modelo si mejora
+                if avg_val_loss < best_val_loss:
+                    best_val_loss = avg_val_loss
                     best_state_dict = self.state_dict()
                     msg_val += " (*)"
 
@@ -147,9 +147,8 @@ class CNNRegressorSimple(nn.Module):
 
         return history
 
-    def evaluate(self, test_loader, device='cpu', save_dir="eval_results", means=None, stds=None):
-        """CNNRegressor5 amplía esta lógica de evaluación para soportar la reconstrucción del espectrograma."""
-        return CNNRegressor5.evaluate(self, test_loader, device=device, save_dir=save_dir, means=means, stds=stds)
+    def evaluate(self, test_loader, device='cpu', save_dir="eval_results", means=None, stds=None, synth_fn=None, sr=44100):
+        return CNNRegressor5.evaluate(self, test_loader, device=device, save_dir=save_dir, means=means, stds=stds, synth_fn=synth_fn, sr=sr)
 
 
 
@@ -248,22 +247,9 @@ class CNNRegressor5(nn.Module):
 
         return params, recon
 
-    # ──────────────────────────────────────────────────────────────────────────
-    # ENTRENAMIENTO
-    # ──────────────────────────────────────────────────────────────────────────
-    def fit(self, train_loader, val_loader=None, device='cpu', epochs=10, lr=1e-3, print_every_batches=50, criterion=None, optimizer=None):
-            # - train_loader: DataLoader que devuelve (batch_spec, batch_params)
-            # - criterion: instancia de HybridLoss (si None se crea una por defecto)
-            # - optimizer: optimizador; si None se crea Adam con lr
-
+    def fit(self, train_loader, val_loader=None, device='cpu', epochs=10, print_every_batches=50, criterion=None, optimizer=None):
             self.to(device)
-
-            # Lo implemento así para poder probar distintos criterios y optimizers
-            if criterion is None:
-                criterion = HybridLoss()
-                criterion.to(device)
-            if optimizer is None:
-                optimizer = optim.Adam(self.parameters(), lr=lr)
+            criterion.to(device)
 
             history = {'total': [],'spec': [],'params': [], 'val_total' : []}
 
@@ -285,12 +271,11 @@ class CNNRegressor5(nn.Module):
                     batch_spec = batch_spec.to(device)       # (B,1,H,W)
                     batch_params = batch_params.to(device)   # (B,3) o (B,n_params)
 
-                    optimizer.zero_grad()  # Reset gradientes
-                    pred_params, pred_spec = self(batch_spec)
-
+                    optimizer.zero_grad()                       # Reset gradientes
+                    pred_params, pred_spec = self(batch_spec)   # Forward pass
                     loss_total, loss_spec, loss_sc, loss_params = criterion(pred_spec, batch_spec, pred_params, batch_params)
-                    loss_total.backward()  #Backprop
-                    optimizer.step()       #Descenso de gradientes
+                    loss_total.backward()                       # Backprop
+                    optimizer.step()                            # Descenso de gradientes
 
                     running_total += loss_total.item()
                     running_spec += loss_spec.item()
@@ -351,145 +336,197 @@ class CNNRegressor5(nn.Module):
 
             return history  # Retorna: history dict con listas 'total', 'spec', 'params' (valores medios por época)
 
+
     # ──────────────────────────────────────────────────────────────────────────
     # EVALUACIÓN
     # ──────────────────────────────────────────────────────────────────────────
-    def evaluate(self, test_loader, device='cpu', save_dir="eval_results", means=None, stds=None):
-        """
-        Evalúa el modelo sobre test_loader siguiendo la celda que proporcionaste.
-        - test_loader: DataLoader que devuelve batches con (spec, params) o (spec, audio, params)
-        - device: 'cpu' o 'cuda'
-        - save_dir: carpeta donde se guardará preds_vs_trues.csv (por defecto 'eval_results')
-        - means: array con las medias de entrenamiento (para desnormalizar la salida)
-        - stds: array con las desviaciones estándar de entrenamiento (para desnormalizar la salida)
-        Retorna: dict con métricas y ruta del CSV.
-        """
-        os.makedirs(save_dir, exist_ok=True)
-        self.to(device)
-        self.eval()
+    # Métricas principales (audio): Mel L1 y MCD entre audio re-sintetizado con params reales vs predichos.
+    #   Evitan el problema de no-inyectividad FM: params distintos → mismo sonido → métrica 0.
+    # Métricas secundarias (params): MSE/RMSE/MAE por parámetro (diagnóstico, afectadas por no-inyectividad).
+    # Métricas decoder (solo CNNRegressor5): L1 espectral entre espectrograma de entrada y reconstrucción.
+    # synth_fn: función de síntesis FM (si None se omiten métricas de audio). sr: sample rate (default 44100).
+    def evaluate(self, test_loader, device='cpu', save_dir="eval_results", means=None, stds=None, synth_fn=None, sr=44100):
+        os.makedirs(save_dir, exist_ok=True)    # Crea la carpeta donde se guardarán los resultados
+        self.to(device)                         
+        self.eval()                             # Modo evaluación
 
-        preds_list = []
-        trues_list = []
-        spec_losses = []
-        param_mae_sum = None
-        param_mse_sum = None
+        # Listas para acumular predicciones y targets de todos los batches
+        preds_list, trues_list = [], []
         n_samples = 0
 
-        spec_loss_fn = nn.L1Loss(reduction='mean')
+        # L1 del decoder: usa reduction='sum' para no sesgar por tamaño de batch
+        # (si un batch tiene 16 muestras y otro 8, con 'mean' pesarían igual; con 'sum' + dividir al final, pesan proporcional)
+        spec_loss_fn    = nn.L1Loss(reduction='sum')
+        spec_loss_total = 0.0       # acumulador de la suma de errores L1
+        spec_loss_count = 0         # acumulador del número total de elementos (pixeles de espectrograma)
+        example_specs, example_pred_specs = [], []  # guardamos hasta 5 pares para plotear luego
 
-        example_specs = []      # primeros 5 espectrogramas reales
-        example_pred_specs = [] # primeros 5 espectrogramas reconstruidos
-
+        # FASE 1: Recopilar predicciones
         with torch.no_grad():
-            for batch in test_loader:
-                batch_spec, batch_params = batch
+            for batch_spec, batch_params in test_loader:
+                # Espectrogramas y parametros del batch
+                batch_spec   = batch_spec.to(device)     
+                batch_params = batch_params.to(device)   
 
-                # mover a device
-                batch_spec = batch_spec.to(device)
-                batch_params = batch_params.to(device)
-
-                # Forward: CNNRegressor5 devuelve (params, recon), CNNRegressorSimple devuelve params
+                # Forward: el modelo devuelve (params, spec_reconstruido) o solo params
                 out = self(batch_spec)
-                if isinstance(out, (tuple, list)):
+                if isinstance(out, (tuple, list)):           # CNNRegressor5 devuelve tupla
                     pred_params, pred_spec = out
-                else:
-                    pred_params = out
-                    pred_spec = None
+                else:                                        # CNNRegressorSimple devuelve solo params
+                    pred_params, pred_spec = out, None
 
-                B = pred_params.shape[0]
-
+                # Acumular predicciones y targets en CPU
                 preds_list.append(pred_params.cpu())
                 trues_list.append(batch_params.cpu())
+                n_samples += pred_params.shape[0]            # contar muestras procesadas
 
-                # MSE y MAE por parámetro (sumadas para acumulación)
-                mse_batch = ((pred_params - batch_params)**2).sum(dim=0).detach().cpu()  # suma por batch
-                mae_batch = torch.abs(pred_params - batch_params).sum(dim=0).detach().cpu()
-
-                if param_mse_sum is None:
-                    param_mse_sum = mse_batch.clone()
-                    param_mae_sum = mae_batch.clone()
-                else:
-                    param_mse_sum += mse_batch
-                    param_mae_sum += mae_batch
-
-                n_samples += B
-
-                # pérdida espectrograma si hay pred_spec (solo CNNRegressor5)
+                # Calcular L1 del decoder (solo si hay reconstrucción, es decir, CNNRegressor5)
                 if pred_spec is not None:
-                    spec_loss = spec_loss_fn(pred_spec, batch_spec)
-                    spec_losses.append(spec_loss.item())
-                    # Acumular hasta 5 ejemplos
+                    spec_loss_total += spec_loss_fn(pred_spec, batch_spec).item()  # sumar error L1 de este batch
+                    spec_loss_count += batch_spec.numel()                          # sumar nº de elementos (pixels)
+                    # Guardar hasta 5 pares de espectrogramas para visualizar después
                     needed = 5 - len(example_specs)
                     if needed > 0:
                         example_specs.extend(batch_spec.detach().cpu()[:needed])
                         example_pred_specs.extend(pred_spec.detach().cpu()[:needed])
 
-        preds = torch.cat(preds_list, dim=0)
-        trues = torch.cat(trues_list, dim=0)
+        # Concatenar todos los batches en un solo tensor (N, n_params)
+        preds = torch.cat(preds_list, dim=0)   
+        trues = torch.cat(trues_list, dim=0)    
 
-        # Desnormalizar a escala real si se proporcionan las estadísticas de entrenamiento
-        if means is not None and stds is not None:
-            means_t = torch.tensor(np.asarray(means, dtype=np.float32))
-            stds_t  = torch.tensor(np.asarray(stds,  dtype=np.float32))
-            preds = preds * stds_t + means_t
-            trues = trues * stds_t + means_t
+        # Desnormalizar: revertir z-score
+        means_t = torch.tensor(np.asarray(means, dtype=np.float32))
+        stds_t  = torch.tensor(np.asarray(stds,  dtype=np.float32))
+        preds_real = preds * stds_t + means_t   # predicciones en Hz, ratios, segundos, etc.
+        trues_real = trues * stds_t + means_t    # targets en escala real
 
-        # Métricas por parámetro (mean)
-        mse_per_param = (param_mse_sum / n_samples).numpy()
-        mae_per_param = (param_mae_sum / n_samples).numpy()
-        rmse_per_param = np.sqrt(mse_per_param)
+        param_names = (["carrier", "ratio", "index", "amp_att", "amp_sus", "amp_dec", "mod_att", "mod_dec"])
 
-        param_names = [
-            "carrier", "ratio", "index",
-            "amp_att", "amp_sus", "amp_dec", "mod_att", "mod_dec"
-        ] if preds.shape[1] == 8 else [f"p{i}" for i in range(preds.shape[1])]
+        # FASE 2: Métricas de parámetros 
+        diff           = preds_real - trues_real               # Diferencia pred - real por muestra y parámetro
+        mse_per_param  = (diff ** 2).mean(dim=0).numpy()       # MSE
+        mae_per_param  = diff.abs().mean(dim=0).numpy()        # MAE
+        rmse_per_param = np.sqrt(mse_per_param)                # RMSE
 
-        # Imprimir resultados
-        print("=== Resultados de evaluación ===")
+        # FASE 3: Métricas de audio: Re-sintetiza audio con params predichos y reales, y compara perceptualmente.
+        mel_l1_list, mcd_list = [], []
+
+        # Rangos válidos para clamp: evitar params fuera de rango que generen audio silencioso o roto
+        param_mins = np.array([20.0, 0.01, 0.0, 0.001, 0.001, 0.001, 0.001, 0.001], dtype=np.float32)
+        param_maxs = np.array([20000.0, 50.0, 100.0, 10.0, 10.0, 10.0, 10.0, 10.0], dtype=np.float32)
+
+        if synth_fn is not None:
+            n_audio   = min(n_samples, 500)                             # Max 500 muestras (sintetizar es lento)
+            rng       = np.random.default_rng(42)                       # Semilla fija
+            indices   = rng.choice(n_samples, n_audio, replace=False)   # elegir n_audio índices aleatorios sin repetir
+            n_skipped = 0                                               # contador de muestras que fallan al sintetizar
+            print(f"Calculando métricas de audio sobre {n_audio} muestras...")
+
+            for idx in indices:
+                p = np.clip(preds_real[idx].numpy(), param_mins, param_maxs)   # predicciones clampeadas a rangos válidos
+                t = trues_real[idx].numpy()                                    # targets
+                try:
+                    # Sintetizar 2s de audio FM con los params predichos y los reales
+                    audio_pred, _ = synth_fn(*p.tolist(), duration=2.0, sr=sr)
+                    audio_true, _ = synth_fn(*t.tolist(), duration=2.0, sr=sr)
+
+                    # ─ Mel L1 ─
+                    # Espectrograma mel de amplitud 
+                    # L1 = media de |log1p(mel_pred) - log1p(mel_true)|
+                    mel_p = librosa.feature.melspectrogram(y=audio_pred, sr=sr, n_fft=1024, hop_length=256, n_mels=128, power=1.0)
+                    mel_t = librosa.feature.melspectrogram(y=audio_true, sr=sr, n_fft=1024, hop_length=256, n_mels=128, power=1.0)
+                    mel_l1_list.append(float(np.mean(np.abs(np.log1p(mel_p) - np.log1p(mel_t)))))
+
+                    # ─ MCD (Mel-Cepstral Distortion) ─
+                    # Extrae 13 coeficientes MFCC y descarta el 0 (energía global) → quedan 12 de timbre
+                    # Fórmula estándar MCD en dB: (10/ln10) * media( sqrt(2 * sum(diff²)) )
+                    mfcc_p = librosa.feature.mfcc(y=audio_pred, sr=sr, n_mfcc=13)[1:]   
+                    mfcc_t = librosa.feature.mfcc(y=audio_true, sr=sr, n_mfcc=13)[1:]
+                    min_t  = min(mfcc_p.shape[1], mfcc_t.shape[1])       
+                    diff_c = mfcc_p[:, :min_t] - mfcc_t[:, :min_t]       
+                    mcd_list.append(float((10 / np.log(10)) * np.mean(np.sqrt(2 * np.sum(diff_c ** 2, axis=0)))))
+                except Exception as e:
+                    # Si falla la síntesis (p.ej. params extremos), descartamos la muestra
+                    n_skipped += 1
+                    if n_skipped <= 5:                                     
+                        print(f"  [!] Muestra {idx} descartada: {e}")
+            if n_skipped > 0:
+                print(f"  Muestras descartadas: {n_skipped}/{n_audio}")
+
+        # ── FASE 4: Imprimir resultados por consola ──
+        print("\n=== Métricas de audio (principales) ===")
+        print(f"  Mel L1  →  media: {np.mean(mel_l1_list):.4f}  |  mediana: {np.median(mel_l1_list):.4f}  |  std: {np.std(mel_l1_list):.4f}  (sobre {len(mel_l1_list)} muestras)")
+        print(f"  MCD     →  media: {np.mean(mcd_list):.4f}  |  mediana: {np.median(mcd_list):.4f}  |  std: {np.std(mcd_list):.4f}  dB")
+
+        print("\n=== Métricas de parámetros (afectadas por no-inyectividad FM) ===")
         for i, name in enumerate(param_names):
-            print(f"{name:8s} | MSE: {mse_per_param[i]:.6f} | RMSE: {rmse_per_param[i]:.6f} | MAE: {mae_per_param[i]:.6f}")
+            print(f"  {name:8s} | MSE: {mse_per_param[i]:.6f} | RMSE: {rmse_per_param[i]:.6f} | MAE: {mae_per_param[i]:.6f}")
 
-        if len(spec_losses) > 0:
-            print(f"Avg spec L1 loss: {np.mean(spec_losses):.6f} (n_batches_with_spec = {len(spec_losses)})")
+        # L1 decoder: dividimos la suma acumulada entre el total de elementos → media global exacta
+        avg_spec_l1 = (spec_loss_total / spec_loss_count) if spec_loss_count > 0 else None
+        if avg_spec_l1 is not None:
+            print(f"\n  L1 espectral decoder: {avg_spec_l1:.6f}")
         else:
-            print("No se calcularon pérdidas de espectrograma (modelo no devolvió pred_spec).")
+            print("\n  (sin reconstrucción del decoder — CNNRegressorSimple)")
 
-        # Guardar preds/trues en CSV
+        # ── FASE 5: Guardar CSV con predicciones vs valores reales ──
+        # Cada fila es una muestra del test set, con columnas pred_carrier, true_carrier, pred_ratio, true_ratio, etc.
         df = pd.DataFrame({
-            **{f"pred_{name}": preds[:,i].numpy() for i,name in enumerate(param_names)},
-            **{f"true_{name}": trues[:,i].numpy() for i,name in enumerate(param_names)}
+            **{f"pred_{n}": preds_real[:, i].numpy() for i, n in enumerate(param_names)},
+            **{f"true_{n}": trues_real[:, i].numpy() for i, n in enumerate(param_names)},
         })
         csv_path = os.path.join(save_dir, "preds_vs_trues.csv")
         df.to_csv(csv_path, index=False)
-        print(f"Predicciones y reales guardados en: {csv_path}")
+        print(f"\nPredicciones guardadas en: {csv_path}")
 
-        # Dibujar scatter true vs pred por parámetro
-        plt.figure(figsize=(12,4))
-        for i,name in enumerate(param_names):
-            plt.subplot(1, len(param_names), i+1)
-            plt.scatter(trues[:,i].numpy(), preds[:,i].numpy(), s=6, alpha=0.6)
-            mn = float(min(trues[:,i].min().item(), preds[:,i].min().item()))
-            mx = float(max(trues[:,i].max().item(), preds[:,i].max().item()))
-            plt.plot([mn, mx], [mn, mx], 'r--', linewidth=1)
-            plt.xlabel("True")
+        # ── FASE 6: Gráficas ──
+        # Plot 1: Histogramas de distribución de Mel L1 y MCD
+        # Permiten ver si hay outliers o si las métricas se concentran en un rango estrecho
+        if mel_l1_list:
+            fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+            for ax, values, title, xlabel in [
+                (axes[0], mel_l1_list, "Distribución Mel L1", "Mel L1"),
+                (axes[1], mcd_list,    "Distribución MCD",    "MCD (dB)"),
+            ]:
+                ax.hist(values, bins=40, edgecolor='black')                                              # histograma con 40 barras
+                ax.axvline(np.mean(values), color='red', linestyle='--', label=f'media={np.mean(values):.3f}')  # línea vertical en la media
+                ax.set_title(title)
+                ax.set_xlabel(xlabel)
+                ax.set_ylabel("Frecuencia")       # frecuencia = nº de muestras en cada barra
+                ax.legend()
+            plt.tight_layout()
+            plt.savefig(os.path.join(save_dir, "audio_metrics_dist.png"), dpi=150)
+            plt.show()
+
+        # Plot 2: Scatter true vs pred por cada parámetro
+        # Si el modelo fuera perfecto, todos los puntos caerían sobre la diagonal roja
+        plt.figure(figsize=(12, 4))
+        for i, name in enumerate(param_names):
+            plt.subplot(1, len(param_names), i + 1)
+            plt.scatter(trues_real[:, i].numpy(), preds_real[:, i].numpy(), s=6, alpha=0.3)  # un punto por muestra
+            mn = float(min(trues_real[:, i].min(), preds_real[:, i].min()))    # mínimo global para los ejes
+            mx = float(max(trues_real[:, i].max(), preds_real[:, i].max()))    # máximo global para los ejes
+            plt.plot([mn, mx], [mn, mx], 'r--', linewidth=1)                  # diagonal = predicción perfecta
+            plt.xlabel("Real")
             plt.ylabel("Pred")
             plt.title(name)
         plt.tight_layout()
         plt.savefig(os.path.join(save_dir, "scatter_params.png"), dpi=150)
         plt.show()
 
-        # Mostrar los primeros 5 pares target / reconstrucción
+        # Plot 3: Comparación visual espectrograma entrada vs reconstrucción del decoder
+        # Solo para CNNRegressor5 (CNNRegressorSimple no tiene decoder → example_specs estará vacío)
         if example_specs:
             n = len(example_specs)
-            fig, axs = plt.subplots(n, 2, figsize=(10, 3 * n))
+            fig, axs = plt.subplots(n, 2, figsize=(10, 3 * n))    # n filas x 2 columnas (target | pred)
             if n == 1:
-                axs = [axs]  # asegurar lista de filas
+                axs = [axs]                                         # normalizar a lista de filas
             for row, (spec_t, spec_p) in enumerate(zip(example_specs, example_pred_specs)):
                 for col, (tensor, title) in enumerate([(spec_t, f"Target #{row+1}"), (spec_p, f"Pred #{row+1}")]):
-                    arr = tensor.squeeze(0).numpy()
-                    im = axs[row][col].imshow(arr, origin='lower', aspect='auto')
+                    arr = tensor.squeeze(0).numpy()                               # quitar dim de canal → (F, T)
+                    im = axs[row][col].imshow(arr, origin='lower', aspect='auto') # origin='lower' = frecuencias bajas abajo
                     axs[row][col].set_title(title)
-                    axs[row][col].set_xlabel("time")
+                    axs[row][col].set_xlabel("tiempo")
                     axs[row][col].set_ylabel("freq")
                     fig.colorbar(im, ax=axs[row][col], format='%+.0f dB')
             plt.tight_layout()
@@ -498,14 +535,18 @@ class CNNRegressor5(nn.Module):
 
         print("Evaluación completada.")
 
-        # Devolver un resumen de métricas y la ruta al CSV
-        metrics = {
-            'param_names': param_names,
-            'mse_per_param': mse_per_param,
-            'rmse_per_param': rmse_per_param,
-            'mae_per_param': mae_per_param,
-            'avg_spec_l1': float(np.mean(spec_losses)) if len(spec_losses) > 0 else None,
-            'n_samples': int(n_samples),
-            'csv_path': csv_path
+        # ── Devolver diccionario con todas las métricas numéricas ──
+        return {
+            'param_names':     param_names,
+            'mse_per_param':   mse_per_param,
+            'rmse_per_param':  rmse_per_param,
+            'mae_per_param':   mae_per_param,
+            'avg_spec_l1':     float(avg_spec_l1) if avg_spec_l1 is not None else None,
+            'mel_l1_mean':     float(np.mean(mel_l1_list))   if mel_l1_list else None,
+            'mel_l1_median':   float(np.median(mel_l1_list)) if mel_l1_list else None,
+            'mcd_mean':        float(np.mean(mcd_list))      if mcd_list    else None,
+            'mcd_median':      float(np.median(mcd_list))    if mcd_list    else None,
+            'n_samples':       int(n_samples),
+            'n_audio_samples': len(mel_l1_list),
+            'csv_path':        csv_path,
         }
-        return metrics

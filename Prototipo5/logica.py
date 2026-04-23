@@ -11,7 +11,7 @@ import sounddevice as sd
 import soundfile as sf
 import torch
 import torchaudio
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader, random_split, Subset
 
 from dataset import SpectrogramTensorDataset
 from losses import HybridLoss, MultiScaleSpectralLoss
@@ -322,13 +322,14 @@ def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3
     print(f"Instanciando modelo ({arch})!")
     if arch == 'simple':
         model = CNNRegressorSimple(8, 1, 32)
-        criterion = None   # CNNRegressorSimple.fit() usa SmoothL1 internamente
+        criterion = torch.nn.SmoothL1Loss()
     else:
         model = CNNRegressor5(8, 1, 32)
         if loss_fn == 'multiscale':
             criterion = MultiScaleSpectralLoss(param_weight=param_w)
         else:
             criterion = HybridLoss(spec_weight=spec_w, sc_weight=sc_w, param_weight=param_w)
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
     # --- Entrenamiento ---
     print(f"Entrenando modelo!       Usando {device}")
@@ -341,7 +342,7 @@ def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     val_loader   = DataLoader(val_dataset,   batch_size=batch_size, shuffle=False)
 
-    history = model.fit(train_loader, val_loader=val_loader, device=device, epochs=epochs, lr=lr, print_every_batches=print_every_batches, criterion=criterion)
+    history = model.fit(train_loader, val_loader=val_loader, device=device, epochs=epochs, print_every_batches=print_every_batches, criterion=criterion, optimizer=optimizer)
 
     # --- Guardar modelo ---
     save_path = os.path.join(save_dir, nombreModelo)
@@ -473,7 +474,8 @@ def prediccion_multiples_wav(path_modelo, path_entrada, path_salida):
 
 # Evalúa el modelo sobre el test set guardado en el checkpoint. Usa el método evaluate de CNNRegressor5
 def evaluar_modelo(ruta_modelo, tensor_folder, device="cpu"):
-    from torch.utils.data import Subset
+    ''' BOTÓN EVALUAR '''
+    # Carga modelo para obtener los indices de test
     model, means, stds, device, _ = cargar_modelo_para_inferencia(ruta_modelo, device)
     ckpt = torch.load(ruta_modelo, map_location='cpu')
     test_indices = ckpt['test_indices']
@@ -481,12 +483,13 @@ def evaluar_modelo(ruta_modelo, tensor_folder, device="cpu"):
     test_dataset = Subset(dataset, test_indices)
     print(f"Evaluando sobre test set ({len(test_indices)} muestras, separadas antes del entrenamiento)")
     test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
-    metrics = model.evaluate(test_loader, device=str(device), means=means, stds=stds)
+
+    # Llama a funcion evaluate del modelo
+    metrics = model.evaluate(test_loader, device=str(device), means=means, stds=stds, synth_fn=fm_synthesize)
     return metrics
 
-# Sonidos FM representativos que cubren el espacio tímbrico del sintetizador:
-# distintos carriers (graves→agudos), ratios (armónicos e inarmónicos),
-# índices (limpio→ruidoso) y envolventes (percusivo, pad, pluck).
+# Sonidos FM representativos que cubren el espacio tímbrico del sintetizador
+# Carriers (graves/agudos), ratios (armónicos/inarmónicos), índices (limpio/ruidoso) y envolventes (percusivo/pad/pluck).
 BENCHMARK_SOUNDS = [
     {"name": "bajo_limpio",       "params": [100,  1.0, 1.0, 0.01, 0.50, 0.50, 0.01, 0.50]},
     {"name": "bajo_rico",         "params": [100,  2.0, 8.0, 0.01, 0.40, 0.60, 0.01, 0.40]},
@@ -504,64 +507,101 @@ BENCHMARK_SOUNDS = [
 
 PARAM_NAMES = ["carrier", "ratio", "index", "amp_att", "amp_sus", "amp_dec", "mod_att", "mod_dec"]
 
-# Sintetiza cada sonido del benchmark, infiere sus parámetros y compara el audio
-# re-sintetizado con el original mediante L1 sobre espectrograma mel.
-# Guarda los WAVs originales y predichos en una carpeta benchmark/.
+# Calcula Mel L1 y MCD entre dos señales de audio
+def _audio_metrics(audio_orig, audio_pred, sr):
+    # Mel L1: L1 sobre log del espectrograma mel de amplitud (power=1.0, coherente con el entrenamiento).
+    mel_o = librosa.feature.melspectrogram(y=audio_orig, sr=sr, n_fft=1024, hop_length=256, n_mels=128, power=1.0)
+    mel_p = librosa.feature.melspectrogram(y=audio_pred, sr=sr, n_fft=1024, hop_length=256, n_mels=128, power=1.0)
+    mel_l1 = float(np.mean(np.abs(np.log1p(mel_o) - np.log1p(mel_p))))
+
+    # MCD: Mel-Cepstral Distortion en dB, coeficientes 1-12
+    mfcc_o = librosa.feature.mfcc(y=audio_orig, sr=sr, n_mfcc=13)[1:]  
+    mfcc_p = librosa.feature.mfcc(y=audio_pred, sr=sr, n_mfcc=13)[1:]
+    min_t  = min(mfcc_o.shape[1], mfcc_p.shape[1])
+    diff_c = mfcc_o[:, :min_t] - mfcc_p[:, :min_t]
+    mcd    = float((10 / np.log(10)) * np.mean(np.sqrt(2 * np.sum(diff_c ** 2, axis=0))))
+
+    return mel_l1, mcd
+
+# Evalúa 12 sonidos de referencia con Mel L1, MCD y param_mae.
+# Genera WAVs original/predicho en benchmark/ y benchmark_metrics.png.
 def evaluar_benchmark_diverso(ruta_modelo, device="cpu"):
+    ''' BOTÓN BENCHMARK DIVERSO '''
     model, means, stds, device, spec_mode = cargar_modelo_para_inferencia(ruta_modelo, device)
 
-    # Carpeta benchmark junto al script (se sobreescribe si ya existe)
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+    script_dir    = os.path.dirname(os.path.abspath(__file__))
     benchmark_dir = os.path.join(script_dir, "benchmark")
     if os.path.exists(benchmark_dir):
         shutil.rmtree(benchmark_dir)
     os.makedirs(benchmark_dir)
 
+    # Clamp a rangos válidos para síntesis
+    param_mins = np.array([20.0, 0.01, 0.0, 0.001, 0.001, 0.001, 0.001, 0.001], dtype=np.float32)
+    param_maxs = np.array([20000.0, 50.0, 100.0, 10.0, 10.0, 10.0, 10.0, 10.0], dtype=np.float32)
+
     results = []
     print(f"\n=== BENCHMARK DIVERSO ({len(BENCHMARK_SOUNDS)} sonidos) ===\n")
+    print(f"  {'Sonido':<22} {'Mel L1':>8}  {'MCD (dB)':>10}")
+    print("  " + "-" * 44)
 
     for idx, sound in enumerate(BENCHMARK_SOUNDS, start=1):
         true_params = sound["params"]
-        name = f"{idx:02d}_{sound['name']}"
+        name        = f"{idx:02d}_{sound['name']}"
 
-        # Sintetizar audio original
+        # Sintetizar original e inferir
         audio_orig, sr = fm_synthesize(*true_params, duration=2.0)
-        waveform = torch.from_numpy(audio_orig).unsqueeze(0)
-
-        # Inferencia con el modo de espectrograma del modelo
-        spec = procesar_espectrograma(waveform, sr, str(device), mode=spec_mode)
+        waveform       = torch.from_numpy(audio_orig).unsqueeze(0)
+        spec           = procesar_espectrograma(waveform, sr, str(device), mode=spec_mode)
         with torch.no_grad():
-            out = model(spec)
+            out       = model(spec)
             pred_norm = out[0] if isinstance(out, (tuple, list)) else out
-        pred_params = (pred_norm.cpu().numpy().flatten() * stds + means).tolist()
+        pred_params = np.clip(pred_norm.cpu().numpy().flatten() * stds + means, param_mins, param_maxs).tolist()
 
-        # Re-sintetizar con los parámetros predichos
+        # Re-sintetizar con params predichos
         audio_pred, sr_pred = fm_synthesize(*[float(p) for p in pred_params], duration=2.0)
 
-        # Guardar ambos WAVs
         sf.write(os.path.join(benchmark_dir, f"{name}_original.wav"),   audio_orig, sr,      subtype='PCM_16')
         sf.write(os.path.join(benchmark_dir, f"{name}_prediccion.wav"), audio_pred, sr_pred, subtype='PCM_16')
 
-        # L1 mel entre original y re-síntesis (métrica perceptual)
-        waveform_pred = torch.from_numpy(audio_pred).unsqueeze(0)
-        spec_orig_mel = procesar_espectrograma(waveform,      sr,      str(device), mode='mel')
-        spec_pred_mel = procesar_espectrograma(waveform_pred, sr_pred, str(device), mode='mel')
-        mel_l1 = torch.mean(torch.abs(spec_orig_mel - spec_pred_mel)).item()
-
-        # MAE por parámetro
+        mel_l1, mcd = _audio_metrics(audio_orig, audio_pred, sr)
         param_mae = {n: abs(t - p) for n, t, p in zip(PARAM_NAMES, true_params, pred_params)}
 
         results.append({
-            "name":        name,
-            "true_params": true_params,
-            "pred_params": pred_params,
-            "param_mae":   param_mae,
-            "mel_l1":      mel_l1,
+            "name": name, "true_params": true_params, "pred_params": pred_params,
+            "mel_l1": mel_l1, "mcd": mcd, "param_mae": param_mae,
         })
-        print(f"  {name:<20} mel_L1={mel_l1:.4f}  |  " +
-              "  ".join(f"{n}={v:.3f}" for n, v in param_mae.items()))
+        print(f"  {name:<22} {mel_l1:>8.4f}  {mcd:>10.4f}")
 
-    print(f"\nAudios guardados en: {benchmark_dir}")
+    mel_l1_vals = [r["mel_l1"] for r in results]
+    mcd_vals    = [r["mcd"]    for r in results]
+    print("  " + "-" * 44)
+    print(f"  {'MEDIA':<22} {np.mean(mel_l1_vals):>8.4f}  {np.mean(mcd_vals):>10.4f}")
+
+    # Plot: barras Mel L1 y MCD por sonido
+    names  = [r["name"].split("_", 1)[1] for r in results]
+    x      = np.arange(len(names))
+    fig, axes = plt.subplots(2, 1, figsize=(12, 7), sharex=True)
+
+    axes[0].bar(x, mel_l1_vals, color='steelblue', edgecolor='black')
+    axes[0].axhline(np.mean(mel_l1_vals), color='red', linestyle='--', label=f'media={np.mean(mel_l1_vals):.3f}')
+    axes[0].set_ylabel("Mel L1")
+    axes[0].set_title("Benchmark — Mel L1 por sonido")
+    axes[0].legend()
+
+    axes[1].bar(x, mcd_vals, color='darkorange', edgecolor='black')
+    axes[1].axhline(np.mean(mcd_vals), color='red', linestyle='--', label=f'media={np.mean(mcd_vals):.3f}')
+    axes[1].set_ylabel("MCD (dB)")
+    axes[1].set_title("Benchmark — MCD por sonido")
+    axes[1].set_xticks(x)
+    axes[1].set_xticklabels(names, rotation=30, ha='right')
+    axes[1].legend()
+
+    plt.tight_layout()
+    plot_path = os.path.join(benchmark_dir, "benchmark_metrics.png")
+    plt.savefig(plot_path, dpi=150)
+    plt.show()
+
+    print(f"\nAudios y gráfica guardados en: {benchmark_dir}")
     return results, benchmark_dir
 
 # Función que muestra los 4 espectrogramas
