@@ -7,6 +7,8 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{geometry}
+\usepackage{float}
+\usepackage{graphicx}
 \geometry{a4paper, margin=2.5cm}
 
 % Información del documento
@@ -182,7 +184,7 @@ espectrogramas (píxel a píxel) en escala logarítmica (dB), siendo la métrica
 formas generales que coincidan en tiempo y frecuencia.
 
 En cuanto a la \textbf{convergencia espectral}, es un refuerzo (tiene un peso bajo) para la pérdida espectral, que compara las magnitudes de forma relativa con la norma de
-Frobenius, capturando la estrutura global del espectro (como los armónicos y la energía). Estas caractarísticas 
+Frobenius, capturando la estrutura global del espectro (como los armónicos y la energía). Estas características 
 son muy relevantes para encontrar una representación fiel al timbre original. 
 
 Por último se encuentra la \textbf{Pérdida Paramétrica}, aplicada mediante \textbf{SmoothL1}. Esta penaliza las diferencias en los parámetros
@@ -196,11 +198,21 @@ el caso de que la red infiera una serie de parámetros que difieran considerable
 espectrogramas son muy similares (y, por tanto, su tiembre también lo es), el error será mínimo. El modelo debe memorizar números
 exactos, si no que analiza la imagen del sonido, su espectrograma.
 
-\subsection{Prototipo 5: Modelo Final y Expansión Paramétrica (Envolventes)}
+\subsection{Prototipo 5: Modelo Final y Estudio de Posibilidades}
+Se adjunta la Figura~\ref{fig:workflow_v5} con el objetivo de facilitar la comprensión del modelo 
+del Prototipo 5. El trabajo queda dividido en 5 fases: generación de audio, conversión a tensores, 
+preparación del dataset, entrenamiento (con múltiples opciones de arquitectura) e inferencia paramétrica.
+\begin{figure}[H] 
+\centering
+\includegraphics[width=0.9\textwidth]{esquema_general.jpeg}
+\caption{Flujo de trabajo del Prototipo 5: desde la síntesis matemática hasta la inferencia y posterior aplicación en la interfaz de usuario.}
+\label{fig:workflow_v5}
+\end{figure}
+\subsubsection{Expansión Paramétrica: Evolventes y Generación Aleatoria del Dataset}
 Las predicciones del \textbf{Prototipo 4} consiguen replicar detalladamente el timbre. Sin embargo,
 los sonidos generados en esta etapa están muy alejados de las aplicaciones reales del \textbf{Sound Matching}. 
-Por esta razón, se propone un nuevo modelo en el que se explora
-un espacio de parámetros mayor, ampliando la dimensionalidad de 3 a 8 parámetros. A las variables
+Por esta razón, se propone un nuevo modelo en el que se explora ampliar
+la dimensionalidad de 3 a 8 parámetros. A las variables
 fundamentales (frecuencia portadora, ratio e índice), se le añaden las envolventes temporales: 
 la envolvente de amplitud (\textit{attack, decay} y \textit{sustain}) y la envolvente del índice de 
 modulación (\textit{attack} y \textit{decay}).
@@ -210,12 +222,11 @@ forma de generación del dataset. La ampliación de 3 a 8 parámetros hace compu
 el dataset mediante un barrido de combinaciones posibles. Para dar solución a esta limitación, se genera el dataset
 por muestreo aleatorio. 
 
-\subsubsection{Generación del Dataset Aleatorio}
-Para ello, el sistema genera un número (N) de muestras de audios con valores continuos aleatorios,
+El sistema genera un número (N) de muestras de audio con valores continuos aleatorios,
 en base a unos rangos de valores específicos para cada parámetro. 
 
 En primer lugar, se sintetizan los N archivos \textit{.wav} mediante la librería \textbf{NumPy} y la formulación matemática de la FM. 
-Se define una frecuencia de muestreo \textit{sample rate} de 44100 Hz
+Se define una frecuencia de muestreo (\textit{sample rate}) de 44100 Hz
 y un tiempo de duración de audio de 2 segundos. Se 
 incrementa el tiempo de duración (de 1 a 2 segundos) con el fin de asegurar un margen temporal
 necesario para analizar y percibir las variaciones en el sonido provocadas por las envolventes. 
@@ -223,11 +234,12 @@ Estas envolventes se generan sobre un vector de tiempo unificado.
 
 Posteriormente, los audios generados \textit{.wav} se convierten a tensores nativos de \textit{PyTorch}. Se cargan mediante \textit{torchaudio} y
 se les aplica un suavizado de amplitud en los extremos (\textit{fade-in} y \textit{fade-out}) con el objetivo de 
-evitar chasquidos o artefactos indeseados. Finalmente, se generan las dos transformaciones principales:
-de audio a espectrograma y de amplitud lineal a logarítmica (dB). Esta función una
+evitar chasquidos o artefactos indeseados. Finalmente, se aplican las dos transformaciones principales:
+de audio a espectrograma y de amplitud lineal a logarítmica (dB). Esta función aplica una
 normalización de pico, calcula la STFT, extrae la magnitud y realiza su conversión a decibelios. 
 
-\subsubsection{Adaptación de la Arquitectura (CNNRegressor5)}
+\subsubsection{Experimentación}
+\subsubsection{Pipelines y Preguntas de investigación}
 
 
 
