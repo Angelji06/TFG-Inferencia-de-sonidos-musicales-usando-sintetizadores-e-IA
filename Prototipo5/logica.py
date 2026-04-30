@@ -31,7 +31,16 @@ def procesar_espectrograma(waveform, sr=44100, device="cpu", spec_transform=None
         waveform = torch.from_numpy(waveform).float()
     waveform = waveform.to(device)
 
-    # 2. Normalización de pico (Peak Normalization)
+    # 2. Fade in/out (50 ms) para suavizar bordes y evitar artefactos espectrales
+    fade_samples = int(sr * 0.05)
+    if fade_samples * 2 < waveform.shape[-1]:
+        fade_in = torch.linspace(0, 1, fade_samples, device=device)
+        fade_out = torch.linspace(1, 0, fade_samples, device=device)
+        waveform = waveform.clone()
+        waveform[..., :fade_samples] *= fade_in
+        waveform[..., -fade_samples:] *= fade_out
+
+    # 3. Normalización de pico (Peak Normalization)
     waveform = waveform / waveform.abs().max().clamp(min=1e-8)
 
     # 3. Transformada a dB (instanciada solo si no se proporciona por parámetro)
@@ -221,14 +230,6 @@ def convertir_wavs_a_tensores(wav_folder, device, mode='stft'):
     # Transformación
     for i, wav_file in enumerate(wav_files, start=1):
         waveform, sr = torchaudio.load(os.path.join(wav_folder, wav_file))
-
-        # Fade
-        fade_samples = int(sr * 0.05)
-        if fade_samples * 2 < waveform.shape[-1]:
-            fade_in = torch.linspace(0, 1, fade_samples)
-            fade_out = torch.linspace(1, 0, fade_samples)
-            waveform[:, :fade_samples] *= fade_in
-            waveform[:, -fade_samples:] *= fade_out
 
         # Guardamos solo el tensor (C, F, T), quitando la dimensión de batch
         spec = procesar_espectrograma(waveform, sr, device, spec_transform, db_transform, mode=mode).squeeze(0)
@@ -491,15 +492,15 @@ def evaluar_modelo(ruta_modelo, tensor_folder, device="cpu"):
 # Sonidos FM representativos que cubren el espacio tímbrico del sintetizador
 # Carriers (graves/agudos), ratios (armónicos/inarmónicos), índices (limpio/ruidoso) y envolventes (percusivo/pad/pluck).
 BENCHMARK_SOUNDS = [
-    {"name": "bajo_limpio",       "params": [100,  1.0, 1.0, 0.01, 0.50, 0.50, 0.01, 0.50]},
-    {"name": "bajo_rico",         "params": [100,  2.0, 8.0, 0.01, 0.40, 0.60, 0.01, 0.40]},
+    {"name": "bajo_limpio",       "params": [100,  1.0, 1.0, 0.02, 0.50, 0.50, 0.01, 0.50]},
+    {"name": "bajo_rico",         "params": [100,  2.0, 8.0, 0.02, 0.40, 0.60, 0.01, 0.40]},
     {"name": "medio_armonico",    "params": [440,  1.0, 3.0, 0.05, 0.40, 0.50, 0.05, 0.40]},
     {"name": "medio_inarmonico",  "params": [440,  1.5, 5.0, 0.05, 0.30, 0.60, 0.05, 0.30]},
-    {"name": "agudo_limpio",      "params": [1200, 1.0, 1.0, 0.01, 0.30, 0.40, 0.01, 0.30]},
-    {"name": "agudo_ruidoso",     "params": [1200, 2.7, 9.5, 0.01, 0.20, 0.30, 0.01, 0.20]},
-    {"name": "percusivo",         "params": [300,  1.0, 5.0, 0.01, 0.05, 0.20, 0.01, 0.10]},
+    {"name": "agudo_limpio",      "params": [1200, 1.0, 1.0, 0.02, 0.30, 0.40, 0.01, 0.30]},
+    {"name": "agudo_ruidoso",     "params": [1200, 1.9, 9.5, 0.02, 0.20, 0.30, 0.01, 0.20]},
+    {"name": "percusivo",         "params": [300,  1.0, 5.0, 0.02, 0.05, 0.20, 0.01, 0.10]},
     {"name": "pad_lento",         "params": [300,  1.0, 2.0, 0.80, 0.80, 0.40, 0.60, 0.40]},
-    {"name": "pluck",             "params": [600,  2.0, 4.0, 0.01, 0.10, 0.80, 0.01, 0.60]},
+    {"name": "pluck",             "params": [600,  2.0, 4.0, 0.02, 0.10, 0.80, 0.01, 0.60]},
     {"name": "muy_bajo",          "params": [100,  0.5, 3.0, 0.02, 0.40, 0.50, 0.02, 0.40]},
     {"name": "muy_agudo",         "params": [1800, 1.0, 2.0, 0.02, 0.30, 0.40, 0.02, 0.30]},
     {"name": "indice_maximo",     "params": [500,  1.0, 9.5, 0.05, 0.40, 0.50, 0.05, 0.40]},
@@ -535,9 +536,9 @@ def evaluar_benchmark_diverso(ruta_modelo, device="cpu"):
         shutil.rmtree(benchmark_dir)
     os.makedirs(benchmark_dir)
 
-    # Clamp a rangos válidos para síntesis
-    param_mins = np.array([20.0, 0.01, 0.0, 0.001, 0.001, 0.001, 0.001, 0.001], dtype=np.float32)
-    param_maxs = np.array([20000.0, 50.0, 100.0, 10.0, 10.0, 10.0, 10.0, 10.0], dtype=np.float32)
+    # Clamp a rangos válidos: coherentes con el dominio de entrenamiento (GEN_PARAMS)
+    param_mins = np.array([100.0, 0.05, 1.0, 0.015, 0.015, 0.015, 0.01, 0.01], dtype=np.float32)
+    param_maxs = np.array([2000.0, 2.0, 10.0, 1.9, 1.9, 1.9, 1.9, 1.9], dtype=np.float32)
 
     results = []
     print(f"\n=== BENCHMARK DIVERSO ({len(BENCHMARK_SOUNDS)} sonidos) ===\n")

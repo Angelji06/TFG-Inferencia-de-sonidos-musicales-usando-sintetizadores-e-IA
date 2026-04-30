@@ -411,9 +411,9 @@ class CNNRegressor5(nn.Module):
         # FASE 3: Métricas de audio: Re-sintetiza audio con params predichos y reales, y compara perceptualmente.
         mel_l1_list, mcd_list = [], []
 
-        # Rangos válidos para clamp: evitar params fuera de rango que generen audio silencioso o roto
-        param_mins = np.array([20.0, 0.01, 0.0, 0.001, 0.001, 0.001, 0.001, 0.001], dtype=np.float32)
-        param_maxs = np.array([20000.0, 50.0, 100.0, 10.0, 10.0, 10.0, 10.0, 10.0], dtype=np.float32)
+        # Rangos válidos para clamp: coherentes con el dominio de entrenamiento (GEN_PARAMS)
+        param_mins = np.array([100.0, 0.05, 1.0, 0.015, 0.015, 0.015, 0.01, 0.01], dtype=np.float32)
+        param_maxs = np.array([2000.0, 2.0, 10.0, 1.9, 1.9, 1.9, 1.9, 1.9], dtype=np.float32)
 
         if synth_fn is not None:
             n_audio   = min(n_samples, 500)                             # Max 500 muestras (sintetizar es lento)
