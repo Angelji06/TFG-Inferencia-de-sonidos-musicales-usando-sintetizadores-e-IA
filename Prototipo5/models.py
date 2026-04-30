@@ -269,7 +269,7 @@ class CNNRegressor5(nn.Module):
                 for batch_idx, (batch_spec, batch_params) in enumerate(train_loader):
                     # mover a device
                     batch_spec = batch_spec.to(device)       # (B,1,H,W)
-                    batch_params = batch_params.to(device)   # (B,3) o (B,n_params)
+                    batch_params = batch_params.to(device)   # (B, n_params)
 
                     optimizer.zero_grad()                       # Reset gradientes
                     pred_params, pred_spec = self(batch_spec)   # Forward pass
@@ -288,11 +288,13 @@ class CNNRegressor5(nn.Module):
                         if (batch_idx + 1) % print_every_batches == 0:
                             avg_total_sofar = running_total / max(1, n_batches)
                             avg_spec_sofar = running_spec / max(1, n_batches)
+                            avg_sc_sofar = running_sc / max(1, n_batches)
                             avg_params_sofar = running_params / max(1, n_batches)
-                            print(f" Epoch {epoch+1}/{epochs}  Batch {batch_idx+1}  Avg total so far: {avg_total_sofar:.6f}  Spec: {avg_spec_sofar:.6f}  Params: {avg_params_sofar:.6f}")
+                            print(f" Epoch {epoch+1}/{epochs}  Batch {batch_idx+1}  Avg total so far: {avg_total_sofar:.6f}  Spec: {avg_spec_sofar:.6f}  SC: {avg_sc_sofar:.6f}  Params: {avg_params_sofar:.6f}")
 
                 avg_total = running_total / max(1, n_batches)
                 avg_spec = running_spec / max(1, n_batches)
+                avg_sc = running_sc / max(1, n_batches)
                 avg_params = running_params / max(1, n_batches)
 
                 history['total'].append(avg_total)
@@ -328,7 +330,7 @@ class CNNRegressor5(nn.Module):
                         best_state_dict = self.state_dict()
                         msg_val += " (*)"
 
-                print(f"Epoch {epoch+1}/{epochs}  Avg total: {avg_total:.6f}  Spec: {avg_spec:.6f}  Params: {avg_params:.6f}{msg_val}")
+                print(f"Epoch {epoch+1}/{epochs}  Avg total: {avg_total:.6f}  Spec: {avg_spec:.6f}  SC: {avg_sc:.6f}  Params: {avg_params:.6f}{msg_val}")
 
             if best_state_dict is not None:
                 self.load_state_dict(best_state_dict)

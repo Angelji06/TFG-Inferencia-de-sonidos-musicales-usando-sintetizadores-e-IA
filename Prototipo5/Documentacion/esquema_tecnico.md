@@ -8,7 +8,7 @@
 
 - **30.000 muestras** generadas aleatoriamente (no rejilla — inviable con 8 parámetros)
 - Cada muestra: 8 parámetros FM muestreados con distribución **uniforme** dentro de rangos fijos (`GEN_PARAMS`)
-- **Envolvente de amplitud**: se sortea una duración total `[0.3s, 2.0s]`, luego 3 pesos aleatorios normalizados → `att + sus + dec = total`
+- **Envolvente de amplitud**: cada fase (`att`, `sus`, `dec`) se muestrea de forma independiente con distribución uniforme dentro de sus rangos en `GEN_PARAMS`. Si la suma `att + sus + dec` excede la duración del audio (2 s), se rescalan proporcionalmente manteniendo cada fase ≥ su mínimo
 - **Envolvente de modulación**: misma idea con 2 fases (`att + dec`, sin sustain)
 - Audio: 2 segundos, 44100 Hz, PCM 16-bit (`.wav`)
 - Etiquetas guardadas en `labels.csv`
@@ -107,20 +107,38 @@ L = SmoothL1(params_pred, params_real)
 
 ---
 
-## 5. Métricas de evaluación (`Prototipo5.py → evaluate`)
+## 5. Métricas de evaluación (`models.py → evaluate`, `logica.py → evaluar_benchmark_diverso`)
 
-Calculadas **por parámetro** sobre el conjunto de test:
+### 5.1 Métricas principales — dominio del audio
+
+Se re-sintetiza audio FM con los parámetros predichos y los reales, y se compara perceptualmente. Estas métricas evitan el problema de no-inyectividad FM (parámetros distintos pueden producir el mismo sonido → métrica 0).
+
+| Métrica | Fórmula | Qué mide |
+|---|---|---|
+| Mel L1 | `mean(\|log1p(mel_pred) − log1p(mel_true)\|)` | Diferencia perceptual en espectro mel (n_fft=1024, hop=256, n_mels=128, power=1.0) |
+| MCD | `(10/ln10) · mean(√(2 · Σ(Δmfcc²)))` | Mel-Cepstral Distortion en dB, coeficientes MFCC 1–12 (descarta el 0 de energía global) |
+
+### 5.2 Métricas secundarias — espacio de parámetros
+
+Calculadas **por parámetro** sobre el conjunto de test. Afectadas por la no-inyectividad FM (uso diagnóstico):
 
 | Métrica | Fórmula | Qué mide |
 |---|---|---|
 | MSE | `mean((pred − true)²)` | Error cuadrático medio |
 | RMSE | `√MSE` | Error en unidades del parámetro |
 | MAE | `mean(\|pred − true\|)` | Error absoluto medio (robusto a outliers) |
-| L1 espectral | `mean(\|spec_pred − spec_real\|)` | Calidad de reconstrucción (solo `full`) |
 
-Salidas generadas automáticamente:
+### 5.3 Métrica del decoder (solo `full`)
+
+| Métrica | Fórmula | Qué mide |
+|---|---|---|
+| L1 espectral | `mean(\|spec_pred − spec_real\|)` | Calidad de reconstrucción del decoder |
+
+### 5.4 Salidas generadas automáticamente
+
 - `preds_vs_trues.csv` — todas las predicciones vs valores reales
 - `scatter_params.png` — scatter true vs pred por parámetro con diagonal perfecta
+- `audio_metrics_dist.png` — histogramas de distribución de Mel L1 y MCD
 - `spectrogram_example.png` — primeros 5 pares target/reconstrucción (solo `full`)
 
 ---

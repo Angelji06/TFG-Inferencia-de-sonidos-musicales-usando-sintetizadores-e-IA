@@ -161,10 +161,14 @@ class App:
 
         tk.Label(device_frame, text="Función de pérdida:").grid(row=2, column=0, sticky="e", padx=4, pady=4)
         self.loss_fn_var = tk.StringVar(value="hybrid")
-        loss_menu = tk.OptionMenu(device_frame, self.loss_fn_var, "hybrid", "multiscale")
-        loss_menu.config(width=10)
-        loss_menu.grid(row=2, column=1, sticky="w", padx=4, pady=4)
-        tk.Label(device_frame, text="(hybrid = L1+SC  |  multiscale = multi-escala DDSP  |  solo con arch=full)", fg="#888", font=("Arial", 8)).grid(row=2, column=2, columnspan=3, sticky="w", padx=4)
+        self.loss_menu = tk.OptionMenu(device_frame, self.loss_fn_var, "hybrid", "multiscale")
+        self.loss_menu.config(width=10)
+        self.loss_menu.grid(row=2, column=1, sticky="w", padx=4, pady=4)
+        self.loss_hint_label = tk.Label(device_frame, text="(hybrid = L1+SC  |  multiscale = multi-escala DDSP)", fg="#888", font=("Arial", 8))
+        self.loss_hint_label.grid(row=2, column=2, columnspan=3, sticky="w", padx=4)
+
+        # Cuando cambia la arquitectura, habilitar/deshabilitar el selector de loss
+        self.arch_var.trace_add("write", self._on_arch_changed)
 
         # Sección superior: generar / cargar dataset
         top_frame = tk.LabelFrame(p, text="Dataset (generar o cargar)", padx=8, pady=8)
@@ -243,6 +247,15 @@ class App:
         # Botón volver
         tk.Button(p, text="Volver", command=lambda: self.show_page(self.page_inicio)).pack(side="bottom", pady=8)
         self.refresh_entrenamiento_page()
+
+    def _on_arch_changed(self, *_args):
+        """Deshabilita el selector de loss cuando la arquitectura es 'simple' (solo usa SmoothL1)."""
+        if self.arch_var.get() == "simple":
+            self.loss_menu.config(state="disabled")
+            self.loss_hint_label.config(text="(simple solo usa SmoothL1 sobre parámetros)")
+        else:
+            self.loss_menu.config(state="normal")
+            self.loss_hint_label.config(text="(hybrid = L1+SC  |  multiscale = multi-escala DDSP)")
 
     def refresh_entrenamiento_page(self):
         """
