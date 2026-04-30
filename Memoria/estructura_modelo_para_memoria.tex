@@ -204,7 +204,7 @@ del Prototipo 5. El trabajo queda dividido en 5 fases: generación de audio, con
 preparación del dataset, entrenamiento (con múltiples opciones de arquitectura) e inferencia paramétrica.
 \begin{figure}[H] 
 \centering
-\includegraphics[width=0.9\textwidth]{esquema_general.jpeg}
+\includegraphics[width=1.1\textwidth]{../Prototipo5/Documentacion/diagrama.png}
 \caption{Flujo de trabajo del Prototipo 5: desde la síntesis matemática hasta la inferencia y posterior aplicación en la interfaz de usuario.}
 \label{fig:workflow_v5}
 \end{figure}
@@ -223,20 +223,72 @@ el dataset mediante un barrido de combinaciones posibles. Para dar solución a e
 por muestreo aleatorio. 
 
 El sistema genera un número (N) de muestras de audio con valores continuos aleatorios,
-en base a unos rangos de valores específicos para cada parámetro. 
+en base a unos rangos de valores específicos para cada parámetro. Para cada uno de ellos 
+se utiliza una distribución uniforme, a excepción de la frecuencia portadora (\textit{Carrier}) que 
+se realiza en escala logarítmica. De esta forma se simula la percepción humana del sonido. 
 
-En primer lugar, se sintetizan los N archivos \textit{.wav} mediante la librería \textbf{NumPy} y la formulación matemática de la FM. 
+En primer lugar, se sintetizan los N archivos \textit{.wav} mediante la librería \textbf{NumPy} y la formulación matemática de la FM (Fase 1). 
 Se define una frecuencia de muestreo (\textit{sample rate}) de 44100 Hz
-y un tiempo de duración de audio de 2 segundos. Se 
-incrementa el tiempo de duración (de 1 a 2 segundos) con el fin de asegurar un margen temporal
+y se incrementa el tiempo de duración de 1 a 2 segundos, con el fin de asegurar un margen temporal
 necesario para analizar y percibir las variaciones en el sonido provocadas por las envolventes. 
 Estas envolventes se generan sobre un vector de tiempo unificado. 
 
-Posteriormente, los audios generados \textit{.wav} se convierten a tensores nativos de \textit{PyTorch}. Se cargan mediante \textit{torchaudio} y
+En la Fase 2, los audios generados \textit{.wav} se convierten a tensores nativos de \textit{PyTorch}. Se cargan mediante \textit{torchaudio} y
 se les aplica un suavizado de amplitud en los extremos (\textit{fade-in} y \textit{fade-out}) con el objetivo de 
-evitar chasquidos o artefactos indeseados. Finalmente, se aplican las dos transformaciones principales:
-de audio a espectrograma y de amplitud lineal a logarítmica (dB). Esta función aplica una
-normalización de pico, calcula la STFT, extrae la magnitud y realiza su conversión a decibelios. 
+evitar chasquidos o ruidos indeseados. Tras una normalización de pico, se aplican las dos transformaciones principales:
+de audio a espectrograma y de amplitud lineal a logarítmica (dB). Para la representación acustica, el programa permite elegir
+entre dos métodos, con el fin de llevar a cabo diferentes pruebas de experimentación. Por un lado, se encuentran 
+los espectrogramas en formato lineal, mediante \textbf{STFT} con 513  \textit{bins}\footnote{El término \textit{bin} hace referencia los intervalos de la Tranformada de Fourier (FFT). 
+El tamaño de ventana utilizado para la creación de los espectrogramas es de 1024 ($N_{fft} = 1024$), lo que genera
+$1024 / 2 + 1 = 513$ intervalos o \textit{bins} de frecuencias}de frecuencia. Y por el otro lado, 
+se da lugar a elegir un formato logarítmico-perceptual (\textbf{Mel} con 128 bandas), el cual tiene un mayor potencial para
+la representación del sonido de manera similar a la percibida por el humano. Posteriormente, se extrae
+la magnitud de la señal, se convierte a decibelios (dB) y se guarda como tensores (formato \textit{.pt}). Además,
+se genera un archivo (spec\_mode.txt) que indica el tipo de espectrograma utilizado.
+
+Para terminar con el tratamiento del dataset, se estructuran los tensores en una clase Dataset de PyTorch
+(\textit{SpectrogramTensorDataset}). Se lee el registro de etiquetas (\textit{labels.cvs}), el cual contiene todos los
+valores de los parámetros de cada audio, y se calcula la media y desviación estándar global de cada uno de ellos. Con estas estadísticas
+se aplica una normalización de puntuación estándar (\textit{Z-score}), nivelando así las diferencias entre las escalas
+de los parámetros, consiguiendo igualar las importancias de cada uno en el cálculo del gradiente.
+Finalmente, el dataset se divide, mediante una semilla fija, en: 70\% para entrenamiento, 15\% validación y se guarda otro 15\%
+como conjunto de pruebas (\textit{Test set}).
+
+La fase de entrenamiento se caracteriza por permitir la elección de diferentes arquitecturas y funciones de pérdida con el fin de experimentar. De esta 
+forma, se pueden probar diferentes combinaciones para ver cual es más interesante en tiempo o precisión.
+\begin{itemize}
+ \item \textbf{Arquitecturas: }Se dispone de dos topologías convolucionales diferentes:
+    \begin{itemize}
+        \item \textbf{CNNRegressorSimple: }Está formada por un \textit{Encoder} de tres bloques convolucionales,
+        un \textit{Bottleneck} y una cabeza de regresión pura (\textit{Global Average Pooling}). Esta última está conectadas
+        a un Perceptrón Multicapa que acaba en 8 neuronas. A pesar de que la red ejecuta un entrenamiento rápido, al carecer de reconstrucción 
+        no se garantiza que el \textit{Encoder} esté extrayendo de manera acertada la estructura del espectrograma, prediciendo únicamente números.
+          
+        \item \textbf{CNNRegressor5: }Se trata de una expansión del modelo anterior, incorporando una segunda cabeza de predicción. 
+        Se añade un \textit{Decoder} que consta de 3 capas convoluvionales traspuestas, las cuales tratan de reconstruir el espectrograma 
+        a partir del espacio latente. Así pues, esta etapa fuerza al \textit{Encoder} a capturar la riqueza temporal y tímbrica del sonido para evitar
+        un error grande.
+    \end{itemize}
+ \item \textbf{Funciones de Pérdida: } Para el modelo simple, se evalua la diferencia paramétrica únicamente mediante
+        \textbf{SmoothL1 Loss}. Esta se utiliza por su robustez y versatilidad en la regresión numérica: cuando la diferencia 
+        entre el valor real y el predicho es muy pequeña, se comporta como un Error Cuadrático (L2), lo que suaviza la convergencia
+        de gradientes; y ante desviaciones grandes, se asemeja al Error Absoluto (L1), de forma que los casos aislados que se alejan del resto 
+        no desestabilicen la red. Esta función de pérdida tiene la desventaja de no tener en cuenta la no-inyectividad de la síntesis FM.
+
+        En cuanto al modelo CNNRegressor5, se permite la elección de una de las siguientes funciones de pérdida:
+    \begin{itemize}
+        \item \textbf{HybridLoss: } % Es igual que la del prototipo anterior, quizá no la debería de explicar de nuevo
+        Es una función de pérdida híbrida, que combina el Error Absoluto Medio (L1) de la reconstrucción del 
+        espectrograma, un refuerzo estructural de Convegencia Espectral (SC), y la penalización paramétrica anterior.
+        La primera se lleva el peso principal (de 1.0), calcula el Error Absoluto Medio píxel a píxel entre el espectrograma original y el reconstruido (en decibelios).
+        La Convergencia Espectral (SC) se aplica con un peso medio (de 0.5) para evitar los espectros borrosos generados por L1. Esta métrica calcula la norma de Frobenius 
+        para evaluar la energía global (relación armónica), regularizando el timbre. A la penalización paramétrica se le da una importancia muy baja (0.05), ya que no es demasiado importante
+        debido al carácter no inyectivo de la síntesis FM.
+          
+        \item \textbf{MultiScaleSpectralLoss: }
+        
+    \end{itemize}
+\end{itemize}
 
 \subsubsection{Experimentación}
 \subsubsection{Pipelines y Preguntas de investigación}
