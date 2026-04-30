@@ -319,11 +319,10 @@ def check_dataset(path):
 # Función encargada de instanciar y entrenar el modelo
 def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3, device="cuda", print_every_batches=100, spec_w=1.0, sc_w=0.5, param_w=0.05, arch='full', loss_fn='hybrid'):
     # dirs
-    start = time.time()  
-    tensors_dir = dataset_obj.get("ruta") 
+    start = time.time()
+    tensors_dir = dataset_obj.get("ruta")
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    root_dir = os.path.dirname(script_dir)          
-    save_dir = os.path.join(root_dir, "models")    # Te crea una carpeta models un nivel arriba (carpeta del proyecto)
+    save_dir = os.path.join(script_dir, "models")    # Carpeta models dentro de Prototipo5
     os.makedirs(save_dir, exist_ok=True)
 
     # --- Dataset ---
