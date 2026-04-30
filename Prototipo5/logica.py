@@ -158,17 +158,27 @@ def generar_wavs_FM(num_muestras=30000):   # conviene que este valor se pueda aj
         r_real = np.random.uniform(*params["ratio"])
         i_real = np.random.uniform(*params["index"])
 
-        # Envolvente amplitud: duración total libre (0.3s – TIME), el resto del clip queda en silencio
-        total_amp = np.random.uniform(0.3, TIME)
-        a_fracs = np.random.uniform(0.05, 1.0, 3)  # 3 pesos aleatorios, mínimo 0.05 para evitar fases nulas
-        a_fracs /= a_fracs.sum()                    # normalizar → proporciones que suman 1
-        a_att, a_sus, a_dec = a_fracs * total_amp   # escalar al tiempo total: att + sus + dec = total_amp
+        # Envolvente amplitud: cada fase uniforme, rescalada si la suma excede TIME
+        min_a = params["amp_attack"][0]
+        a_att = np.random.uniform(*params["amp_attack"])
+        a_sus = np.random.uniform(*params["amp_sustain"])
+        a_dec = np.random.uniform(*params["amp_decay"])
+        amp_sum = a_att + a_sus + a_dec
+        if amp_sum > TIME:
+            factor = (TIME - 3 * min_a) / (amp_sum - 3 * min_a)
+            a_att = min_a + (a_att - min_a) * factor
+            a_sus = min_a + (a_sus - min_a) * factor
+            a_dec = min_a + (a_dec - min_a) * factor
 
-        # Envolvente modulación: duración total libre (0.2s – TIME)
-        total_mod = np.random.uniform(0.2, TIME)
-        m_frac = np.random.uniform(0.05, 0.95)  # proporción del attack; con 2 fases basta un número
-        m_att = m_frac * total_mod               # att = fracción del total
-        m_dec = (1.0 - m_frac) * total_mod      # dec = resto; att + dec = total_mod
+        # Envolvente modulación: cada fase uniforme, rescalada si la suma excede TIME
+        min_m = params["mod_attack"][0]
+        m_att = np.random.uniform(*params["mod_attack"])
+        m_dec = np.random.uniform(*params["mod_decay"])
+        mod_sum = m_att + m_dec
+        if mod_sum > TIME:
+            factor = (TIME - 2 * min_m) / (mod_sum - 2 * min_m)
+            m_att = min_m + (m_att - min_m) * factor
+            m_dec = min_m + (m_dec - min_m) * factor
 
         # Sintesis
         x, _ = fm_synthesize(c_real, r_real, i_real, a_att, a_sus, a_dec, m_att, m_dec, duration=TIME, sr=SR)
