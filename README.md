@@ -63,6 +63,12 @@ Una vez completada la instalación, lanzar la aplicación con:
 bash lanzar.sh
 ```
 
+Si no encuentra conda utilizar el siguiente comando (si está instalado en la ruta por defecto)
+
+```bash
+~/miniconda3/bin/conda init bash
+```
+
 ### CPU (opcional)
 
 Por defecto el entorno instala PyTorch con soporte CUDA 12.1, lo que requiere una tarjeta NVIDIA compatible. Para usar únicamente CPU, sustituir en `environment.yml` la línea `pytorch-cuda=12.1` por:
