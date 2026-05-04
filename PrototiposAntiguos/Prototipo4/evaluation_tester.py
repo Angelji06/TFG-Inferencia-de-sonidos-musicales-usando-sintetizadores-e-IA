@@ -5,6 +5,7 @@ import numpy as np
 import librosa
 import soundfile as sf
 from tqdm import tqdm
+import time
 
 # Importamos tu función de síntesis (asegúrate de que el nombre coincida con el de tu logica.py)
 from PrototiposAntiguos.Prototipo4.logica import fm_synthesize 
@@ -19,10 +20,11 @@ def calcular_error_mel(mel_objetivo, audio_generado, sr):
     return error
 
 def grid_search_fm(ruta_audio_objetivo, sr=44100, duration=1.0):
-    print(f"🎙️ Analizando: {os.path.basename(ruta_audio_objetivo)}")
+    print(f"Analizando: {os.path.basename(ruta_audio_objetivo)}")
     
     # 1. Cargar el audio real (Ground Truth)
     y_target, _ = librosa.load(ruta_audio_objetivo, sr=sr, duration=duration)
+    
     
     # Pre-calcular el Mel del objetivo UNA SOLA VEZ
     mel_target = librosa.feature.melspectrogram(y=y_target, sr=sr, n_mels=128)
@@ -34,7 +36,7 @@ def grid_search_fm(ruta_audio_objetivo, sr=44100, duration=1.0):
     indexes = np.arange(1.0, 10.0 + 0.5, 0.5)
     
     total_combinaciones = len(carriers) * len(ratios) * len(indexes)
-    print(f"🔍 Iniciando fuerza bruta: {total_combinaciones} combinaciones...")
+    print(f"Iniciando fuerza bruta: {total_combinaciones} combinaciones...")
     
     mejores_candidatos = [] 
     
@@ -70,19 +72,31 @@ def main():
     )
     
     if not ruta_audio:
-        print("❌ Operación cancelada. No se seleccionó ningún archivo.")
+        print("Operación cancelada. No se seleccionó ningún archivo.")
         return
+    
+    print("\nIniciando cronómetro de evaluación...")
+    tiempo_inicio = time.time()  # <-- Marcamos el inicio
 
     # --- Ejecutar la Búsqueda ---
     top_3 = grid_search_fm(ruta_audio)
+
+    tiempo_fin = time.time()  # <-- Marcamos el final
+    tiempo_total_segundos = tiempo_fin - tiempo_inicio
+
+    # Convertimos a minutos y segundos para que sea más fácil de leer
+    minutos = int(tiempo_total_segundos // 60)
+    segundos = tiempo_total_segundos % 60
 
     # --- Guardar y mostrar resultados ---
     carpeta_salida = "./resultados_grid_search"
     os.makedirs(carpeta_salida, exist_ok=True)
     
     print("\n" + "="*50)
-    print("🏆 ¡BÚSQUEDA COMPLETADA! TOP 3 MEJORES COMBINACIONES")
+    print("¡BÚSQUEDA COMPLETADA! TOP 3 MEJORES COMBINACIONES")
     print("="*50)
+    print(f"Tiempo total de ejecución: {minutos} minutos y {segundos:.2f} segundos")
+    print("="*50 + "\n")
     
     nombre_base = os.path.splitext(os.path.basename(ruta_audio))[0]
     
@@ -97,7 +111,7 @@ def main():
         ruta_guardado = os.path.join(carpeta_salida, f"{nombre_base}_top{rank+1}_C{c:.0f}_R{r:.2f}_I{idx:.1f}.wav")
         sf.write(ruta_guardado, audio_ganador, sr, subtype='PCM_16')
 
-    print("\n✅ Los audios ganadores se han guardado en la carpeta:")
+    print("\nLos audios ganadores se han guardado en la carpeta:")
     print(f"   {os.path.abspath(carpeta_salida)}")
 
 if __name__ == "__main__":

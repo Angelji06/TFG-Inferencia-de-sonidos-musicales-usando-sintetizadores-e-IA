@@ -217,7 +217,7 @@ fundamentales (frecuencia portadora, ratio e índice), se le añaden las envolve
 la envolvente de amplitud (\textit{attack, decay} y \textit{sustain}) y la envolvente del índice de 
 modulación (\textit{attack} y \textit{decay}).
 
-Son precisamente estas caractarísticas del \textbf{Prototipo 5}, por las que es necesario una nueva 
+Son precisamente estas características del \textbf{Prototipo 5}, por las que es necesario una nueva 
 forma de generación del dataset. La ampliación de 3 a 8 parámetros hace computacional inviable generar
 el dataset mediante un barrido de combinaciones posibles. Para dar solución a esta limitación, se genera el dataset
 por muestreo aleatorio. 
@@ -285,9 +285,87 @@ forma, se pueden probar diferentes combinaciones para ver cual es más interesan
         para evaluar la energía global (relación armónica), regularizando el timbre. A la penalización paramétrica se le da una importancia muy baja (0.05), ya que no es demasiado importante
         debido al carácter no inyectivo de la síntesis FM.
           
-        \item \textbf{MultiScaleSpectralLoss: }
-        
+        \item \textbf{MultiScaleSpectralLoss: } Esta función está inspirada en el modelo de síntesis diferencial DDSP. Al estar utilizando 
+        espectrogramas, se simulan los distintos tamaños de ventana de Fourier mediante agrupamientos espaciales temporales (\textit{Average Pooling}).
+        Se agrupa en seis factores (de 1, 2, 4, 8, 16 y 32) y se mide el error en cada una de esas escalas, siendo la media aritmética de esos errores
+        el valor de pérdida total. El cálculo del error de cada escala primero se calcula la diferencia sobre las magnitudes
+        lineales, la cual es útil para capturar picos de energía que pueden ser breves. A esto se le suma después la diferencia sobre las magnitudes en decibelios (logarítmico),
+        multiplicada por un factor $\alpha$ de 1.0, por lo que se le está danto la misma relevancia que el error lineal, capturando así perfectamente
+        la envolvente global y los momentos de baja energía. Mediante esta función, se consigue compara el sonido obtenido del original
+        en varios niveles de resolución simultáneamente. Por último, se le suma el error paramétrico (\textit{SmoothL1}) con un peso muy bajo (0.05) con el objetivo
+        de que la red no deje de tener mínimamente en cuenta los valores de los parámetros.   
     \end{itemize}
+\end{itemize}
+En la etapa final del entrenamiento, se encuentra el algoritmo de retropropagación (\textit{Backpropagation}), mediante el cual se actualizan
+los pesos para así minimizar el error en la red, calculando los gradientes del error con respecto a cada nodo. 
+Para la actualización de los pesos se emplea el optimizador \textbf{Adam} (\textit{Adaptive Moment Estimation}). Este se elige frente al descenso de gradiente común (SGD) debido al cálculo que hace 
+de las tasas de aprendizaje adatativas e independientes para cada parámetro. A parte, se guardan los pesos de la época que ha conseguido 
+el mínimo histórico con respecto al error sobre el conjunto de validación. Estos valores se almacenan en un archivo de punto de control (checkpoint.pth) junto
+con el resto de información de contexto necesaria: 
+
+\begin{itemize}
+        \item \textbf{Parámetros de Desnormalización: } Contiene las medias y desviaciones estándar obtenidas en la Fase 3
+        sobre los parámetros. Estas son necesarias para poder revertir el Z-score en las futuras predicciones. 
+          
+        \item \textbf{Contexto de Arquitectura: } Son las etiquetas que describen la topología (\textit{arch}: simple o full)
+        y el tipo de espectrogramas (\textit{spec\_mode}: stft o mel) que se han utilizado para el modelo.
+        
+        \item \textbf{Aislamiento de Datos: } Contiene los índices del conjunto de prueba (\textit{test\_indices}), necesario para la evaluación.
+        
+
+\end{itemize}
+
+La fase 5 consiste en la inferencia de parámetros de síntesis FM, mediante el modelo entrenado previamente, a partir
+de audios. 
+
+Al inicio de esta fase, se instancia el modelo y carga el punto de control, que instancia automáticamente
+el tipo de red. 
+
+La inferencia comienza cuando se recibe un archivo de audio (\textit{.wav}). En ese momento, se sigue el mismo flujo
+que en la Fase 2, transformando el audio en un tensor de espectrograma (del tipo indicado por \textit{spec\_mode}). Este 
+se introduce en el modelo (\textit{forward pass}), obteniendo así un vector latente de 8 valores, sobre el que se aplica
+una desnormalización (con los valores de Z-score almacenados en el \textit{checkpoint}) que da como resultado la predicción de 
+los parámetros. 
+
+En este punto, el sistema te permite llevar a cabo varias acciones diferentes mediante la 
+interfaz gráfica (GUI). Por un lado, se puede realizar una comparación visual del espectrograma del audio
+predicho con el del audio original. Para ello, se sintetizan los parámetros obtenidos y los parametros originales y se 
+calculan sus espectrogramas. También se da la opción de comparar acústicamente el audio original con el sintetizado por los parámetros
+inferidos (mediante \textit{sounddevice}) y de exportar estos a un sintetizador propio, con la opción de modificarlos manualmente. 
+
+La última fase se centra en la evaluación del rendimiento del sistema y en la experimentación en el uso de las
+diferentes combinaciones de arquitecturas y funciones de pérdida. Para ello, la fase se divide en dos vertientes:
+evaluación sobre \textit{Test Set} y evaluación sobre \textit{Benchmark}. En la primera, se utilizan las muestras reservadas en la división inicial del dataset (un 15\%).
+Los índices exactos de dicha muestra, se consiguen del archivo de punto de control (\textit{checkpoint}), evitando datos cruzados 
+con los vistos en el entrenamiento. Y en cuanto a la evaluación sobre \textit{Benchmark}, su objetivo 
+es poner a prueba el manejo del modelo dada la característica inyectividad nula de la síntesis FM. Para
+ello, se diseña un banco de pruebas (\textit{benchmark}) con 12 sonidos de referencia que abarcan todo el espacio tímbrico
+del sintetizador (desde un bajo limpio a sonidos agudos, complejos y muy ruidosos).
+
+Sobre los resultados obtenidos por las dos vertientes previas, se pueden calcular diferentes métricas
+para la evaluación del modelo en ambos ámbitos:
+
+\begin{itemize}
+
+\item \textbf{Métricas Sobre Parámetros: } Estas evalúan el modelo en función de la precisión obtenida
+en los parámetros inferidos. Se emplean las métricas de: Error Cuadrático Medio (MSE), que penaliza las desviaciones paramétricas grandes 
+entre predicción y original; Raíz del Error Cuadrático Medio (RMSE), que devuelve el error en las unidades originales de cada parámetro, consiguiendo
+ver de forma directa la precisión y así poder hacer comparaciones objetivas entre las distintas arquitecturas y funciones de pérdida;
+y Error Absoluto Medio (MAE), el cual es más robusto frente a valores atípicos. Estas métricas sufren ante e problema de la inyectividad 
+nula en la síntesis FM, por lo que se utilizan principalmente como diagnóstico rápido.
+
+\item \textbf{Métricas de Audio: } Estas son mucho más interesantes para conseguir una evaluación
+similar a la que daría un oído experto, ya que vuelven a sintetizar los parámetros y realizan una comparativa
+perceptual de los sonidos. Primero se aplica la Distancia L1 en Espectrogramas Mel (\textit{Mel l1}), la cual calcula el 
+Error Absoluto Medio (L1) sobre las señales previamente transformadas a la escala Mel, consiguiendo así la sensibilidad logarítmica
+del oído humano. De igual manera se aplica la Distorsión Cepstral Mel (MCD - \textit{Mel-Cepstral Distortion}). Es una métrica que trata 
+de evaluar la similitud del timbre de los audios, extrayendo 13 Coeficientes Cepstrales en las Frecuencias de Mel (MFCC). 
+El primer coeficiente, que representa la energía global, es descartado para que la métrica refleje exclusivamente el timbre (textura del sonido).
+
+\item \textbf{Métrica de Reconstrucción (Decoder L1): } En el caso en el que se utilice la arquitectura
+\textbf{CNNRegressor5}. Calcula el Error Absoluto Medio (L1) entre el espectrograma original y el reconstruido por la red,
+de forma que se consigue evaluar la asimilación de información en el espacio latente. 
+
 \end{itemize}
 
 \subsubsection{Experimentación}

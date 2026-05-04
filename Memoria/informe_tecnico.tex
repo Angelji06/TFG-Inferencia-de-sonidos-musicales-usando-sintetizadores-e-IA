@@ -44,7 +44,7 @@ Finalmente, la métrica se obtiene calculando la \textit{Distancia de Fréchet} 
 
 
 Para la implementación de la métrica FAD en el proyecto, se compararon dos conjuntos de datos: una muestra de 2.000 audios FM generados aleatoriamente
-y sus predicciones con el modelo utilizado en el \textit{Prototipo 4}. El resultado obtenido fue de \textbf{0.9999}, un valor que, según la literatura de referencia, indica una similitud estadística casi absoluta entre las distribuciones de audio.
+y sus predicciones con el modelo utilizado en el \textit{Prototipo 4}. El resultado obtenido fue de 0.9999, un valor que, según la literatura de referencia, indica una similitud estadística casi absoluta entre las distribuciones de audio.
 
 
 A pesar de que el resultado obtenido planteaba una evaluación teóricamente óptima, el análisis cualitativo reveló una discrepancia. 
@@ -77,8 +77,8 @@ la frecuencia.
 
 Por otra parte, para este mismo fin también se contempla el uso de los \textit{Mel Frecuency Cepstral Coefficients} (MFCC). Esta métrica aplica una Transformada 
 del Coseno Discreta (DCT) sobre un espectrograma previamente mapeado en la escala Mel. La principal diferencia, donde radica su interés, es 
-la capacidad de aislar la \textbf{envolvente espectral} del sonido, consiguiendo una representación matemática precisa del 
-\textbf{timbre} o la textura acústica del audio. Al comprimir la información en un vector de coeficientes de baja dimensionalidad, 
+la capacidad de aislar la envolvente espectral del sonido, consiguiendo una representación matemática precisa del 
+timbre o la textura acústica del audio. Al comprimir la información en un vector de coeficientes de baja dimensionalidad, 
 MFCC permite calcular eficientemente la distancia matemática entre el sonido objetivo y los sonidos conseguidos en las iteraciones
 del \textit{Grid Search}.
 

@@ -5,6 +5,7 @@ import numpy as np
 import librosa
 import soundfile as sf
 from tqdm import tqdm
+import time
 
 # Importamos tu función de síntesis (asegúrate de que el nombre coincida)
 from PrototiposAntiguos.Prototipo4.logica import fm_synthesize 
@@ -25,7 +26,7 @@ def calcular_error_mfcc(mfcc_objetivo_mean, audio_generado, sr, n_mfcc=13):
     return error
 
 def grid_search_fm_mfcc(ruta_audio_objetivo, sr=44100, duration=1.0):
-    print(f"🎙️ Analizando: {os.path.basename(ruta_audio_objetivo)}")
+    print(f"Analizando: {os.path.basename(ruta_audio_objetivo)}")
     
     # 1. Cargar el audio real (Ground Truth)
     y_target, _ = librosa.load(ruta_audio_objetivo, sr=sr, duration=duration)
@@ -40,7 +41,7 @@ def grid_search_fm_mfcc(ruta_audio_objetivo, sr=44100, duration=1.0):
     indexes = np.arange(1.0, 10.0 + 0.5, 0.5)
     
     total_combinaciones = len(carriers) * len(ratios) * len(indexes)
-    print(f"🔍 Iniciando fuerza bruta con MFCC: {total_combinaciones} combinaciones...")
+    print(f"Iniciando fuerza bruta con MFCC: {total_combinaciones} combinaciones...")
     
     mejores_candidatos = [] 
     
@@ -78,17 +79,30 @@ def main():
         print("❌ Operación cancelada. No se seleccionó ningún archivo.")
         return
 
-    # --- Ejecutar la Búsqueda ---
+    # --- Ejecutar la Búsqueda y Medir el Tiempo ---
+    print("\nIniciando cronómetro de evaluación (MFCC)...")
+    tiempo_inicio = time.time()  # <-- Marcamos el inicio
+    
     top_3 = grid_search_fm_mfcc(ruta_audio)
+
+    tiempo_fin = time.time()  # <-- Marcamos el final
+    tiempo_total_segundos = tiempo_fin - tiempo_inicio  # <-- Calculamos la diferencia
+    
+    # Convertimos a minutos y segundos para que sea más fácil de leer
+    minutos = int(tiempo_total_segundos // 60)
+    segundos = tiempo_total_segundos % 60
 
     # --- Guardar y mostrar resultados ---
     carpeta_salida = "./resultados_grid_search_mfcc"
     os.makedirs(carpeta_salida, exist_ok=True)
     
     print("\n" + "="*50)
-    print("🏆 ¡BÚSQUEDA COMPLETADA! TOP 3 MEJORES COMBINACIONES (MFCC)")
+    print("¡BÚSQUEDA COMPLETADA! TOP 3 MEJORES COMBINACIONES (MFCC)")
     print("="*50)
     
+    print(f"Tiempo total de ejecución: {minutos} minutos y {segundos:.2f} segundos") # <-- Imprimimos el tiempo
+    print("="*50 + "\n")
+
     nombre_base = os.path.splitext(os.path.basename(ruta_audio))[0]
     
     for rank in range(3):
@@ -102,7 +116,7 @@ def main():
         ruta_guardado = os.path.join(carpeta_salida, f"{nombre_base}_top{rank+1}_C{c:.0f}_R{r:.2f}_I{idx:.1f}_mfcc.wav")
         sf.write(ruta_guardado, audio_ganador, sr, subtype='PCM_16')
 
-    print("\n✅ Los audios ganadores se han guardado en la carpeta:")
+    print("\nLos audios ganadores se han guardado en la carpeta:")
     print(f"   {os.path.abspath(carpeta_salida)}")
 
 if __name__ == "__main__":
