@@ -15,11 +15,13 @@
 \contentsline {section}{\numberline {3.2}El Problema de la Inyectividad y la Necesidad de una Arquitectura Compleja}{11}{section.26}%
 \contentsline {subsection}{\numberline {3.2.1}Prototipo 4: Red Convolucional de Doble Cabeza}{11}{subsection.27}%
 \contentsline {subsection}{\numberline {3.2.2}Prototipo 4: Función de Pérdida Híbrida}{12}{subsection.29}%
-\contentsline {chapter}{\numberline {4}Conclusiones y Trabajo Futuro}{15}{chapter.33}%
-\contentsline {chapter}{Introduction}{17}{chapter*.34}%
+\contentsline {chapter}{\numberline {4}Arquitectura Final}{15}{chapter.33}%
+\contentsline {section}{\numberline {4.1}Expansión Paramétrica: Evolventes y Generación Aleatoria del Dataset}{15}{section.35}%
+\contentsline {chapter}{\numberline {5}Conclusiones y Trabajo Futuro}{21}{chapter.37}%
+\contentsline {chapter}{Introduction}{23}{chapter*.38}%
 \babel@toc {english}{}\relax 
-\contentsline {chapter}{Conclusions and Future Work}{19}{chapter*.35}%
-\contentsline {chapter}{Contribuciones Personales}{21}{chapter*.36}%
+\contentsline {chapter}{Conclusions and Future Work}{25}{chapter*.39}%
+\contentsline {chapter}{Contribuciones Personales}{27}{chapter*.40}%
 \babel@toc {spanish}{}\relax 
-\contentsline {chapter}{\numberline {A}Título del Apéndice A}{23}{appendix.37}%
-\contentsline {chapter}{\numberline {B}Título del Apéndice B}{25}{appendix.38}%
+\contentsline {chapter}{\numberline {A}Título del Apéndice A}{29}{appendix.41}%
+\contentsline {chapter}{\numberline {B}Título del Apéndice B}{31}{appendix.42}%

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.3.25)  4 MAY 2026 20:27
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.3.25)  5 MAY 2026 12:38
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -632,9 +632,9 @@ Package babel Info: 'spanish' activates 'spanish' shorthands.
  (Cascaras/dedicatoria.aux) (Cascaras/agradecimientos.aux) (Cascaras/resumen.aux) (Cascaras/abstract.aux) (TeXiS/TeXiS_toc.aux)
 LaTeX Info: Redefining \. on input line 20.
 LaTeX Info: Redefining \% on input line 20.
- (Capitulos/Introduccion.aux) (Capitulos/EstadoDeLaCuestion.aux) (Capitulos/EvolucionArquitectonica.aux) (Capitulos/ConclusionesTrabajoFuturo.aux) (Capitulos/Introduction.aux) (Capitulos/ConclusionsFutureWork.aux) (Capitulos/ContribucionesPersonales.aux)
-LaTeX Info: Redefining \. on input line 29.
-LaTeX Info: Redefining \% on input line 29.
+ (Capitulos/Introduccion.aux) (Capitulos/EstadoDeLaCuestion.aux) (Capitulos/EvolucionArquitectonica.aux) (Capitulos/ArquitecturaFinal.aux) (Capitulos/ConclusionesTrabajoFuturo.aux) (Capitulos/Introduction.aux) (Capitulos/ConclusionsFutureWork.aux) (Capitulos/ContribucionesPersonales.aux)
+LaTeX Info: Redefining \. on input line 30.
+LaTeX Info: Redefining \% on input line 30.
  (Cascaras/bibliografia.aux) (Apendices/appendixA.aux) (Apendices/appendixB.aux) (Cascaras/fin.aux))
 \openout1 = `TFGTeXiS.aux'.
 
@@ -739,7 +739,7 @@ Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
 \evensidemarginOriginal=\skip95
 \oddsidemarginOriginal=\skip96
 \longTitulo=\skip97
-<Imagenes/Bitmap/escudoUCMcolor.png, id=107, 600.3228pt x 678.3744pt>
+<Imagenes/Bitmap/escudoUCMcolor.png, id=115, 600.3228pt x 678.3744pt>
 File: Imagenes/Bitmap/escudoUCMcolor.png Graphic file (type png)
 <use Imagenes/Bitmap/escudoUCMcolor.png>
 Package pdftex.def Info: Imagenes/Bitmap/escudoUCMcolor.png  used on input line 188.
@@ -796,8 +796,8 @@ LaTeX Info: Redefining \. on input line 1.
 LaTeX Info: Redefining \% on input line 1.
 LaTeX Info: Redefining \. on input line 3.
 LaTeX Info: Redefining \% on input line 3.
-LaTeX Info: Redefining \. on input line 23.
-LaTeX Info: Redefining \% on input line 23.
+LaTeX Info: Redefining \. on input line 25.
+LaTeX Info: Redefining \% on input line 25.
 )
 \tf@toc=\write6
 \openout6 = `TFGTeXiS.toc'.
@@ -809,8 +809,8 @@ LaTeX Info: Redefining \. on input line 1.
 LaTeX Info: Redefining \% on input line 1.
 LaTeX Info: Redefining \. on input line 3.
 LaTeX Info: Redefining \% on input line 3.
-LaTeX Info: Redefining \. on input line 9.
-LaTeX Info: Redefining \% on input line 9.
+LaTeX Info: Redefining \. on input line 11.
+LaTeX Info: Redefining \% on input line 11.
 )
 \tf@lof=\write7
 \openout7 = `TFGTeXiS.lof'.
@@ -822,8 +822,8 @@ LaTeX Info: Redefining \. on input line 1.
 LaTeX Info: Redefining \% on input line 1.
 LaTeX Info: Redefining \. on input line 3.
 LaTeX Info: Redefining \% on input line 3.
-LaTeX Info: Redefining \. on input line 9.
-LaTeX Info: Redefining \% on input line 9.
+LaTeX Info: Redefining \. on input line 10.
+LaTeX Info: Redefining \% on input line 10.
 )
 \tf@lot=\write8
 \openout8 = `TFGTeXiS.lot'.
@@ -921,24 +921,6 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 
  (Capitulos/EstadoDeLaCuestion.tex
 Cap\'itulo 2.
-
-Package natbib Warning: Citation `ldesc2e' on page 7 undefined on input line 7.
-
-
-Package natbib Warning: Citation `notsoshort' on page 7 undefined on input line 8.
-
-
-Package natbib Warning: Citation `latexAPrimer' on page 7 undefined on input line 9.
-
-
-Package natbib Warning: Citation `latexCompanion' on page 7 undefined on input line 12.
-
-
-Package natbib Warning: Citation `LaTeXLamport' on page 7 undefined on input line 12.
-
-
-Package natbib Warning: Citation `texKnuth' on page 7 undefined on input line 12.
-
 ) [7
 
 
@@ -1007,42 +989,115 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
 [13]
-\openout2 = `Capitulos/ConclusionesTrabajoFuturo.aux'.
+\openout2 = `Capitulos/ArquitecturaFinal.aux'.
 
- (Capitulos/ConclusionesTrabajoFuturo.tex [14
+ (Capitulos/ArquitecturaFinal.tex [14
 
 
 
 
 ]
 Cap\'itulo 4.
-) [15]
+<Imagenes/Bitmap/diagrama.png, id=325, 1653.17625pt x 1064.97874pt>
+File: Imagenes/Bitmap/diagrama.png Graphic file (type png)
+<use Imagenes/Bitmap/diagrama.png>
+Package pdftex.def Info: Imagenes/Bitmap/diagrama.png  used on input line 10.
+(pdftex.def)             Requested size: 426.79135pt x 274.93791pt.
+[15]
+LaTeX Info: Redefining \. on input line 59.
+LaTeX Info: Redefining \% on input line 59.
+
+
+Package fancyhdr Warning: \headheight is too small (14.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
+
+[16 <./Imagenes/Bitmap/diagrama.png>]
+LaTeX Info: Redefining \. on input line 100.
+LaTeX Info: Redefining \% on input line 100.
+
+
+Package fancyhdr Warning: \headheight is too small (14.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
+
+[17]
+Overfull \hbox (29.28894pt too wide) in paragraph at lines 116--117
+[]\T1/cmr/bx/n/12 Aislamiento de Da-tos:  \T1/cmr/m/n/12 Con-tie-ne los ín-di-ces del con-jun-to de prue-ba (\T1/cmr/m/it/12 test_indices\T1/cmr/m/n/12 ),
+ []
+
+LaTeX Info: Redefining \. on input line 133.
+LaTeX Info: Redefining \% on input line 133.
+
+Package fancyhdr Warning: \headheight is too small (14.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
+
+[18]
+LaTeX Info: Redefining \. on input line 171.
+LaTeX Info: Redefining \% on input line 171.
+
+
+Package fancyhdr Warning: \headheight is too small (14.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
+
+[19])
+LaTeX Info: Redefining \. on input line 143.
+LaTeX Info: Redefining \% on input line 143.
+
+
+Package fancyhdr Warning: \headheight is too small (14.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
+
+[20]
+\openout2 = `Capitulos/ConclusionesTrabajoFuturo.aux'.
+
+ (Capitulos/ConclusionesTrabajoFuturo.tex
+Cap\'itulo 5.
+) [21
+
+
+
+
+]
 \openout2 = `Capitulos/Introduction.aux'.
 
- (Capitulos/Introduction.tex [16
+ (Capitulos/Introduction.tex [22
 
 
 
 
-]) [17]
+]) [23]
 \openout2 = `Capitulos/ConclusionsFutureWork.aux'.
 
- (Capitulos/ConclusionsFutureWork.tex [18
+ (Capitulos/ConclusionsFutureWork.tex [24
 
 
 
 
-]) [19]
+]) [25]
 LaTeX Info: Redefining \. on input line 153.
 LaTeX Info: Redefining \% on input line 153.
 \openout2 = `Capitulos/ContribucionesPersonales.aux'.
 
- (Capitulos/ContribucionesPersonales.tex [20
+ (Capitulos/ContribucionesPersonales.tex [26
 
 
 
 
-]) [21]
+]) [27]
 \openout2 = `Cascaras/bibliografia.aux'.
 
  (Cascaras/bibliografia.tex
@@ -1050,7 +1105,7 @@ No file TFGTeXiS.bbl.
 )
 \openout2 = `Apendices/appendixA.aux'.
 
- (Apendices/appendixA.tex [22
+ (Apendices/appendixA.tex [28
 
 
 
@@ -1060,58 +1115,54 @@ No file TFGTeXiS.bbl.
 
 ]
 Ap\'{e}ndice A.
-) [23]
+) [29]
 \openout2 = `Apendices/appendixB.aux'.
 
- (Apendices/appendixB.tex [24
+ (Apendices/appendixB.tex [30
 
 
 
 
 ]
 Ap\'{e}ndice B.
-) [25] [26
+) [31] [32
 
 
 
 ]
 \openout2 = `Cascaras/fin.aux'.
 
- (Cascaras/fin.tex [27
+ (Cascaras/fin.tex [33
 
-] [28])
-
-Package natbib Warning: There were undefined citations.
-
-(TFGTeXiS.aux (Cascaras/cover.aux)
+] [34]) (TFGTeXiS.aux (Cascaras/cover.aux)
 LaTeX Info: Redefining \. on input line 13.
 LaTeX Info: Redefining \% on input line 13.
  (Cascaras/dedicatoria.aux) (Cascaras/agradecimientos.aux) (Cascaras/resumen.aux) (Cascaras/abstract.aux) (TeXiS/TeXiS_toc.aux)
 LaTeX Info: Redefining \. on input line 20.
 LaTeX Info: Redefining \% on input line 20.
- (Capitulos/Introduccion.aux) (Capitulos/EstadoDeLaCuestion.aux) (Capitulos/EvolucionArquitectonica.aux) (Capitulos/ConclusionesTrabajoFuturo.aux) (Capitulos/Introduction.aux) (Capitulos/ConclusionsFutureWork.aux) (Capitulos/ContribucionesPersonales.aux)
-LaTeX Info: Redefining \. on input line 29.
-LaTeX Info: Redefining \% on input line 29.
+ (Capitulos/Introduccion.aux) (Capitulos/EstadoDeLaCuestion.aux) (Capitulos/EvolucionArquitectonica.aux) (Capitulos/ArquitecturaFinal.aux) (Capitulos/ConclusionesTrabajoFuturo.aux) (Capitulos/Introduction.aux) (Capitulos/ConclusionsFutureWork.aux) (Capitulos/ContribucionesPersonales.aux)
+LaTeX Info: Redefining \. on input line 30.
+LaTeX Info: Redefining \% on input line 30.
  (Cascaras/bibliografia.aux) (Apendices/appendixA.aux) (Apendices/appendixB.aux) (Cascaras/fin.aux))
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
 Package rerunfilecheck Info: File `TFGTeXiS.out' has not changed.
-(rerunfilecheck)             Checksum: C656D80F5F65268AEB7B0E7E1BCD1521;4760.
+(rerunfilecheck)             Checksum: 6F16064C80175B8416A3D81EA2EF43B3;5323.
  ) 
 Here is how much of TeX's memory you used:
- 19261 strings out of 467871
- 331384 string characters out of 5418376
- 854307 words of memory out of 5000000
- 47377 multiletter control sequences out of 15000+600000
- 651709 words of font info for 89 fonts, out of 8000000 for 9000
+ 19326 strings out of 467871
+ 333701 string characters out of 5418376
+ 857522 words of memory out of 5000000
+ 47423 multiletter control sequences out of 15000+600000
+ 652732 words of font info for 91 fonts, out of 8000000 for 9000
  1379 hyphenation exceptions out of 8191
- 97i,12n,109p,807b,848s stack positions out of 10000i,1000n,20000p,200000b,200000s
- <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1095.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1000.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1000.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm0700.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm0800.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\eccc1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1440.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm2488.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1440.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1728.pk><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb>
-Output written on TFGTeXiS.pdf (46 pages, 705146 bytes).
+ 97i,12n,109p,763b,848s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1095.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1000.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1000.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1000.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm0700.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm0800.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\eccc1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1440.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm2488.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1440.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1728.pk><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb>
+Output written on TFGTeXiS.pdf (52 pages, 892259 bytes).
 PDF statistics:
- 961 PDF objects out of 1000 (max. 8388607)
- 91 named destinations out of 1000 (max. 500000)
- 214 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1066 PDF objects out of 1200 (max. 8388607)
+ 101 named destinations out of 1000 (max. 500000)
+ 235 words of extra memory for PDF output out of 10000 (max. 10000000)
 
