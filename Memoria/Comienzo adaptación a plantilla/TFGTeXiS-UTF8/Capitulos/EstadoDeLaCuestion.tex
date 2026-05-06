@@ -14,3 +14,13 @@
 %Después, \LaTeX se ocupa de rellenar la sección de bibliografía con las entradas \textbf{que hayan sido citadas} (es decir, no con todas las entradas que hay en el .bib, sino sólo con aquellas que se hayan citado en alguna parte del texto).
 
 %Bibtex es un programa separado de latex, pdflatex o cualquier otra cosa que se use para compilar los .tex, de manera que para que se rellene correctamente la sección de bibliografía es necesario compilar primero el trabajo (a veces es necesario compilarlo dos veces), compilar después con bibtex, y volver a compilar otra vez el trabajo (de nuevo, puede ser necesario compilarlo dos veces). 
+La métrica \textit{Fréchet Audio Distance} (FAD) \cite{kilgour19_interspeech} fue introducida originalmente por investigadores de Google AI y es utilizada actualmente en proyectos muy grandes como 
+MusicLM \cite{agostinelli2023musiclm}, pudiendo considerarse como el \textbf{estado del arte} para medir la calidad objetiva de los audios generados mediante Inteligencia Artificial, adaptando al dominio del audio las métricas utilizadas en la generación de imágenes.
+
+Conceptualmente, el FAD deriva de \textit{Fréchet Inception Distance} (FID), una métrica referente en la evaluación de modelos generativos de imágenes.
+Al igual que su predecesora, esta métrica no realiza comparación muestra a muestra, sino que compara características de alto nivel extraídas por una red neuronal profunda.
+
+Para la extracción de estas caractarísticas, el FAD utiliza un modelo llamado \textit{VGGish}, un clasificador de audio entrenado con una base de datos 
+de gran envergadura de vídeos de YouTube. Este modelo transforma la señal de audio en \textit{log-mel features} extraídas del espectrograma de magnitud
+
+Finalmente, la métrica se obtiene calculando la \textit{Distancia de Fréchet} entre la música de referencia y la generada. Un valor de FAD reducido indíca una estadística similar entre el audio de referencia y el generado.

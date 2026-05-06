@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.3.25)  5 MAY 2026 12:38
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.3.25)  6 MAY 2026 11:25
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -105,6 +105,12 @@ LaTeX Info: Redefining \Relbar on input line 970.
 \mathdisplay@stack=\toks23
 LaTeX Info: Redefining \[ on input line 2950.
 LaTeX Info: Redefining \] on input line 2951.
+) (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/multirow\multirow.sty
+Package: multirow 2024/11/12 v2.9 Span multiple rows of a table
+\multirow@colwidth=\skip54
+\multirow@cntb=\count296
+\multirow@dima=\skip55
+\bigstrutjot=\dimen158
 ) (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/base\shortvrb.sty
 Package: shortvrb 2024/12/25 v3.0q Standard LaTeX documentation package V3 (FMi)
 ) (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/base\inputenc.sty
@@ -113,13 +119,13 @@ Package: inputenc 2024/02/08 v1.3d Input encoding file
 \inpenc@posthook=\toks25
 ) (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/natbib\natbib.sty
 Package: natbib 2010/09/13 8.31b (PWD, AO)
-\bibhang=\skip54
-\bibsep=\skip55
+\bibhang=\skip56
+\bibsep=\skip57
 LaTeX Info: Redefining \cite on input line 694.
-\c@NAT@ctr=\count296
+\c@NAT@ctr=\count297
 ) (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/generic/babel\babel.sty
 Package: babel 2025/12/11 v25.17 The multilingual framework for LuaLaTeX, pdfLaTeX and XeLaTeX
-\babel@savecnt=\count297
+\babel@savecnt=\count298
 LaTeX Encoding Info:    Redeclaring text command \ij (encoding OT1) on input line 2068.
 LaTeX Encoding Info:    Redeclaring text command \IJ (encoding OT1) on input line 2070.
 LaTeX Encoding Info:    Redeclaring text command \ij (encoding T1) on input line 2072.
@@ -127,11 +133,11 @@ LaTeX Encoding Info:    Redeclaring text command \IJ (encoding T1) on input line
 LaTeX Encoding Info:    Ignoring declaration for text command \ij (encoding ?) on input line 2074.
 LaTeX Encoding Info:    Ignoring declaration for text command \IJ (encoding ?) on input line 2076.
 LaTeX Encoding Info:    Ignoring declaration for text command \SS (encoding ?) on input line 2101.
-\U@D=\dimen158
+\U@D=\dimen159
 \l@unhyphenated=\language79
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/generic/babel\txtbabel.def)
 \bbl@readstream=\read3
-\bbl@dirlevel=\count298
+\bbl@dirlevel=\count299
 Package babel Info: Configuration files are deprecated, as
 (babel)             they can break document portability.
 (babel)             Reported on input line 4196.
@@ -158,15 +164,15 @@ Package babel Info: Importing font and identification data for spanish
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/babel-spanish\spanish.ldf
 Language: spanish.ldf 2021/05/27 v5.0q Spanish support from the babel system
 \es@quottoks=\toks26
-\es@quotdepth=\count299
+\es@quotdepth=\count300
 Package babel Info: Making " an active character on input line 570.
 Package babel Info: Making . an active character on input line 675.
 Package babel Info: Making < an active character on input line 722.
 Package babel Info: Making > an active character on input line 722.
 Package babel Info: Making ' an active character on input line 740.
 ))
-LaTeX Encoding Info:    Redeclaring text command \guillemotleft (encoding OT1) on input line 212.
-LaTeX Encoding Info:    Redeclaring text command \guillemotright (encoding OT1) on input line 212.
+LaTeX Encoding Info:    Redeclaring text command \guillemotleft (encoding OT1) on input line 213.
+LaTeX Encoding Info:    Redeclaring text command \guillemotright (encoding OT1) on input line 213.
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/url\url.sty
 \Urlmuskip=\muskip18
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
@@ -176,13 +182,13 @@ Package: ifpdf 2019/10/25 v3.4 ifpdf legacy package. Use iftex instead.
 Package: iftex 2024/12/12 v1.0g TeX engine tests
 )) (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/fncychap\fncychap.sty
 Package: fncychap 2007/07/30 v1.34 LaTeX package (Revised chapters)
-\RW=\skip56
-\mylen=\skip57
-\myhi=\skip58
-\px=\skip59
-\py=\skip60
-\pyy=\skip61
-\pxx=\skip62
+\RW=\skip58
+\mylen=\skip59
+\myhi=\skip60
+\px=\skip61
+\py=\skip62
+\pyy=\skip63
+\pxx=\skip64
 ) (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hyperref.sty
 Package: hyperref 2025-07-12 v7.01o Hypertext links for LaTeX
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty
@@ -215,16 +221,16 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/kvoptions\kvoptions.sty
 Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
 ))
-\c@section@level=\count300
+\c@section@level=\count301
 ) (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/etoolbox\etoolbox.sty
 Package: etoolbox 2025/10/02 v2.5m e-TeX tools for LaTeX (JAW)
-\etb@tempcnta=\count301
+\etb@tempcnta=\count302
 ) (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/generic/stringenc\stringenc.sty
 Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO)
 )
-\@linkdim=\dimen159
-\Hy@linkcounter=\count302
-\Hy@pagecounter=\count303
+\@linkdim=\dimen160
+\Hy@linkcounter=\count303
+\Hy@pagecounter=\count304
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\pd1enc.def
 File: pd1enc.def 2025-07-12 v7.01o Hyperref: PDFDocEncoding definition (HO)
 Now handling font encoding PD1 ...
@@ -232,7 +238,7 @@ Now handling font encoding PD1 ...
 ) (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/generic/intcalc\intcalc.sty
 Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 )
-\Hy@SavedSpaceFactor=\count304
+\Hy@SavedSpaceFactor=\count305
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\puenc.def
 File: puenc.def 2025-07-12 v7.01o Hyperref: PDF Unicode definition (HO)
 Now handling font encoding PU ...
@@ -253,17 +259,17 @@ Package hyperref Info: Plain pages OFF on input line 4210.
 Package hyperref Info: Backreferencing OFF on input line 4215.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4462.
-\c@Hy@tempcnt=\count305
+\c@Hy@tempcnt=\count306
 LaTeX Info: Redefining \url on input line 4801.
-\XeTeXLinkMargin=\dimen160
+\XeTeXLinkMargin=\dimen161
 (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/generic/bitset\bitset.sty
 Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/generic/bigintcalc\bigintcalc.sty
 Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO)
 ))
-\Fld@menulength=\count306
-\Field@Width=\dimen161
-\Fld@charsize=\dimen162
+\Fld@menulength=\count307
+\Field@Width=\dimen162
+\Fld@charsize=\dimen163
 Package hyperref Info: Hyper figures OFF on input line 6078.
 Package hyperref Info: Link nesting OFF on input line 6083.
 Package hyperref Info: Hyper index ON on input line 6086.
@@ -271,15 +277,15 @@ Package hyperref Info: backreferencing OFF on input line 6093.
 Package hyperref Info: Link coloring OFF on input line 6098.
 Package hyperref Info: Link coloring with OCG OFF on input line 6103.
 Package hyperref Info: PDF/A mode OFF on input line 6108.
-\Hy@abspage=\count307
-\c@Item=\count308
-\c@Hfootnote=\count309
+\Hy@abspage=\count308
+\c@Item=\count309
+\c@Hfootnote=\count310
 )
 Package hyperref Info: Driver (autodetected): hpdftex.
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hpdftex.def
 File: hpdftex.def 2025-07-12 v7.01o Hyperref driver for pdfTeX
-\Fld@listcount=\count310
-\c@bookmark@seq@number=\count311
+\Fld@listcount=\count311
+\c@bookmark@seq@number=\count312
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/rerunfilecheck\rerunfilecheck.sty
 Package: rerunfilecheck 2025-06-21 v1.11 Rerun checks for auxiliary files (HO)
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/generic/uniquecounter\uniquecounter.sty
@@ -287,9 +293,9 @@ Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
 )
 Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 284.
 )
-\Hy@SectionHShift=\skip63
+\Hy@SectionHShift=\skip65
 )
-Package hyperref Info: Option `colorlinks' set `false' on input line 291.
+Package hyperref Info: Option `colorlinks' set `false' on input line 292.
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/base\makeidx.sty
 Package: makeidx 2021/10/04 v1.0m Standard LaTeX package
 )
@@ -300,24 +306,24 @@ Package: makeidx 2021/10/04 v1.0m Standard LaTeX package
 Writing index file TFGTeXiS.idx
 (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/tools\multicol.sty
 Package: multicol 2025/10/21 v2.0b multicolumn formatting (FMi)
-\c@tracingmulticols=\count312
+\c@tracingmulticols=\count313
 \mult@box=\box55
-\multicol@leftmargin=\dimen163
-\c@unbalance=\count313
-\c@collectmore=\count314
-\doublecol@number=\count315
-\multicoltolerance=\count316
-\multicolpretolerance=\count317
-\full@width=\dimen164
-\page@free=\dimen165
-\premulticols=\dimen166
-\postmulticols=\dimen167
-\multicolsep=\skip64
-\multicolbaselineskip=\skip65
+\multicol@leftmargin=\dimen164
+\c@unbalance=\count314
+\c@collectmore=\count315
+\doublecol@number=\count316
+\multicoltolerance=\count317
+\multicolpretolerance=\count318
+\full@width=\dimen165
+\page@free=\dimen166
+\premulticols=\dimen167
+\postmulticols=\dimen168
+\multicolsep=\skip66
+\multicolbaselineskip=\skip67
 \partial@page=\box56
 \last@line=\box57
 \mc@boxedresult=\box58
-\maxbalancingoverflow=\dimen168
+\maxbalancingoverflow=\dimen169
 \mult@rightbox=\box59
 \mult@grightbox=\box60
 \mult@firstbox=\box61
@@ -358,70 +364,70 @@ Package: multicol 2025/10/21 v2.0b multicolumn formatting (FMi)
 \@tempa=\box96
 \@tempa=\box97
 \@tempa=\box98
-\c@minrows=\count318
-\c@columnbadness=\count319
-\c@finalcolumnbadness=\count320
-\last@try=\dimen169
-\multicolovershoot=\dimen170
-\multicolundershoot=\dimen171
+\c@minrows=\count319
+\c@columnbadness=\count320
+\c@finalcolumnbadness=\count321
+\last@try=\dimen170
+\multicolovershoot=\dimen171
+\multicolundershoot=\dimen172
 \mult@nat@firstbox=\box99
 \colbreak@box=\box100
-\mc@col@check@num=\count321
-\g__mc_curr_col_int=\count322
+\mc@col@check@num=\count322
+\g__mc_curr_col_int=\count323
 ) (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/subfig\subfig.sty
 Package: subfig 2005/06/28 ver: 1.3 subfig package
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/caption\caption.sty
 Package: caption 2023/08/05 v3.6o Customizing captions (AR)
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/caption\caption3.sty
 Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
-\caption@tempdima=\dimen172
-\captionmargin=\dimen173
-\caption@leftmargin=\dimen174
-\caption@rightmargin=\dimen175
-\caption@width=\dimen176
-\caption@indent=\dimen177
-\caption@parindent=\dimen178
-\caption@hangindent=\dimen179
+\caption@tempdima=\dimen173
+\captionmargin=\dimen174
+\caption@leftmargin=\dimen175
+\caption@rightmargin=\dimen176
+\caption@width=\dimen177
+\caption@indent=\dimen178
+\caption@parindent=\dimen179
+\caption@hangindent=\dimen180
 Package caption Info: Standard document class detected.
 )
-\c@caption@flags=\count323
-\c@continuedfloat=\count324
+\c@caption@flags=\count324
+\c@continuedfloat=\count325
 Package caption Info: hyperref package is loaded.
 )
-\c@KVtest=\count325
-\sf@farskip=\skip66
-\sf@captopadj=\dimen180
-\sf@capskip=\skip67
-\sf@nearskip=\skip68
-\c@subfigure=\count326
-\c@subfigure@save=\count327
-\c@lofdepth=\count328
-\c@subtable=\count329
-\c@subtable@save=\count330
-\c@lotdepth=\count331
-\sf@top=\skip69
-\sf@bottom=\skip70
+\c@KVtest=\count326
+\sf@farskip=\skip68
+\sf@captopadj=\dimen181
+\sf@capskip=\skip69
+\sf@nearskip=\skip70
+\c@subfigure=\count327
+\c@subfigure@save=\count328
+\c@lofdepth=\count329
+\c@subtable=\count330
+\c@subtable@save=\count331
+\c@lotdepth=\count332
+\sf@top=\skip71
+\sf@bottom=\skip72
 )
 \sf@box=\box101
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/listings\listings.sty
-\lst@mode=\count332
+\lst@mode=\count333
 \lst@gtempboxa=\box102
 \lst@token=\toks28
-\lst@length=\count333
-\lst@currlwidth=\dimen181
-\lst@column=\count334
-\lst@pos=\count335
-\lst@lostspace=\dimen182
-\lst@width=\dimen183
-\lst@newlines=\count336
-\lst@lineno=\count337
-\lst@maxwidth=\dimen184
+\lst@length=\count334
+\lst@currlwidth=\dimen182
+\lst@column=\count335
+\lst@pos=\count336
+\lst@lostspace=\dimen183
+\lst@width=\dimen184
+\lst@newlines=\count337
+\lst@lineno=\count338
+\lst@maxwidth=\dimen185
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstpatch.sty
 File: lstpatch.sty 2025/11/14 1.11b (Carsten Heinz)
 ) (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstmisc.sty
 File: lstmisc.sty 2025/11/14 1.11b (Carsten Heinz)
-\c@lstnumber=\count338
-\lst@skipnumbers=\count339
+\c@lstnumber=\count339
+\lst@skipnumbers=\count340
 \lst@framebox=\box103
 ) (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/listings\listings.cfg
 File: listings.cfg 2025/11/14 1.11b listings configuration
@@ -438,20 +444,20 @@ Package: listings 2025/11/14 1.11b (Carsten Heinz)
 Package: tabularx 2023/12/11 v2.12a `tabularx' package (DPC)
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/tools\array.sty
 Package: array 2025/09/25 v2.6n Tabular extension package (FMi)
-\col@sep=\dimen185
+\col@sep=\dimen186
 \ar@mcellbox=\box104
-\extrarowheight=\dimen186
+\extrarowheight=\dimen187
 \NC@list=\toks29
-\extratabsurround=\skip71
-\backup@length=\skip72
+\extratabsurround=\skip73
+\backup@length=\skip74
 \ar@cellbox=\box105
 )
-\TX@col@width=\dimen187
-\TX@old@table=\dimen188
-\TX@old@col=\dimen189
-\TX@target=\dimen190
-\TX@delta=\dimen191
-\TX@cols=\count340
+\TX@col@width=\dimen188
+\TX@old@table=\dimen189
+\TX@old@col=\dimen190
+\TX@target=\dimen191
+\TX@delta=\dimen192
+\TX@cols=\count341
 \TX@ftn=\toks30
 ) (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/base\fontenc.sty
 Package: fontenc 2025/07/18 v2.1d Standard LaTeX package
@@ -470,59 +476,59 @@ Package graphics Info: Driver file: pdftex.def on input line 106.
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def
 File: pdftex.def 2025/09/29 v1.2d Graphics/color driver for pdftex
 ))
-\Gin@req@height=\dimen192
-\Gin@req@width=\dimen193
+\Gin@req@height=\dimen193
+\Gin@req@width=\dimen194
 )
-\epsfxsize=\dimen194
-\epsfysize=\dimen195
+\epsfxsize=\dimen195
+\epsfysize=\dimen196
 ) (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/tools\calc.sty
 Package: calc 2025/03/01 v4.3b Infix arithmetic (KKT,FJ)
-\calc@Acount=\count341
-\calc@Bcount=\count342
-\calc@Adimen=\dimen196
-\calc@Bdimen=\dimen197
-\calc@Askip=\skip73
-\calc@Bskip=\skip74
+\calc@Acount=\count342
+\calc@Bcount=\count343
+\calc@Adimen=\dimen197
+\calc@Bdimen=\dimen198
+\calc@Askip=\skip75
+\calc@Bskip=\skip76
 LaTeX Info: Redefining \setlength on input line 86.
 LaTeX Info: Redefining \addtolength on input line 87.
-\calc@Ccount=\count343
-\calc@Cskip=\skip75
+\calc@Ccount=\count344
+\calc@Cskip=\skip77
 ) (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.sty
 Package: geometry 2026/03/07 v6.0 Page Geometry
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/generic/iftex\ifvtex.sty
 Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
 )
-\Gm@cnth=\count344
-\Gm@cntv=\count345
-\c@Gm@tempcnt=\count346
-\Gm@bindingoffset=\dimen198
-\Gm@wd@mp=\dimen199
-\Gm@odd@mp=\dimen256
-\Gm@even@mp=\dimen257
-\Gm@layoutwidth=\dimen258
-\Gm@layoutheight=\dimen259
-\Gm@layouthoffset=\dimen260
-\Gm@layoutvoffset=\dimen261
+\Gm@cnth=\count345
+\Gm@cntv=\count346
+\c@Gm@tempcnt=\count347
+\Gm@bindingoffset=\dimen199
+\Gm@wd@mp=\dimen256
+\Gm@odd@mp=\dimen257
+\Gm@even@mp=\dimen258
+\Gm@layoutwidth=\dimen259
+\Gm@layoutheight=\dimen260
+\Gm@layouthoffset=\dimen261
+\Gm@layoutvoffset=\dimen262
 \Gm@dimlist=\toks31
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.cfg)) (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/titlesec\titlesec.sty
 Package: titlesec 2025/01/04 v2.17 Sectioning titles
 \ttl@box=\box106
-\beforetitleunit=\skip76
-\aftertitleunit=\skip77
-\ttl@plus=\dimen262
-\ttl@minus=\dimen263
+\beforetitleunit=\skip78
+\aftertitleunit=\skip79
+\ttl@plus=\dimen263
+\ttl@minus=\dimen264
 \ttl@toksa=\toks32
-\titlewidth=\dimen264
-\titlewidthlast=\dimen265
-\titlewidthfirst=\dimen266
+\titlewidth=\dimen265
+\titlewidthlast=\dimen266
+\titlewidthfirst=\dimen267
 ) (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/csquotes\csquotes.sty
 Package: csquotes 2024-04-04 v5.2o context-sensitive quotations (JAW)
-\csq@reset=\count347
-\csq@gtype=\count348
-\csq@glevel=\count349
-\csq@qlevel=\count350
-\csq@maxlvl=\count351
-\csq@tshold=\count352
+\csq@reset=\count348
+\csq@gtype=\count349
+\csq@glevel=\count350
+\csq@qlevel=\count351
+\csq@maxlvl=\count352
+\csq@tshold=\count353
 \csq@ltx@everypar=\toks33
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/csquotes\csquotes.def
 File: csquotes.def 2024-04-04 v5.2o csquotes generic definitions (JAW)
@@ -537,8 +543,8 @@ Package: pdfpages 2026/03/30 v0.6h Insert pages of external PDF documents (AM)
 Package: ifthen 2024/03/16 v1.1e Standard LaTeX ifthen package (DPC)
 ) (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/eso-pic\eso-pic.sty
 Package: eso-pic 2025/12/10 v3.0d eso-pic (RN)
-\ESO@tempdima=\dimen267
-\ESO@tempdimb=\dimen268
+\ESO@tempdima=\dimen268
+\ESO@tempdimb=\dimen269
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/xcolor\xcolor.sty
 Package: xcolor 2024/09/29 v3.02 LaTeX color extensions (UK)
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\color.cfg
@@ -556,52 +562,52 @@ Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1370.
 Package xcolor Info: Model `Gray' substituted by `gray' on input line 1371.
 Package xcolor Info: Model `wave' substituted by `hsb' on input line 1372.
 ))
-\AM@pagewidth=\dimen269
-\AM@pageheight=\dimen270
-\AM@fboxrule=\dimen271
+\AM@pagewidth=\dimen270
+\AM@pageheight=\dimen271
+\AM@fboxrule=\dimen272
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/pdfpages\pppdftex.def
 File: pppdftex.def 2026/03/30 v0.6h Pdfpages driver for pdfTeX (AM)
 )
-\pdfpages@includegraphics@status=\count353
+\pdfpages@includegraphics@status=\count354
 \AM@pagebox=\box107
 \AM@global@opts=\toks34
-\AM@pagecnt=\count354
+\AM@pagecnt=\count355
 \AM@toc@title=\toks35
 \AM@lof@heading=\toks36
-\c@AM@survey=\count355
+\c@AM@survey=\count356
 \AM@templatesizebox=\box108
 ) (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/lipsum\lipsum.sty (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/l3packages/l3keys2e\l3keys2e.sty (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/l3kernel\expl3.sty
 Package: expl3 2025-12-24 L3 programming layer (loader) 
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdftex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count356
+\l__color_backend_stack_int=\count357
 ))
 Package: l3keys2e 2025-10-09 LaTeX2e option processing using LaTeX3 keys
 )
 Package: lipsum 2021-09-20 v2.7 150 paragraphs of Lorem Ipsum dummy text
-\g__lipsum_par_int=\count357
-\l__lipsum_a_int=\count358
-\l__lipsum_b_int=\count359
+\g__lipsum_par_int=\count358
+\l__lipsum_a_int=\count359
+\l__lipsum_b_int=\count360
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/lipsum\lipsum.ltd.tex)))
 
 LaTeX Warning: \include should only be used after \begin{document} on input line 464.
 
 (TeXiS/TeXiS_cab.tex (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/fancyhdr\fancyhdr.sty
 Package: fancyhdr 2025/02/07 v5.2 Extensive control of page headers and footers
-\f@nch@headwidth=\skip78
-\f@nch@offset@elh=\skip79
-\f@nch@offset@erh=\skip80
-\f@nch@offset@olh=\skip81
-\f@nch@offset@orh=\skip82
-\f@nch@offset@elf=\skip83
-\f@nch@offset@erf=\skip84
-\f@nch@offset@olf=\skip85
-\f@nch@offset@orf=\skip86
-\f@nch@height=\skip87
-\f@nch@footalignment=\skip88
-\f@nch@widthL=\skip89
-\f@nch@widthC=\skip90
-\f@nch@widthR=\skip91
+\f@nch@headwidth=\skip80
+\f@nch@offset@elh=\skip81
+\f@nch@offset@erh=\skip82
+\f@nch@offset@olh=\skip83
+\f@nch@offset@orh=\skip84
+\f@nch@offset@elf=\skip85
+\f@nch@offset@erf=\skip86
+\f@nch@offset@olf=\skip87
+\f@nch@offset@orf=\skip88
+\f@nch@height=\skip89
+\f@nch@footalignment=\skip90
+\f@nch@widthL=\skip91
+\f@nch@widthC=\skip92
+\f@nch@widthR=\skip93
 \@temptokenb=\toks37
 ))
 
@@ -632,9 +638,9 @@ Package babel Info: 'spanish' activates 'spanish' shorthands.
  (Cascaras/dedicatoria.aux) (Cascaras/agradecimientos.aux) (Cascaras/resumen.aux) (Cascaras/abstract.aux) (TeXiS/TeXiS_toc.aux)
 LaTeX Info: Redefining \. on input line 20.
 LaTeX Info: Redefining \% on input line 20.
- (Capitulos/Introduccion.aux) (Capitulos/EstadoDeLaCuestion.aux) (Capitulos/EvolucionArquitectonica.aux) (Capitulos/ArquitecturaFinal.aux) (Capitulos/ConclusionesTrabajoFuturo.aux) (Capitulos/Introduction.aux) (Capitulos/ConclusionsFutureWork.aux) (Capitulos/ContribucionesPersonales.aux)
-LaTeX Info: Redefining \. on input line 30.
-LaTeX Info: Redefining \% on input line 30.
+ (Capitulos/Introduccion.aux) (Capitulos/EstadoDeLaCuestion.aux) (Capitulos/EvolucionArquitectonica.aux) (Capitulos/ExperimentacionPrevia.aux) (Capitulos/ArquitecturaFinal.aux) (Capitulos/ResultadosYEvaluacion.aux) (Capitulos/ConclusionesTrabajoFuturo.aux) (Capitulos/Introduction.aux) (Capitulos/ConclusionsFutureWork.aux) (Capitulos/ContribucionesPersonales.aux)
+LaTeX Info: Redefining \. on input line 32.
+LaTeX Info: Redefining \% on input line 32.
  (Cascaras/bibliografia.aux) (Apendices/appendixA.aux) (Apendices/appendixB.aux) (Cascaras/fin.aux))
 \openout1 = `TFGTeXiS.aux'.
 
@@ -667,19 +673,19 @@ Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: subfig package v1.3 is loaded.
 Package caption Info: listings package is loaded.
 Package caption Info: End \AtBeginDocument code.
-\c@lstlisting=\count360
+\c@lstlisting=\count361
  (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count361
-\scratchdimen=\dimen272
+\scratchcounter=\count362
+\scratchdimen=\dimen273
 \scratchbox=\box109
-\nofMPsegments=\count362
-\nofMParguments=\count363
+\nofMPsegments=\count363
+\nofMParguments=\count364
 \everyMPshowfont=\toks38
-\MPscratchCnt=\count364
-\MPscratchDim=\dimen273
-\MPnumerator=\count365
-\makeMPintoPDFobject=\count366
+\MPscratchCnt=\count365
+\MPscratchDim=\dimen274
+\MPnumerator=\count366
+\makeMPintoPDFobject=\count367
 \everyMPtoPDFconversion=\toks39
 ) (C:\Users\angel\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
@@ -733,18 +739,18 @@ Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
 \openout2 = `Cascaras/cover.aux'.
 
  (Cascaras/cover.tex
-\cambioIzquierdo=\skip92
-\cambioDerecho=\skip93
-\margenPortada=\skip94
-\evensidemarginOriginal=\skip95
-\oddsidemarginOriginal=\skip96
-\longTitulo=\skip97
-<Imagenes/Bitmap/escudoUCMcolor.png, id=115, 600.3228pt x 678.3744pt>
+\cambioIzquierdo=\skip94
+\cambioDerecho=\skip95
+\margenPortada=\skip96
+\evensidemarginOriginal=\skip97
+\oddsidemarginOriginal=\skip98
+\longTitulo=\skip99
+<Imagenes/Bitmap/escudoUCMcolor.png, id=155, 600.3228pt x 678.3744pt>
 File: Imagenes/Bitmap/escudoUCMcolor.png Graphic file (type png)
 <use Imagenes/Bitmap/escudoUCMcolor.png>
 Package pdftex.def Info: Imagenes/Bitmap/escudoUCMcolor.png  used on input line 188.
 (pdftex.def)             Requested size: 120.06242pt x 135.67247pt.
-\c@lastyear=\count367
+\c@lastyear=\count368
  [1
 
 
@@ -796,34 +802,35 @@ LaTeX Info: Redefining \. on input line 1.
 LaTeX Info: Redefining \% on input line 1.
 LaTeX Info: Redefining \. on input line 3.
 LaTeX Info: Redefining \% on input line 3.
-LaTeX Info: Redefining \. on input line 25.
-LaTeX Info: Redefining \% on input line 25.
+ [13]
+LaTeX Info: Redefining \. on input line 35.
+LaTeX Info: Redefining \% on input line 35.
 )
 \tf@toc=\write6
 \openout6 = `TFGTeXiS.toc'.
 
- [13] [14
-
-] (TFGTeXiS.lof
+ [14] (TFGTeXiS.lof
 LaTeX Info: Redefining \. on input line 1.
 LaTeX Info: Redefining \% on input line 1.
 LaTeX Info: Redefining \. on input line 3.
 LaTeX Info: Redefining \% on input line 3.
-LaTeX Info: Redefining \. on input line 11.
-LaTeX Info: Redefining \% on input line 11.
+LaTeX Info: Redefining \. on input line 14.
+LaTeX Info: Redefining \% on input line 14.
 )
 \tf@lof=\write7
 \openout7 = `TFGTeXiS.lof'.
 
- [15] [16
+ [15
+
+] [16
 
 ] (TFGTeXiS.lot
 LaTeX Info: Redefining \. on input line 1.
 LaTeX Info: Redefining \% on input line 1.
 LaTeX Info: Redefining \. on input line 3.
 LaTeX Info: Redefining \% on input line 3.
-LaTeX Info: Redefining \. on input line 10.
-LaTeX Info: Redefining \% on input line 10.
+LaTeX Info: Redefining \. on input line 13.
+LaTeX Info: Redefining \% on input line 13.
 )
 \tf@lot=\write8
 \openout8 = `TFGTeXiS.lot'.
@@ -921,6 +928,12 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 
  (Capitulos/EstadoDeLaCuestion.tex
 Cap\'itulo 2.
+
+Package natbib Warning: Citation `kilgour19_interspeech' on page 7 undefined on input line 17.
+
+
+Package natbib Warning: Citation `agostinelli2023musiclm' on page 7 undefined on input line 18.
+
 ) [7
 
 
@@ -989,21 +1002,104 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
 [13]
-\openout2 = `Capitulos/ArquitecturaFinal.aux'.
+\openout2 = `Capitulos/ExperimentacionPrevia.aux'.
 
- (Capitulos/ArquitecturaFinal.tex [14
+ (Capitulos/ExperimentacionPrevia.tex [14
 
 
 
 
 ]
 Cap\'itulo 4.
-<Imagenes/Bitmap/diagrama.png, id=325, 1653.17625pt x 1064.97874pt>
+
+LaTeX Warning: Reference `cap:EstadoDeLaCuestion' on page 15 undefined on input line 5.
+
+
+Package natbib Warning: Citation `kilgour2019' on page 15 undefined on input line 11.
+
+
+Package natbib Warning: Citation `kilgour2019' on page 15 undefined on input line 14.
+
+
+Package natbib Warning: Citation `kilgour2019' on page 15 undefined on input line 16.
+
+
+Package natbib Warning: Citation `agostinelli2023' on page 15 undefined on input line 16.
+
+[15]
+Overfull \hbox (1.98277pt too wide) in paragraph at lines 43--43
+|[]\T1/cmr/bx/n/14.4 Diseño ex-pe-ri-men-tal y pa-ra-me-tri-za-ción del Grid Search| 
+ []
+
+LaTeX Info: Redefining \. on input line 61.
+LaTeX Info: Redefining \% on input line 61.
+
+Package fancyhdr Warning: \headheight is too small (14.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
+
+[16]
+LaTeX Info: Redefining \. on input line 102.
+LaTeX Info: Redefining \% on input line 102.
+
+
+Package fancyhdr Warning: \headheight is too small (14.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
+
+[17]
+LaTeX Info: Redefining \. on input line 157.
+LaTeX Info: Redefining \% on input line 157.
+
+
+Package fancyhdr Warning: \headheight is too small (14.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
+
+[18])
+LaTeX Info: Redefining \. on input line 143.
+LaTeX Info: Redefining \% on input line 143.
+
+
+Package fancyhdr Warning: \headheight is too small (14.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
+
+[19]
+LaTeX Info: Redefining \. on input line 143.
+LaTeX Info: Redefining \% on input line 143.
+
+
+Package fancyhdr Warning: \headheight is too small (14.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
+
+[20]
+\openout2 = `Capitulos/ArquitecturaFinal.aux'.
+
+ (Capitulos/ArquitecturaFinal.tex
+Cap\'itulo 5.
+<Imagenes/Bitmap/diagrama.png, id=408, 1653.17625pt x 1064.97874pt>
 File: Imagenes/Bitmap/diagrama.png Graphic file (type png)
 <use Imagenes/Bitmap/diagrama.png>
 Package pdftex.def Info: Imagenes/Bitmap/diagrama.png  used on input line 10.
 (pdftex.def)             Requested size: 426.79135pt x 274.93791pt.
-[15]
+[21
+
+
+
+
+]
 LaTeX Info: Redefining \. on input line 59.
 LaTeX Info: Redefining \% on input line 59.
 
@@ -1014,7 +1110,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[16 <./Imagenes/Bitmap/diagrama.png>]
+[22 <./Imagenes/Bitmap/diagrama.png>]
 LaTeX Info: Redefining \. on input line 100.
 LaTeX Info: Redefining \% on input line 100.
 
@@ -1025,7 +1121,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[17]
+[23]
 Overfull \hbox (29.28894pt too wide) in paragraph at lines 116--117
 []\T1/cmr/bx/n/12 Aislamiento de Da-tos:  \T1/cmr/m/n/12 Con-tie-ne los ín-di-ces del con-jun-to de prue-ba (\T1/cmr/m/it/12 test_indices\T1/cmr/m/n/12 ),
  []
@@ -1039,7 +1135,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[18]
+[24]
 LaTeX Info: Redefining \. on input line 171.
 LaTeX Info: Redefining \% on input line 171.
 
@@ -1050,9 +1146,9 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[19])
-LaTeX Info: Redefining \. on input line 143.
-LaTeX Info: Redefining \% on input line 143.
+[25])
+LaTeX Info: Redefining \. on input line 144.
+LaTeX Info: Redefining \% on input line 144.
 
 
 Package fancyhdr Warning: \headheight is too small (14.0pt): 
@@ -1061,12 +1157,38 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[20]
+[26]
+\openout2 = `Capitulos/ResultadosYEvaluacion.aux'.
+
+ (Capitulos/ResultadosYEvaluacion.tex
+Cap\'itulo 6.
+<Imagenes/Bitmap/pipelines.png, id=442, 871.255pt x 688.5725pt>
+File: Imagenes/Bitmap/pipelines.png Graphic file (type png)
+<use Imagenes/Bitmap/pipelines.png>
+Package pdftex.def Info: Imagenes/Bitmap/pipelines.png  used on input line 12.
+(pdftex.def)             Requested size: 426.79135pt x 337.2984pt.
+) [27
+
+
+
+
+]
+LaTeX Info: Redefining \. on input line 145.
+LaTeX Info: Redefining \% on input line 145.
+
+
+Package fancyhdr Warning: \headheight is too small (14.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
+
+[28 <./Imagenes/Bitmap/pipelines.png>]
 \openout2 = `Capitulos/ConclusionesTrabajoFuturo.aux'.
 
  (Capitulos/ConclusionesTrabajoFuturo.tex
-Cap\'itulo 5.
-) [21
+Cap\'itulo 7.
+) [29
 
 
 
@@ -1074,30 +1196,30 @@ Cap\'itulo 5.
 ]
 \openout2 = `Capitulos/Introduction.aux'.
 
- (Capitulos/Introduction.tex [22
+ (Capitulos/Introduction.tex [30
 
 
 
 
-]) [23]
+]) [31]
 \openout2 = `Capitulos/ConclusionsFutureWork.aux'.
 
- (Capitulos/ConclusionsFutureWork.tex [24
+ (Capitulos/ConclusionsFutureWork.tex [32
 
 
 
 
-]) [25]
-LaTeX Info: Redefining \. on input line 153.
-LaTeX Info: Redefining \% on input line 153.
+]) [33]
+LaTeX Info: Redefining \. on input line 155.
+LaTeX Info: Redefining \% on input line 155.
 \openout2 = `Capitulos/ContribucionesPersonales.aux'.
 
- (Capitulos/ContribucionesPersonales.tex [26
+ (Capitulos/ContribucionesPersonales.tex [34
 
 
 
 
-]) [27]
+]) [35]
 \openout2 = `Cascaras/bibliografia.aux'.
 
  (Cascaras/bibliografia.tex
@@ -1105,7 +1227,7 @@ No file TFGTeXiS.bbl.
 )
 \openout2 = `Apendices/appendixA.aux'.
 
- (Apendices/appendixA.tex [28
+ (Apendices/appendixA.tex [36
 
 
 
@@ -1115,54 +1237,63 @@ No file TFGTeXiS.bbl.
 
 ]
 Ap\'{e}ndice A.
-) [29]
+) [37]
 \openout2 = `Apendices/appendixB.aux'.
 
- (Apendices/appendixB.tex [30
+ (Apendices/appendixB.tex [38
 
 
 
 
 ]
 Ap\'{e}ndice B.
-) [31] [32
+) [39] [40
 
 
 
 ]
 \openout2 = `Cascaras/fin.aux'.
 
- (Cascaras/fin.tex [33
+ (Cascaras/fin.tex [41
 
-] [34]) (TFGTeXiS.aux (Cascaras/cover.aux)
+] [42])
+No file TFGTeXiS.bbl.
+
+Package natbib Warning: There were undefined citations.
+
+(TFGTeXiS.aux (Cascaras/cover.aux)
 LaTeX Info: Redefining \. on input line 13.
 LaTeX Info: Redefining \% on input line 13.
  (Cascaras/dedicatoria.aux) (Cascaras/agradecimientos.aux) (Cascaras/resumen.aux) (Cascaras/abstract.aux) (TeXiS/TeXiS_toc.aux)
 LaTeX Info: Redefining \. on input line 20.
 LaTeX Info: Redefining \% on input line 20.
- (Capitulos/Introduccion.aux) (Capitulos/EstadoDeLaCuestion.aux) (Capitulos/EvolucionArquitectonica.aux) (Capitulos/ArquitecturaFinal.aux) (Capitulos/ConclusionesTrabajoFuturo.aux) (Capitulos/Introduction.aux) (Capitulos/ConclusionsFutureWork.aux) (Capitulos/ContribucionesPersonales.aux)
-LaTeX Info: Redefining \. on input line 30.
-LaTeX Info: Redefining \% on input line 30.
+ (Capitulos/Introduccion.aux) (Capitulos/EstadoDeLaCuestion.aux) (Capitulos/EvolucionArquitectonica.aux) (Capitulos/ExperimentacionPrevia.aux) (Capitulos/ArquitecturaFinal.aux) (Capitulos/ResultadosYEvaluacion.aux) (Capitulos/ConclusionesTrabajoFuturo.aux) (Capitulos/Introduction.aux) (Capitulos/ConclusionsFutureWork.aux) (Capitulos/ContribucionesPersonales.aux)
+LaTeX Info: Redefining \. on input line 32.
+LaTeX Info: Redefining \% on input line 32.
  (Cascaras/bibliografia.aux) (Apendices/appendixA.aux) (Apendices/appendixB.aux) (Cascaras/fin.aux))
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
+
+
+LaTeX Warning: There were undefined references.
+
 Package rerunfilecheck Info: File `TFGTeXiS.out' has not changed.
-(rerunfilecheck)             Checksum: 6F16064C80175B8416A3D81EA2EF43B3;5323.
+(rerunfilecheck)             Checksum: 324E5C364042E084D20FA55187B5CAFB;7706.
  ) 
 Here is how much of TeX's memory you used:
- 19326 strings out of 467871
- 333701 string characters out of 5418376
- 857522 words of memory out of 5000000
- 47423 multiletter control sequences out of 15000+600000
+ 19503 strings out of 467871
+ 339332 string characters out of 5418376
+ 861068 words of memory out of 5000000
+ 47562 multiletter control sequences out of 15000+600000
  652732 words of font info for 91 fonts, out of 8000000 for 9000
  1379 hyphenation exceptions out of 8191
- 97i,12n,109p,763b,848s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 97i,12n,109p,763b,900s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1095.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1000.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1000.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1000.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm0700.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm0800.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\eccc1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1440.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm2488.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1440.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1728.pk><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb>
-Output written on TFGTeXiS.pdf (52 pages, 892259 bytes).
+Output written on TFGTeXiS.pdf (60 pages, 977837 bytes).
 PDF statistics:
- 1066 PDF objects out of 1200 (max. 8388607)
- 101 named destinations out of 1000 (max. 500000)
- 235 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1200 PDF objects out of 1200 (max. 8388607)
+ 121 named destinations out of 1000 (max. 500000)
+ 320 words of extra memory for PDF output out of 10000 (max. 10000000)
 

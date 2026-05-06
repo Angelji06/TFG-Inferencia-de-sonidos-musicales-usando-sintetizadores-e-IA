@@ -1,0 +1,41 @@
+\chapter{Resultados y Evaluación}
+\label{cap:ResultadosYEvaluacion}
+
+% (TODO) Texto introductorio
+
+\section{Definición de los Pipelines Experimentales}
+
+% (ToDO) Texto descriptivo del diagrama de los pipelines
+
+\begin{figure} 
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/pipelines}
+    \caption{Flujo de trabajo del Prototipo 5: desde la síntesis matemática hasta la inferencia y posterior aplicación en la interfaz de usuario.}
+    \label{fig:pipelines}
+\end{figure}
+
+\section{Evaluación de las Diferentes Arquitecturas y Funciones de Pérdida}
+
+
+\begin{table}
+    \centering
+    \resizebox{\textwidth}{!}{ 
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{|c||c|c|c||c|c|c|}
+    \hline
+    \multirow{2}{*}{\textbf{Pipeline}} & \multicolumn{3}{c||}{\textbf{Métricas Paramétricas (RMSE) $\downarrow$}} & \multicolumn{3}{c|}{\textbf{Métricas Acústicas $\downarrow$}} \\ \cline{2-7} 
+    & \textbf{Carrier (Hz)} & \textbf{Ratio} & \textbf{Index} & \textbf{Mel L1 (dB)} & \textbf{MCD} & \textbf{Decoder L1} \\ \hline\hline
+    \textbf{P1} & X.XX & X.XX & X.XX & X.XX & X.XX & N/A \\ \hline
+    \textbf{P2} & X.XX & X.XX & X.XX & X.XX & X.XX & N/A \\ \hline
+    \textbf{P3} & X.XX & X.XX & X.XX & X.XX & X.XX & X.XX \\ \hline
+    \textbf{P4} & X.XX & X.XX & X.XX & X.XX & X.XX & X.XX \\ \hline
+    \textbf{P5} & X.XX & X.XX & X.XX & X.XX & X.XX & X.XX \\ \hline
+    \textbf{P6} & X.XX & X.XX & X.XX & X.XX & X.XX & X.XX \\ \hline
+    \end{tabular}
+    }
+    \caption{Comparativa de métricas paramétricas y acústicas sobre el Test Set para los 6 pipelines. Las flechas ($\downarrow$) indican que un valor menor representa un mejor rendimiento. El Decoder L1 no aplica (N/A) en las arquitecturas simples.}
+    \label{tab:resultados_cuantitativos}
+\end{table}
+
+
+% (TODO) Meter comparaciones de los espectrogramas generados por cada uno y compararlos con el original. Justificar esto un poco con que no podemos poner audios en la memoria (obviamente)
