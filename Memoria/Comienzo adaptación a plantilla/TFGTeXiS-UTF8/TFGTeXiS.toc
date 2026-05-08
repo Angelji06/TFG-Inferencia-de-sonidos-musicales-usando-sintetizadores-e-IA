@@ -24,14 +24,16 @@
 \contentsline {subsection}{\numberline {4.2.4}Conclusiones}{19}{subsection.39}%
 \contentsline {chapter}{\numberline {5}Arquitectura Final}{21}{chapter.40}%
 \contentsline {section}{\numberline {5.1}Expansión Paramétrica: Evolventes y Generación Aleatoria del Dataset}{21}{section.42}%
-\contentsline {chapter}{\numberline {6}Resultados y Evaluación}{27}{chapter.44}%
-\contentsline {section}{\numberline {6.1}Definición de los Pipelines Experimentales}{27}{section.45}%
-\contentsline {section}{\numberline {6.2}Evaluación de las Diferentes Arquitecturas y Funciones de Pérdida}{27}{section.47}%
-\contentsline {chapter}{\numberline {7}Conclusiones y Trabajo Futuro}{29}{chapter.49}%
-\contentsline {chapter}{Introduction}{31}{chapter*.50}%
+\contentsline {section}{\numberline {5.2}Interfaz Gráfica de la Aplicación}{26}{section.44}%
+\contentsline {section}{\numberline {5.3}Estructura del Código}{26}{section.45}%
+\contentsline {chapter}{\numberline {6}Resultados y Evaluación}{31}{chapter.50}%
+\contentsline {section}{\numberline {6.1}Definición de los Pipelines Experimentales}{31}{section.51}%
+\contentsline {section}{\numberline {6.2}Evaluación de las Diferentes Arquitecturas y Funciones de Pérdida}{31}{section.53}%
+\contentsline {chapter}{\numberline {7}Conclusiones y Trabajo Futuro}{33}{chapter.55}%
+\contentsline {chapter}{Introduction}{35}{chapter*.56}%
 \babel@toc {english}{}\relax 
-\contentsline {chapter}{Conclusions and Future Work}{33}{chapter*.51}%
-\contentsline {chapter}{Contribuciones Personales}{35}{chapter*.52}%
+\contentsline {chapter}{Conclusions and Future Work}{37}{chapter*.57}%
+\contentsline {chapter}{Contribuciones Personales}{39}{chapter*.58}%
 \babel@toc {spanish}{}\relax 
-\contentsline {chapter}{\numberline {A}Título del Apéndice A}{37}{appendix.53}%
-\contentsline {chapter}{\numberline {B}Título del Apéndice B}{39}{appendix.54}%
+\contentsline {chapter}{\numberline {A}Título del Apéndice A}{41}{appendix.59}%
+\contentsline {chapter}{\numberline {B}Título del Apéndice B}{43}{appendix.60}%

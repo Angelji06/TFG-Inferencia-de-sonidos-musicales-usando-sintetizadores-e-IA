@@ -170,3 +170,62 @@ El primer coeficiente, que representa la energía global, es descartado para que
 de forma que se consigue evaluar la asimilación de información en el espacio latente. 
 
 \end{itemize}
+
+\section{Interfaz Gráfica de la Aplicación}
+
+Para una mejor experiencia de uso y facilitar el entorno de entrenamientos y pruebas de la aplicación, se ha desarrollado una Interfaz Gráfica. Se trata de una serie de pantallas sencillas, programadas en Python mediante el uso de la librería \textit{Tkinter}.
+
+En la primera pantalla (\ref{fig:pantalla1}), se da la opción de elegir un modelo existente o de entrenarlo. 
+
+En caso de decidir cargar un modelo, se podrá seleccionar mediante el explorador de archivos. A continuación (\ref{fig:pantallaPruebas}), existen dos posibilidades: probar predicciones independientes de audios o realizar una evaluación general. En la primera, se puede cargar un wav y generar una predicción, existiendo la posibilidad de compararlos auditivamente o gráficamente sus espectrogramas (en frecuencia lineal y en logarítmica) y de ejecutar un sintetizador. En la pantalla del sintetizador(\ref{fig:sinte}), aparecen los parámetros de la predicción y los del audio original (en caso de tenerlos), siendo modificables. Además, el teclado hace la función de teclas del sintetizador con el sonido generado por los parámetros seleccionados. 
+
+La sección del entrenamiento (\ref{fig:pantallaEntrenamiento}) es la dedicada a seleccionar varios aspectos relevantes, tanto para el tiempo y forma de entrenamiento como para la topología del modelo. Por un lado, se permite elegir si entrenar el modelo en CPU o en GPU, lo que afectará directamente a su tiempo de entrenamiento. Por el otro, hay que decidir que tipo de espectrograma, arquitectura del modelo y función de pérdida (explorados en el apartado anterior) van a ser los que definan el modelo. El siguiente campo de la pantalla incluye la opción de crear el dataset (explicado anteriormente) o cargar uno personalizado. En último lugar se encuentra el apartado de parámetros modificables para el entrenamiento, como son las épocas (\textit{epoch}), la tasa de aprendizaje (\textit{Learning Rate}) y los pesos de los parámetros de las funciones de pérdida. 
+
+\section{Estructura del Código}
+
+Para asegurar la mantenibilidad y escalabilidad, el código se estructura mediante el principio de Separación de Responsabilidades (\textit{Separation of Concerns}). Se divide así la aplicación en dos módulos diferentes:
+
+\begin{itemize}
+    \item \textbf{Lógica (Backend): } Se encuentra en el archivo {\textit{logica.py}}. Aquí se agrupan las funciones matemáticas para la síntesis, calculo de métricas, generación de espectrogramas, etc. 
+    \item \textbf{Vista y Controlador (Frontend): } Archivo \textit{main.py}. Este gestiona la interfaz, recibe los \textit{inputs} del usuario y gestiona el flujo de llamadas a la lógica y los errores.
+\end{itemize}
+
+Adicionalmente, destaca el uso de la Programación Orientada a Objetos (POO) y el encapsulamiento. Estas características se aplican en la aplicación de la siguiente manera:
+
+\begin{itemize}
+    \item \textbf{Clase App (\textit{main.py}): } Se encarga de encapsular el estado global. Evita el uso de variables globales manteniendo las variables necesarias instanciadas en esta clase (\textit{self.dataset\_obj}, \textit{self.pathModelo}, \textit{self.model\_trained}, etc).
+    \item \textbf{Clase SpectrogramTensorDataset (\textit{dataset.py}): } Hereda de la clase base de \textit{Pytorch} de \textit{torch.utils.data.Dataset}, teniendo acceso a métodos como el de procesamiento por lotes (\textit{batching}). Asimismo, esta clase se encarga de los cálculos de estadísticas de normalización y mapeo de los archivos, de forma que desde fuera se obtienen los datos ya preparados mediante el método \textit{\_\_getitem\_\_}. 
+    \item \textbf{Modelos y Funciones de Pérdida: } Como se ha mencionado previamente, existen diferentes arquitecturas y funciones de pérdida y todas ellas heredan de \textit{nn.Modules}. En consecuencia, el código permite que la lógica del entrenamiento sea independiente del modelo exacto que se esté utilizando, lo que se conoce como \textbf{Polimorfismo}. Por otro lado, la clase \textit{HybridLoss} encapsula la lógica de la convergencia espectral y la norma de Frobenius, manteniendo el entrenamiento ajeno a estas fórmulas. 
+    \item \textbf{\textit{FMSynth8Window}: } La pantalla del sintetizador se encuentra totalmente desacoplada del resto de la lógica, siendo una clase independiente. De esta manera, se puede utilizar tanto desde la ejecución normal de la aplicación como de forma aislada, facilitando así su construcción, ampliación y pruebas aisaldas.
+    
+
+\end{itemize}
+
+
+\begin{figure} 
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/pantalla1}
+    \caption{Primera pantalla de la Interfaz Gráfica de la Aplicación, elección uso modelo o entrenamiento.}
+    \label{fig:pantalla1}
+\end{figure}
+
+\begin{figure} 
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/pantallaPruebas}
+    \caption{Pantalla en la que se pueden hacer pruebas con el modelo seleccionado.}
+    \label{fig:pantallaPruebas}
+\end{figure}
+
+\begin{figure} 
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/sinte}
+    \caption{Sintetizador FM de prueba.}
+    \label{fig:sinte}
+\end{figure}
+
+\begin{figure} 
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/pantallaEntrenamiento}
+    \caption{Sintetizador FM de prueba.}
+    \label{fig:pantallaEntrenamiento}
+\end{figure}
