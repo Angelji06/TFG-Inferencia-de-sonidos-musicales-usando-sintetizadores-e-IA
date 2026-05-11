@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.3.25)  8 MAY 2026 14:33
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.3.25)  10 MAY 2026 18:14
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -745,7 +745,7 @@ Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
 \evensidemarginOriginal=\skip97
 \oddsidemarginOriginal=\skip98
 \longTitulo=\skip99
-<Imagenes/Bitmap/escudoUCMcolor.png, id=163, 600.3228pt x 678.3744pt>
+<Imagenes/Bitmap/escudoUCMcolor.png, id=175, 600.3228pt x 678.3744pt>
 File: Imagenes/Bitmap/escudoUCMcolor.png Graphic file (type png)
 <use Imagenes/Bitmap/escudoUCMcolor.png>
 Package pdftex.def Info: Imagenes/Bitmap/escudoUCMcolor.png  used on input line 188.
@@ -803,8 +803,8 @@ LaTeX Info: Redefining \% on input line 1.
 LaTeX Info: Redefining \. on input line 3.
 LaTeX Info: Redefining \% on input line 3.
  [13]
-LaTeX Info: Redefining \. on input line 37.
-LaTeX Info: Redefining \% on input line 37.
+LaTeX Info: Redefining \. on input line 40.
+LaTeX Info: Redefining \% on input line 40.
 )
 \tf@toc=\write6
 \openout6 = `TFGTeXiS.toc'.
@@ -929,10 +929,15 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
  (Capitulos/EstadoDeLaCuestion.tex
 Cap\'itulo 2.
 
-Package natbib Warning: Citation `kilgour19_interspeech' on page 7 undefined on input line 17.
+Package natbib Warning: Citation `kilgour19_interspeech' on page 7 undefined on input line 19.
 
 
-Package natbib Warning: Citation `agostinelli2023musiclm' on page 7 undefined on input line 18.
+Package natbib Warning: Citation `agostinelli2023musiclm' on page 7 undefined on input line 20.
+
+
+Overfull \hbox (8.98923pt too wide) in paragraph at lines 31--31
+|[]\T1/cmr/bx/it/17.28 Mel Fre-quency Ces-ptral Coef-fi-cients \T1/cmr/bx/n/17.28 (MFCC)| 
+ []
 
 ) [7
 
@@ -953,8 +958,8 @@ Cap\'itulo 3.
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [9]
-LaTeX Info: Redefining \. on input line 75.
-LaTeX Info: Redefining \% on input line 75.
+LaTeX Info: Redefining \. on input line 70.
+LaTeX Info: Redefining \% on input line 70.
 
 
 Package fancyhdr Warning: \headheight is too small (14.0pt): 
@@ -964,8 +969,8 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
 [10]
-LaTeX Info: Redefining \. on input line 115.
-LaTeX Info: Redefining \% on input line 115.
+LaTeX Info: Redefining \. on input line 108.
+LaTeX Info: Redefining \% on input line 108.
 
 
 Package fancyhdr Warning: \headheight is too small (14.0pt): 
@@ -975,6 +980,8 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
 [11]
+Underfull \vbox (badness 1609) has occurred while \output is active []
+
 LaTeX Info: Redefining \. on input line 157.
 LaTeX Info: Redefining \% on input line 157.
 
@@ -986,7 +993,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
 [12]
-Overfull \hbox (8.63268pt too wide) in paragraph at lines 181--184
+Overfull \hbox (8.63268pt too wide) in paragraph at lines 182--185
 []\T1/cmr/m/n/12 Por úl-ti-mo se en-cuen-tra la \T1/cmr/bx/n/12 Pér-di-da Pa-ra-mé-tri-ca\T1/cmr/m/n/12 , apli-ca-da me-dian-te \T1/cmr/bx/n/12 SmoothL1\T1/cmr/m/n/12 .
  []
 
@@ -1002,14 +1009,20 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
 [13]
+LaTeX Info: Redefining \. on input line 142.
+LaTeX Info: Redefining \% on input line 142.
+
+
+Package fancyhdr Warning: \headheight is too small (14.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
+
+[14]
 \openout2 = `Capitulos/ExperimentacionPrevia.aux'.
 
- (Capitulos/ExperimentacionPrevia.tex [14
-
-
-
-
-]
+ (Capitulos/ExperimentacionPrevia.tex
 Cap\'itulo 4.
 
 LaTeX Warning: Reference `cap:EstadoDeLaCuestion' on page 15 undefined on input line 5.
@@ -1026,7 +1039,12 @@ Package natbib Warning: Citation `kilgour2019' on page 15 undefined on input lin
 
 Package natbib Warning: Citation `agostinelli2023' on page 15 undefined on input line 16.
 
-[15]
+[15
+
+
+
+
+]
 Overfull \hbox (1.98277pt too wide) in paragraph at lines 43--43
 |[]\T1/cmr/bx/n/14.4 Diseño ex-pe-ri-men-tal y pa-ra-me-tri-za-ción del Grid Search| 
  []
@@ -1089,7 +1107,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 
  (Capitulos/ArquitecturaFinal.tex
 Cap\'itulo 5.
-<Imagenes/Bitmap/diagrama.png, id=427, 1653.17625pt x 1064.97874pt>
+<Imagenes/Bitmap/diagrama.png, id=443, 1653.17625pt x 1064.97874pt>
 File: Imagenes/Bitmap/diagrama.png Graphic file (type png)
 <use Imagenes/Bitmap/diagrama.png>
 Package pdftex.def Info: Imagenes/Bitmap/diagrama.png  used on input line 10.
@@ -1158,22 +1176,22 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
 [26]
-<Imagenes/Bitmap/pantalla1.png, id=465, 522.45187pt x 351.56343pt>
+<Imagenes/Bitmap/pantalla1.png, id=481, 522.45187pt x 351.56343pt>
 File: Imagenes/Bitmap/pantalla1.png Graphic file (type png)
 <use Imagenes/Bitmap/pantalla1.png>
 Package pdftex.def Info: Imagenes/Bitmap/pantalla1.png  used on input line 207.
 (pdftex.def)             Requested size: 426.79135pt x 287.19489pt.
-<Imagenes/Bitmap/pantallaPruebas.png, id=466, 851.43094pt x 529.22719pt>
+<Imagenes/Bitmap/pantallaPruebas.png, id=482, 851.43094pt x 529.22719pt>
 File: Imagenes/Bitmap/pantallaPruebas.png Graphic file (type png)
 <use Imagenes/Bitmap/pantallaPruebas.png>
 Package pdftex.def Info: Imagenes/Bitmap/pantallaPruebas.png  used on input line 214.
 (pdftex.def)             Requested size: 426.79135pt x 265.28319pt.
-<Imagenes/Bitmap/sinte.png, id=467, 609.02531pt x 374.90062pt>
+<Imagenes/Bitmap/sinte.png, id=483, 609.02531pt x 374.90062pt>
 File: Imagenes/Bitmap/sinte.png Graphic file (type png)
 <use Imagenes/Bitmap/sinte.png>
 Package pdftex.def Info: Imagenes/Bitmap/sinte.png  used on input line 221.
 (pdftex.def)             Requested size: 426.79135pt x 262.73183pt.
-<Imagenes/Bitmap/pantallaEntrenamiento.png, id=468, 843.90282pt x 522.45187pt>
+<Imagenes/Bitmap/pantallaEntrenamiento.png, id=484, 843.90282pt x 522.45187pt>
 File: Imagenes/Bitmap/pantallaEntrenamiento.png Graphic file (type png)
 <use Imagenes/Bitmap/pantallaEntrenamiento.png>
 Package pdftex.def Info: Imagenes/Bitmap/pantallaEntrenamiento.png  used on input line 228.
@@ -1221,7 +1239,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 
 ]
 Cap\'itulo 6.
-<Imagenes/Bitmap/pipelines.png, id=490, 871.255pt x 688.5725pt>
+<Imagenes/Bitmap/pipelines.png, id=506, 871.255pt x 688.5725pt>
 File: Imagenes/Bitmap/pipelines.png Graphic file (type png)
 <use Imagenes/Bitmap/pipelines.png>
 Package pdftex.def Info: Imagenes/Bitmap/pipelines.png  used on input line 12.
@@ -1333,24 +1351,21 @@ L3 programming layer <2025-12-24>
 
 LaTeX Warning: There were undefined references.
 
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
 Package rerunfilecheck Info: File `TFGTeXiS.out' has not changed.
-(rerunfilecheck)             Checksum: 1D47DC324D16AF13D56803E81D4C1C4B;8113.
+(rerunfilecheck)             Checksum: 59412F6A749468A0790BCBB23D89802B;8735.
  ) 
 Here is how much of TeX's memory you used:
- 19565 strings out of 467871
- 341255 string characters out of 5418376
- 861483 words of memory out of 5000000
- 47613 multiletter control sequences out of 15000+600000
- 653431 words of font info for 92 fonts, out of 8000000 for 9000
+ 19573 strings out of 467871
+ 341347 string characters out of 5418376
+ 861487 words of memory out of 5000000
+ 47617 multiletter control sequences out of 15000+600000
+ 654131 words of font info for 93 fonts, out of 8000000 for 9000
  1379 hyphenation exceptions out of 8191
- 97i,12n,109p,1131b,871s stack positions out of 10000i,1000n,20000p,200000b,200000s
- <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1095.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbi1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1000.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1000.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1000.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm0700.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm0800.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\eccc1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1440.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm2488.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1440.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1728.pk><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb>
-Output written on TFGTeXiS.pdf (64 pages, 1053700 bytes).
+ 97i,12n,109p,1131b,855s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1095.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbi1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1000.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbi1728.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1000.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1000.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm0700.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm0800.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\eccc1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1440.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm2488.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1440.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1728.pk><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb>
+Output written on TFGTeXiS.pdf (64 pages, 1066346 bytes).
 PDF statistics:
- 1277 PDF objects out of 1440 (max. 8388607)
- 131 named destinations out of 1000 (max. 500000)
- 356 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1315 PDF objects out of 1440 (max. 8388607)
+ 134 named destinations out of 1000 (max. 500000)
+ 380 words of extra memory for PDF output out of 10000 (max. 10000000)
 

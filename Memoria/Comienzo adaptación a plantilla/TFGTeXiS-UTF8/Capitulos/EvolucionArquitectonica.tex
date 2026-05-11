@@ -20,29 +20,30 @@ al plantear una arquitectura básica no convolucional, la red neuronal carece de
 realizar una interpretación correcta de los patrones bidimensionales de los MFCC. Como consecuencia, el 
 modelo arroja una precisión muy baja. 
 
-El \textbf{Prototipo 2} se basa en el \textbf{Prototipo 1}. Sigue atendiendo al objetivo de la clasificación, pero tiene 
+El \textbf{Prototipo 2} se basa en el Prototipo 1. Sigue atendiendo al objetivo de la clasificación, pero tiene 
 características que difieren del anterior. Esta vez, los audios se convierten a espectrogramas \textit{.png}
-mediante el uso de la librería de \textit{librosa}. Esto conlleva un menor coste computacional y de almacenamiento.
-Al tratarse realmente de imágenes, se pueden utilizar modelos preentrenados de visión, encargados de clasificar imágenes.
+mediante el uso de la librería de \textit{librosa}. De esta forma se consigue un menor coste computacional y de almacenamiento.
+Al tratarse realmente de imágenes, se pueden utilizar modelos preentrenados de visión capaces de clasificarlas.
 
-Para el entrenamiento, se hace uso de \textbf{ResNet34 preentrenada} vía \textit{fastAI}. Para su adaptación, se utilizan \textbf{DataBlocks},
+En el entrenamiento se hace uso de \textbf{ResNet34 preentrenada} vía \textit{fastAI}. Para su adaptación, se utilizan \textbf{DataBlocks},
 una herramienta de \textit{fastAI} mediante la cual se especifican que las entradas son las imágenes (espectrogramas) y las salidas
-son las categorías (tipo de onda). Asimismo, se etiqueta obteniendo la categoría a partir del nombre archivo y se divide
+son las categorías (tipo de onda). El etiquetado de la categoría de cada archivo se obtiene a partir su nombre y se divide
 destinando un 80\% de las imágenes para entrenar y un 20\% para validación.
 
 Como resultado de utilizar una red convolucional y la arquitectura externa \textbf{ResNet34}, el modelo obtuvo una buena precisión, especialmente 
 identificando ondas puras dentro del rango entrenado. 
 
 \subsection{Enfoque de Regresión}
-Al plantear un salto hacia la síntesis paramétrica continua, fue necesario tomar una decisión
+La clasificación sirvió como prueba de concepto y como primer acercamiento a un modelo de procesamiento de audio, permitiendo que se explorasen tecnologías, biblotecas y métodos que serían de gran utilidad durante la totalidad de las fases del desarrollo. 
+
+Sin embargo, para la implementación de un modelo que cumpliese con la descripción del trabajo, se decide dar un salto hacia la síntesis paramétrica continua. Para ello, fue necesario tomar una decisión
 de diseño fundamental: la elección del motor de síntesis. Tras la evaluación de distintas alternativas, 
 se optó por centrar el proyecto en la síntesis por Modulación de Frecuencia (FM). Esta técnica presenta
 ventajas claras para el aprendizaje automático. A diferencia de la síntesis aditiva, que requiere decenas
 de osciladores simultáneos, la síntesis FM es muy eficiente, consiguiendo generar timbres complejos
 a partir de un número reducido de parámetros. De esta forma, se puede comenzar utilizando, por ejemplo, 
 la frecuencia portadora, el ratio y el índice de modulación, y luego ampliar el número de variables para
-conseguir sonidos más complejos. Estas características acotan la dimensionalidad del problema predictivo, 
-haciéndolo viable para la red neuronal.   
+conseguir sonidos más complejos. Estas características acotan la dimensionalidad del problema predictivo en un rango viable para la red neuronal.   
 
 Si bien con la clasificación queda validada la extracción de características acústicas, una vez tomada 
 esta última decisión, deja de ser útil. Para la inferencia de parámetros de la síntesis FM, resulta 
@@ -75,19 +76,19 @@ del sintetizador: frecuencia portadora, ratio y el índice de modulación.
 
 El modelo optimiza el proceso de los espectrogramas mediante el algoritmo Adam, utilizando el Error Cuadrático
 Medio (MSELoss) como función de pérdida. Y, en cuanto al ciclo de entrenamiento, este se configuró con 
-una duración de 5 épocas (\textit{epochs}). En este prototipo se decidió no hacer una búsqueda extensa
+una duración de 5 épocas (\textit{epochs}), un número bajo pero suficiente para analizar el comportamiento del modelo. En este prototipo se decidió no hacer una búsqueda extensa
 de hiperparámetros al tratarse de un prototipo intermedio, con un fin de experimentación inicial 
 con la regresión.
 
 A pesar de esto, se puede observar una precisión muy limitada en los resultados experimentales.
 Se consigue mantener un MSE bajo en el \textit{Ratio} e \textit{Index}, pero el error en el
 \textit{Carrier} resulta desproporcionado, debido a operar en la escala de miles de hercios. 
-De este prototipo se puede sacar la conclusión de que el minimizar el error matemático sobre los
-parámetros no garantiza la similitud acústica del sonido generado. 
+De este prototipo se puede sacar la conclusión de que minimizar el error matemático sobre los
+parámetros no garantiza la similitud acústica del sonido generado y de la necesidad de trabajar sobre parámetros normalizados para contrarrestar las grandes diferencias en sus escalas. 
 
 
 \section{El Problema de la Inyectividad y la Necesidad de una Arquitectura Compleja}
-El \textbf{Prototipo 3} contiene una limitación fundamental muy relevante en la sintesís FM:
+El Prototipo 3 contiene una limitación fundamental muy relevante en la sintesís FM:
 su inyectividad es nula. Esto quiere decir que diferentes combinaciones de parámetros pueden dar lugar
 a sonidos idénticos. Un ejemplo, radical pero que explica muy bien este resultado, es un caso en el que
 el índice de modulación sea 0. En ese caso, no es verdaderamente relevante el valor del ratio, sin embargo, 
