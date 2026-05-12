@@ -15,6 +15,60 @@
 
 %Bibtex es un programa separado de latex, pdflatex o cualquier otra cosa que se use para compilar los .tex, de manera que para que se rellene correctamente la sección de bibliografía es necesario compilar primero el trabajo (a veces es necesario compilarlo dos veces), compilar después con bibtex, y volver a compilar otra vez el trabajo (de nuevo, puede ser necesario compilarlo dos veces). 
 
+\section{Representación espectral: STFT y Spectrogramas}
+La Transformada de Fourier de Tiempo Reducido (STFT) es la herramienta que permite superar la limitación de la Transformada de Fourier convencional, que descarta la información temporal al transformar la señal del dominio del tiempo al de la frecuencia. El proceso de la STFT se basa en la aplicación de un ventaneo en segmentos cortos de la señal para extraer su contenido de frecuencia local (Allen, 1977). De esta forma, al aplicar esta operación a un fragmento de audio, obtenemos su espectrograma, una representación en 2D donde el eje X es el tiempo, el Y es la frecuencia y la intensidad del color (eje Z) es la magnitud.
+
+En el análisis de síntesis FM, donde los transitorios son extremadamente complejos, el espectrograma se convierte en la entrada estándar para modelos de aprendizaje profundo, ya que permite tratar el audio como una estructura de datos bidimensional similar a una imagen. (Yee-King, Fedden, \& d’Inverno, 2018)
+
+\section{Escala de Mel}
+La escala Mel es un sistema de unidades diseñado para que distancias iguales en la escala correspondan a distancias perceptuales iguales en el tono (Stevens, Volkmann, \& Newman, 1937). Su importancia radica en que el oído humano no percibe las frecuencias de forma lineal, sino que tiene una mayor resolución en las frecuencias bajas que en las altas. 
+
+La fórmula de conversión (\ref{eq:forMel}) es esencial para procesar sonidos de sintetizadores FM, los cuales generan una gran densidad de armónicos superiores que, en una escala lineal, ocuparían la mayor parte del espectro sin aportar información crítica para el reconocimiento tímbrico humano.
+
+\begin{equation}
+m = 2595 \cdot \log_{10}(1 + f/700)
+\label{eq:forMel}
+\end{equation}
+
+\section{\textit{Mel Frequency Cesptral Coefficients} (MFCC)}
+
+Los MFCCs representan la envolvente espectral de un sonido, separando el contenido del timbre de la frecuencia fundamental. Su cálculo implica aplicar la Transformada de Coseno Discreta (DCT) (\ref{eq:dct_mfcc}) sobre el log-espectro Mel para decorrelacionar las bandas de frecuencia (Davis \& Mermelstein, 1980). Aunque históricamente estos coeficientes fueron la característica principal para el reconocimiento de voz, en el diseño de sonido moderno se ha desplazado el interés hacia el espectrograma Mel completo. Esta preferencia radica en que el espectrograma retiene una información que las CNN pueden aprovechar con mayor precisión para predecir parámetros de modulación específicos, evitando la pérdida de datos que conlleva la compresión de la DCT.
+
+\begin{equation}
+C_n = \sum_{m=1}^{M} S_m \cos\left[ \frac{\pi n (m - 0.5)}{M} \right]
+\label{eq:dct_mfcc}
+\end{equation}
+
+\section{CNNs en el dominio del audio}
+
+Las Redes Neuronales Convolucionales (CNNs) son un tipo de arquitectura de aprendizaje profundo diseñada para explotar la estructura espacial-local de los datos, es precisamente por esto que se usan tanto en tareas de imagen. Fueron propuestas originalmente por LeCun et al. (1998) para el reconocimiento de caracteres escritos a mano. Su principio fundamental es el uso de filtros convolucionales de pequeño tamaño (kernels) que se deslizan sobre la entrada, compartiendo pesos a lo largo de todas las posiciones. Esto las hace invariantes a la traslación y dramáticamente más eficientes en parámetros que una red densa equivalente. La arquitectura típica alterna capas convolucionales, que extraen características locales, con capas de pooling, que reducen la dimensionalidad y aumentan el campo receptivo, construyendo así una jerarquía de características que va desde elementos simples, como bordes o gradientes, hacia representaciones abstractas de formas y texturas (Krizhevsky, Sutskever, \& Hinton, 2012).
+
+En el dominio del audio, las CNNs son eficaces son eficaces porque pueden aprender patrones locales en el espectrograma, como la estructura armónica y el ruido de ataque. Se ha demostrado que modelos pre-entrenados en bases de datos masivas pueden transferir capacidades de detección de características generales a tareas específicas de síntesis (Kong et al., 2020). Al aplicar filtros convolucionales sobre las dimensiones de tiempo y frecuencia, la red identifica texturas tímbricas con una eficiencia muy superior a las redes densas tradicionales, capturando la identidad sonora de la modulación FM.
+
+\section{Audio Spectrogram Transformer (AST)}
+
+El estado del arte en el procesamiento de audio ha evolucionado de las arquitecturas convolucionales (CNN) hacia los Transformers, tras su éxito en el procesamiento de lenguaje natural (Vaswani et al., 2017). En el contexto del audio, el modelo de referencia es el Audio Spectrogram Transformer (AST)(Gong et al., 2021), que adapta la arquitectura de atención para trabajar directamente con espectrogramas.
+A diferencia de las CNN, que analizan patrones locales mediante filtros, el AST utiliza un mecanismo de auto-atención (self-attention). Este permite al modelo capturar relaciones globales y dependencias de largo alcance en el tiempo y la frecuencia, dividiendo el espectrograma en parches de datos (Gong et al., 2021).
+
+Sin embargo, los Transformers presentan una complejidad computacional cuadrática y requieren volúmenes masivos de datos para superar a las CNN (Gong et al., 2021). Por ello, en tareas de sound matching con recursos limitados, como es nuestro caso, las arquitecturas convolucionales siguen siendo una opción preferente por su eficiencia.
+
+\section{Inferencia de parámetros en síntesis}
+
+El diseño automático de sonido busca encontrar los parámetros de un sintetizador que repliquen un audio objetivo. Los primeros enfoques exitosos con redes neuronales profundas utilizaron arquitecturas LSTM y CNN para mapear sonidos a las configuraciones de operadores de un Yamaha DX7 (Yee-King et al., 2018). Sin embargo, un hallazgo crítico transformó esta metodología: optimizar el modelo basándose exclusivamente en la distancia numérica entre parámetros es ineficiente.
+
+Este fenómeno se debe a la falta de inyectividad del motor de síntesis, donde combinaciones de parámetros drásticamente diferentes pueden generar resultados acústicos idénticos. Para solventar esta ambigüedad, se propuso el uso de funciones de pérdida basadas en la distancia entre los espectrogramas del audio original y el resintetizado (perdida espectral) (Barkan et al., 2019). Esta evolución ha convergido en el uso de decodificadores avanzados, sintetizadores diferenciables como DDSP (Engel et al) y arquitecturas basadas en Transformers, que permiten una convergencia mucho más precisa pues priorizan la coherencia perceptiva del sonido sobre la coincidencia de valores numéricos.
+
+\section{Audio End-to-End vs. Parámetros + Espectrograma}
+
+El debate sobre la representación óptima divide a la comunidad entre el uso de características extraídas (como el espectrograma) y el procesamiento de la onda cruda (raw approach). Los modelos End-to-End permiten capturar micro-detalles temporales y de fase que se pierden en el espectrograma de magnitud (Oord et al., 2016). Recientemente, se ha propuesto un camino intermedio mediante el Procesamiento de Señales Digitales Diferenciable (DDSP), que integra el conocimiento de la síntesis clásica dentro de las redes neuronales, permitiendo que el modelo controle osciladores y filtros directamente mientras mantiene la interpretabilidad de los parámetros (Engel et al., 2020).
+
+\section{Datasets de referencia: NSynth y otros}
+
+Para entrenar modelos de inferencia, se requieren bases de datos extensas y etiquetadas. Además, en el contexto del audio, la calidad de la muestra es muy importante, pues en representaciones espectrograma el ruido puede hacer que la CNN detecte patrones equivocados.
+
+El dataset NSynth es el estándar actual, proporcionando más de 300.000 notas individuales de diversos instrumentos con etiquetas detalladas de sus cualidades acústicas (Engel et al., 2017). Sin embargo, para proyectos centrados en síntesis FM, es habitual complementar estos datos mediante la generación sintética masiva utilizando emuladores como Dexed, que simula el Yamaha dx7, lo que garantiza una correspondencia exacta entre el audio y los parámetros internos del sintetizador. (Yee King) (Masuda)
+
+
 \section{Fréchet Audio Distance (FAD)}
 La métrica \textit{Fréchet Audio Distance} (FAD) \cite{kilgour19_interspeech} fue introducida originalmente por investigadores de Google AI y es utilizada actualmente en proyectos muy grandes como 
 MusicLM \cite{agostinelli2023musiclm}, pudiendo considerarse como el \textbf{estado del arte} para medir la calidad objetiva de los audios generados mediante Inteligencia Artificial, adaptando al dominio del audio las métricas utilizadas en la generación de imágenes.
@@ -27,5 +81,4 @@ de gran envergadura de vídeos de YouTube. Este modelo transforma la señal de a
 
 Finalmente, la métrica se obtiene calculando la \textit{Distancia de Fréchet} entre la música de referencia y la generada. Un valor de FAD reducido indíca una estadística similar entre el audio de referencia y el generado.
 
-\section{Escala de Mel}
-\section{\textit{Mel Frequency Cesptral Coefficients} (MFCC)}
+

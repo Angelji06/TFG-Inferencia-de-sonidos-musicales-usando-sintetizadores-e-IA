@@ -8,35 +8,41 @@
 \contentsline {section}{\numberline {1.4}Explicaciones adicionales sobre el uso de esta plantilla}{2}{section.18}%
 \contentsline {subsection}{\numberline {1.4.1}Texto de prueba}{3}{subsection.20}%
 \contentsline {chapter}{\numberline {2}Estado de la Cuestión}{7}{chapter.21}%
-\contentsline {section}{\numberline {2.1}Fréchet Audio Distance (FAD)}{7}{section.22}%
+\contentsline {section}{\numberline {2.1}Representación espectral: STFT y Spectrogramas}{7}{section.22}%
 \contentsline {section}{\numberline {2.2}Escala de Mel}{7}{section.23}%
-\contentsline {section}{\numberline {2.3}\textit {Mel Frequency Cesptral Coefficients} (MFCC)}{7}{section.24}%
-\contentsline {chapter}{\numberline {3}Evolución Arquitectónica}{9}{chapter.25}%
-\contentsline {section}{\numberline {3.1}Exploración de Paradigmas: Clasificación vs. Regresión}{9}{section.26}%
-\contentsline {subsection}{\numberline {3.1.1}Enfoque de Clasificación}{9}{subsection.27}%
-\contentsline {subsection}{\numberline {3.1.2}Enfoque de Regresión}{10}{subsection.28}%
-\contentsline {section}{\numberline {3.2}El Problema de la Inyectividad y la Necesidad de una Arquitectura Compleja}{11}{section.29}%
-\contentsline {subsection}{\numberline {3.2.1}Prototipo 4: Red Convolucional de Doble Cabeza}{11}{subsection.30}%
-\contentsline {subsection}{\numberline {3.2.2}Prototipo 4: Función de Pérdida Híbrida}{13}{subsection.32}%
-\contentsline {chapter}{\numberline {4}Experimentación Previa}{15}{chapter.36}%
-\contentsline {section}{\numberline {4.1}Limitaciones de Fréchet Audio Distance (FAD)}{15}{section.37}%
-\contentsline {section}{\numberline {4.2}Validación por Fuerza Bruta (Grid Search)}{15}{section.38}%
-\contentsline {subsection}{\numberline {4.2.1}Diseño experimental y parametrización del Grid Search}{16}{subsection.39}%
-\contentsline {subsection}{\numberline {4.2.2}Espectrograma de Mel}{17}{subsection.40}%
-\contentsline {subsection}{\numberline {4.2.3}Espectrograma MFCC}{18}{subsection.41}%
-\contentsline {subsection}{\numberline {4.2.4}Conclusiones}{19}{subsection.42}%
-\contentsline {chapter}{\numberline {5}Arquitectura Final}{21}{chapter.43}%
-\contentsline {section}{\numberline {5.1}Expansión Paramétrica: Evolventes y Generación Aleatoria del Dataset}{21}{section.45}%
-\contentsline {section}{\numberline {5.2}Interfaz Gráfica de la Aplicación}{26}{section.47}%
-\contentsline {section}{\numberline {5.3}Estructura del Código}{26}{section.48}%
-\contentsline {chapter}{\numberline {6}Resultados y Evaluación}{31}{chapter.53}%
-\contentsline {section}{\numberline {6.1}Definición de los Pipelines Experimentales}{31}{section.54}%
-\contentsline {section}{\numberline {6.2}Evaluación de las Diferentes Arquitecturas y Funciones de Pérdida}{31}{section.56}%
-\contentsline {chapter}{\numberline {7}Conclusiones y Trabajo Futuro}{33}{chapter.58}%
-\contentsline {chapter}{Introduction}{35}{chapter*.59}%
+\contentsline {section}{\numberline {2.3}\textit {Mel Frequency Cesptral Coefficients} (MFCC)}{8}{section.25}%
+\contentsline {section}{\numberline {2.4}CNNs en el dominio del audio}{8}{section.27}%
+\contentsline {section}{\numberline {2.5}Audio Spectrogram Transformer (AST)}{8}{section.28}%
+\contentsline {section}{\numberline {2.6}Inferencia de parámetros en síntesis}{9}{section.29}%
+\contentsline {section}{\numberline {2.7}Audio End-to-End vs. Parámetros + Espectrograma}{9}{section.30}%
+\contentsline {section}{\numberline {2.8}Datasets de referencia: NSynth y otros}{10}{section.31}%
+\contentsline {section}{\numberline {2.9}Fréchet Audio Distance (FAD)}{10}{section.32}%
+\contentsline {chapter}{\numberline {3}Evolución Arquitectónica}{11}{chapter.33}%
+\contentsline {section}{\numberline {3.1}Exploración de Paradigmas: Clasificación vs. Regresión}{11}{section.34}%
+\contentsline {subsection}{\numberline {3.1.1}Enfoque de Clasificación}{11}{subsection.35}%
+\contentsline {subsection}{\numberline {3.1.2}Enfoque de Regresión}{12}{subsection.36}%
+\contentsline {section}{\numberline {3.2}El Problema de la Inyectividad y la Necesidad de una Arquitectura Compleja}{13}{section.37}%
+\contentsline {subsection}{\numberline {3.2.1}Prototipo 4: Red Convolucional de Doble Cabeza}{13}{subsection.38}%
+\contentsline {subsection}{\numberline {3.2.2}Prototipo 4: Función de Pérdida Híbrida}{15}{subsection.40}%
+\contentsline {chapter}{\numberline {4}Experimentación Previa}{17}{chapter.44}%
+\contentsline {section}{\numberline {4.1}Limitaciones de Fréchet Audio Distance (FAD)}{17}{section.45}%
+\contentsline {section}{\numberline {4.2}Validación por Fuerza Bruta (Grid Search)}{17}{section.46}%
+\contentsline {subsection}{\numberline {4.2.1}Diseño experimental y parametrización del Grid Search}{18}{subsection.47}%
+\contentsline {subsection}{\numberline {4.2.2}Espectrograma de Mel}{19}{subsection.48}%
+\contentsline {subsection}{\numberline {4.2.3}Espectrograma MFCC}{20}{subsection.49}%
+\contentsline {subsection}{\numberline {4.2.4}Conclusiones}{21}{subsection.50}%
+\contentsline {chapter}{\numberline {5}Arquitectura Final}{23}{chapter.51}%
+\contentsline {section}{\numberline {5.1}Expansión Paramétrica: Evolventes y Generación Aleatoria del Dataset}{23}{section.53}%
+\contentsline {section}{\numberline {5.2}Interfaz Gráfica de la Aplicación}{28}{section.55}%
+\contentsline {section}{\numberline {5.3}Estructura del Código}{28}{section.56}%
+\contentsline {chapter}{\numberline {6}Resultados y Evaluación}{33}{chapter.61}%
+\contentsline {section}{\numberline {6.1}Definición de los Pipelines Experimentales}{33}{section.62}%
+\contentsline {section}{\numberline {6.2}Evaluación de las Diferentes Arquitecturas y Funciones de Pérdida}{33}{section.64}%
+\contentsline {chapter}{\numberline {7}Conclusiones y Trabajo Futuro}{35}{chapter.66}%
+\contentsline {chapter}{Introduction}{37}{chapter*.67}%
 \babel@toc {english}{}\relax 
-\contentsline {chapter}{Conclusions and Future Work}{37}{chapter*.60}%
-\contentsline {chapter}{Contribuciones Personales}{39}{chapter*.61}%
+\contentsline {chapter}{Conclusions and Future Work}{39}{chapter*.68}%
+\contentsline {chapter}{Contribuciones Personales}{41}{chapter*.69}%
 \babel@toc {spanish}{}\relax 
-\contentsline {chapter}{\numberline {A}Título del Apéndice A}{41}{appendix.62}%
-\contentsline {chapter}{\numberline {B}Título del Apéndice B}{43}{appendix.63}%
+\contentsline {chapter}{\numberline {A}Título del Apéndice A}{43}{appendix.70}%
+\contentsline {chapter}{\numberline {B}Título del Apéndice B}{45}{appendix.71}%

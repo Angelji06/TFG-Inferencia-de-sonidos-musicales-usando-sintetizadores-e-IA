@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.3.25)  10 MAY 2026 18:14
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.3.25)  12 MAY 2026 17:49
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -745,7 +745,7 @@ Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
 \evensidemarginOriginal=\skip97
 \oddsidemarginOriginal=\skip98
 \longTitulo=\skip99
-<Imagenes/Bitmap/escudoUCMcolor.png, id=175, 600.3228pt x 678.3744pt>
+<Imagenes/Bitmap/escudoUCMcolor.png, id=199, 600.3228pt x 678.3744pt>
 File: Imagenes/Bitmap/escudoUCMcolor.png Graphic file (type png)
 <use Imagenes/Bitmap/escudoUCMcolor.png>
 Package pdftex.def Info: Imagenes/Bitmap/escudoUCMcolor.png  used on input line 188.
@@ -803,8 +803,8 @@ LaTeX Info: Redefining \% on input line 1.
 LaTeX Info: Redefining \. on input line 3.
 LaTeX Info: Redefining \% on input line 3.
  [13]
-LaTeX Info: Redefining \. on input line 40.
-LaTeX Info: Redefining \% on input line 40.
+LaTeX Info: Redefining \. on input line 46.
+LaTeX Info: Redefining \% on input line 46.
 )
 \tf@toc=\write6
 \openout6 = `TFGTeXiS.toc'.
@@ -929,35 +929,72 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
  (Capitulos/EstadoDeLaCuestion.tex
 Cap\'itulo 2.
 
-Package natbib Warning: Citation `kilgour19_interspeech' on page 7 undefined on input line 19.
-
-
-Package natbib Warning: Citation `agostinelli2023musiclm' on page 7 undefined on input line 20.
-
-
-Overfull \hbox (8.98923pt too wide) in paragraph at lines 31--31
+Overfull \hbox (8.98923pt too wide) in paragraph at lines 33--33
 |[]\T1/cmr/bx/it/17.28 Mel Fre-quency Ces-ptral Coef-fi-cients \T1/cmr/bx/n/17.28 (MFCC)| 
  []
 
-) [7
+
+Underfull \vbox (badness 1694) has occurred while \output is active []
+
+ [7
 
 
 
 
 ]
+LaTeX Info: Redefining \. on input line 52.
+LaTeX Info: Redefining \% on input line 52.
+
+
+Package fancyhdr Warning: \headheight is too small (14.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
+
+[8]
+LaTeX Info: Redefining \. on input line 68.
+LaTeX Info: Redefining \% on input line 68.
+
+
+Package fancyhdr Warning: \headheight is too small (14.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
+
+[9]
+
+Package natbib Warning: Citation `kilgour19_interspeech' on page 10 undefined on input line 73.
+
+
+Package natbib Warning: Citation `agostinelli2023musiclm' on page 10 undefined on input line 74.
+
+)
+LaTeX Info: Redefining \. on input line 141.
+LaTeX Info: Redefining \% on input line 141.
+
+
+Package fancyhdr Warning: \headheight is too small (14.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
+
+[10]
 \openout2 = `Capitulos/EvolucionArquitectonica.aux'.
 
- (Capitulos/EvolucionArquitectonica.tex [8
-
-
-
-
-]
+ (Capitulos/EvolucionArquitectonica.tex
 Cap\'itulo 3.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [9]
+ [11
+
+
+
+
+]
 LaTeX Info: Redefining \. on input line 70.
 LaTeX Info: Redefining \% on input line 70.
 
@@ -968,7 +1005,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[10]
+[12]
 LaTeX Info: Redefining \. on input line 108.
 LaTeX Info: Redefining \% on input line 108.
 
@@ -979,7 +1016,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[11]
+[13]
 Underfull \vbox (badness 1609) has occurred while \output is active []
 
 LaTeX Info: Redefining \. on input line 157.
@@ -992,7 +1029,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[12]
+[14]
 Overfull \hbox (8.63268pt too wide) in paragraph at lines 182--185
 []\T1/cmr/m/n/12 Por úl-ti-mo se en-cuen-tra la \T1/cmr/bx/n/12 Pér-di-da Pa-ra-mé-tri-ca\T1/cmr/m/n/12 , apli-ca-da me-dian-te \T1/cmr/bx/n/12 SmoothL1\T1/cmr/m/n/12 .
  []
@@ -1008,7 +1045,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[13]
+[15]
 LaTeX Info: Redefining \. on input line 142.
 LaTeX Info: Redefining \% on input line 142.
 
@@ -1019,27 +1056,27 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[14]
+[16]
 \openout2 = `Capitulos/ExperimentacionPrevia.aux'.
 
  (Capitulos/ExperimentacionPrevia.tex
 Cap\'itulo 4.
 
-LaTeX Warning: Reference `cap:EstadoDeLaCuestion' on page 15 undefined on input line 5.
+LaTeX Warning: Reference `cap:EstadoDeLaCuestion' on page 17 undefined on input line 5.
 
 
-Package natbib Warning: Citation `kilgour2019' on page 15 undefined on input line 11.
+Package natbib Warning: Citation `kilgour2019' on page 17 undefined on input line 11.
 
 
-Package natbib Warning: Citation `kilgour2019' on page 15 undefined on input line 14.
+Package natbib Warning: Citation `kilgour2019' on page 17 undefined on input line 14.
 
 
-Package natbib Warning: Citation `kilgour2019' on page 15 undefined on input line 16.
+Package natbib Warning: Citation `kilgour2019' on page 17 undefined on input line 16.
 
 
-Package natbib Warning: Citation `agostinelli2023' on page 15 undefined on input line 16.
+Package natbib Warning: Citation `agostinelli2023' on page 17 undefined on input line 16.
 
-[15
+[17
 
 
 
@@ -1058,7 +1095,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[16]
+[18]
 LaTeX Info: Redefining \. on input line 102.
 LaTeX Info: Redefining \% on input line 102.
 
@@ -1069,7 +1106,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[17]
+[19]
 LaTeX Info: Redefining \. on input line 157.
 LaTeX Info: Redefining \% on input line 157.
 
@@ -1080,7 +1117,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[18])
+[20])
 LaTeX Info: Redefining \. on input line 143.
 LaTeX Info: Redefining \% on input line 143.
 
@@ -1091,7 +1128,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[19]
+[21]
 LaTeX Info: Redefining \. on input line 143.
 LaTeX Info: Redefining \% on input line 143.
 
@@ -1102,17 +1139,17 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[20]
+[22]
 \openout2 = `Capitulos/ArquitecturaFinal.aux'.
 
  (Capitulos/ArquitecturaFinal.tex
 Cap\'itulo 5.
-<Imagenes/Bitmap/diagrama.png, id=443, 1653.17625pt x 1064.97874pt>
+<Imagenes/Bitmap/diagrama.png, id=485, 1653.17625pt x 1064.97874pt>
 File: Imagenes/Bitmap/diagrama.png Graphic file (type png)
 <use Imagenes/Bitmap/diagrama.png>
 Package pdftex.def Info: Imagenes/Bitmap/diagrama.png  used on input line 10.
 (pdftex.def)             Requested size: 426.79135pt x 274.93791pt.
-[21
+[23
 
 
 
@@ -1128,7 +1165,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[22 <./Imagenes/Bitmap/diagrama.png>]
+[24 <./Imagenes/Bitmap/diagrama.png>]
 LaTeX Info: Redefining \. on input line 100.
 LaTeX Info: Redefining \% on input line 100.
 
@@ -1139,7 +1176,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[23]
+[25]
 Overfull \hbox (29.28894pt too wide) in paragraph at lines 116--117
 []\T1/cmr/bx/n/12 Aislamiento de Da-tos:  \T1/cmr/m/n/12 Con-tie-ne los ín-di-ces del con-jun-to de prue-ba (\T1/cmr/m/it/12 test_indices\T1/cmr/m/n/12 ),
  []
@@ -1153,7 +1190,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[24]
+[26]
 LaTeX Info: Redefining \. on input line 171.
 LaTeX Info: Redefining \% on input line 171.
 
@@ -1164,7 +1201,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[25]
+[27]
 LaTeX Info: Redefining \. on input line 191.
 LaTeX Info: Redefining \% on input line 191.
 
@@ -1175,23 +1212,23 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[26]
-<Imagenes/Bitmap/pantalla1.png, id=481, 522.45187pt x 351.56343pt>
+[28]
+<Imagenes/Bitmap/pantalla1.png, id=523, 522.45187pt x 351.56343pt>
 File: Imagenes/Bitmap/pantalla1.png Graphic file (type png)
 <use Imagenes/Bitmap/pantalla1.png>
 Package pdftex.def Info: Imagenes/Bitmap/pantalla1.png  used on input line 207.
 (pdftex.def)             Requested size: 426.79135pt x 287.19489pt.
-<Imagenes/Bitmap/pantallaPruebas.png, id=482, 851.43094pt x 529.22719pt>
+<Imagenes/Bitmap/pantallaPruebas.png, id=524, 851.43094pt x 529.22719pt>
 File: Imagenes/Bitmap/pantallaPruebas.png Graphic file (type png)
 <use Imagenes/Bitmap/pantallaPruebas.png>
 Package pdftex.def Info: Imagenes/Bitmap/pantallaPruebas.png  used on input line 214.
 (pdftex.def)             Requested size: 426.79135pt x 265.28319pt.
-<Imagenes/Bitmap/sinte.png, id=483, 609.02531pt x 374.90062pt>
+<Imagenes/Bitmap/sinte.png, id=525, 609.02531pt x 374.90062pt>
 File: Imagenes/Bitmap/sinte.png Graphic file (type png)
 <use Imagenes/Bitmap/sinte.png>
 Package pdftex.def Info: Imagenes/Bitmap/sinte.png  used on input line 221.
 (pdftex.def)             Requested size: 426.79135pt x 262.73183pt.
-<Imagenes/Bitmap/pantallaEntrenamiento.png, id=484, 843.90282pt x 522.45187pt>
+<Imagenes/Bitmap/pantallaEntrenamiento.png, id=526, 843.90282pt x 522.45187pt>
 File: Imagenes/Bitmap/pantallaEntrenamiento.png Graphic file (type png)
 <use Imagenes/Bitmap/pantallaEntrenamiento.png>
 Package pdftex.def Info: Imagenes/Bitmap/pantallaEntrenamiento.png  used on input line 228.
@@ -1207,7 +1244,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[27]
+[29]
 LaTeX Info: Redefining \. on input line 144.
 LaTeX Info: Redefining \% on input line 144.
 
@@ -1218,7 +1255,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[28 <./Imagenes/Bitmap/pantalla1.png> <./Imagenes/Bitmap/pantallaPruebas.png>]
+[30 <./Imagenes/Bitmap/pantalla1.png> <./Imagenes/Bitmap/pantallaPruebas.png>]
 LaTeX Info: Redefining \. on input line 144.
 LaTeX Info: Redefining \% on input line 144.
 
@@ -1229,22 +1266,22 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[29 <./Imagenes/Bitmap/sinte.png> <./Imagenes/Bitmap/pantallaEntrenamiento.png>]
+[31 <./Imagenes/Bitmap/sinte.png> <./Imagenes/Bitmap/pantallaEntrenamiento.png>]
 \openout2 = `Capitulos/ResultadosYEvaluacion.aux'.
 
- (Capitulos/ResultadosYEvaluacion.tex [30
+ (Capitulos/ResultadosYEvaluacion.tex [32
 
 
 
 
 ]
 Cap\'itulo 6.
-<Imagenes/Bitmap/pipelines.png, id=506, 871.255pt x 688.5725pt>
+<Imagenes/Bitmap/pipelines.png, id=549, 871.255pt x 688.5725pt>
 File: Imagenes/Bitmap/pipelines.png Graphic file (type png)
 <use Imagenes/Bitmap/pipelines.png>
 Package pdftex.def Info: Imagenes/Bitmap/pipelines.png  used on input line 12.
 (pdftex.def)             Requested size: 426.79135pt x 337.2984pt.
-) [31]
+) [33]
 LaTeX Info: Redefining \. on input line 145.
 LaTeX Info: Redefining \% on input line 145.
 
@@ -1255,12 +1292,12 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[32 <./Imagenes/Bitmap/pipelines.png>]
+[34 <./Imagenes/Bitmap/pipelines.png>]
 \openout2 = `Capitulos/ConclusionesTrabajoFuturo.aux'.
 
  (Capitulos/ConclusionesTrabajoFuturo.tex
 Cap\'itulo 7.
-) [33
+) [35
 
 
 
@@ -1268,30 +1305,30 @@ Cap\'itulo 7.
 ]
 \openout2 = `Capitulos/Introduction.aux'.
 
- (Capitulos/Introduction.tex [34
-
-
-
-
-]) [35]
-\openout2 = `Capitulos/ConclusionsFutureWork.aux'.
-
- (Capitulos/ConclusionsFutureWork.tex [36
+ (Capitulos/Introduction.tex [36
 
 
 
 
 ]) [37]
-LaTeX Info: Redefining \. on input line 155.
-LaTeX Info: Redefining \% on input line 155.
-\openout2 = `Capitulos/ContribucionesPersonales.aux'.
+\openout2 = `Capitulos/ConclusionsFutureWork.aux'.
 
- (Capitulos/ContribucionesPersonales.tex [38
+ (Capitulos/ConclusionsFutureWork.tex [38
 
 
 
 
 ]) [39]
+LaTeX Info: Redefining \. on input line 155.
+LaTeX Info: Redefining \% on input line 155.
+\openout2 = `Capitulos/ContribucionesPersonales.aux'.
+
+ (Capitulos/ContribucionesPersonales.tex [40
+
+
+
+
+]) [41]
 \openout2 = `Cascaras/bibliografia.aux'.
 
  (Cascaras/bibliografia.tex
@@ -1299,7 +1336,7 @@ No file TFGTeXiS.bbl.
 )
 \openout2 = `Apendices/appendixA.aux'.
 
- (Apendices/appendixA.tex [40
+ (Apendices/appendixA.tex [42
 
 
 
@@ -1309,26 +1346,26 @@ No file TFGTeXiS.bbl.
 
 ]
 Ap\'{e}ndice A.
-) [41]
+) [43]
 \openout2 = `Apendices/appendixB.aux'.
 
- (Apendices/appendixB.tex [42
+ (Apendices/appendixB.tex [44
 
 
 
 
 ]
 Ap\'{e}ndice B.
-) [43] [44
+) [45] [46
 
 
 
 ]
 \openout2 = `Cascaras/fin.aux'.
 
- (Cascaras/fin.tex [45
+ (Cascaras/fin.tex [47
 
-] [46])
+] [48])
 No file TFGTeXiS.bbl.
 
 Package natbib Warning: There were undefined citations.
@@ -1352,20 +1389,20 @@ L3 programming layer <2025-12-24>
 LaTeX Warning: There were undefined references.
 
 Package rerunfilecheck Info: File `TFGTeXiS.out' has not changed.
-(rerunfilecheck)             Checksum: 59412F6A749468A0790BCBB23D89802B;8735.
+(rerunfilecheck)             Checksum: 4F862518C33FE5B8FE76DE7980D503C1;10311.
  ) 
 Here is how much of TeX's memory you used:
- 19573 strings out of 467871
- 341347 string characters out of 5418376
- 861487 words of memory out of 5000000
- 47617 multiletter control sequences out of 15000+600000
+ 19591 strings out of 467871
+ 341539 string characters out of 5418376
+ 861602 words of memory out of 5000000
+ 47625 multiletter control sequences out of 15000+600000
  654131 words of font info for 93 fonts, out of 8000000 for 9000
  1379 hyphenation exceptions out of 8191
- 97i,12n,109p,1131b,855s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 97i,12n,109p,1271b,871s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1095.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbi1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1000.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbi1728.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1000.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1000.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm0700.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm0800.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\eccc1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1440.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm2488.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1440.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1728.pk><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb>
-Output written on TFGTeXiS.pdf (64 pages, 1066346 bytes).
+Output written on TFGTeXiS.pdf (66 pages, 1087765 bytes).
 PDF statistics:
- 1315 PDF objects out of 1440 (max. 8388607)
- 134 named destinations out of 1000 (max. 500000)
- 380 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1369 PDF objects out of 1440 (max. 8388607)
+ 144 named destinations out of 1000 (max. 500000)
+ 428 words of extra memory for PDF output out of 10000 (max. 10000000)
 
