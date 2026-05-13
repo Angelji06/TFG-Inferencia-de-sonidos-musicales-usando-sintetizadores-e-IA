@@ -7,7 +7,7 @@ import pandas as pd
 import torch
 
 from FMsynth8 import FMSynth8Window
-from logica import get_gen_params, generar_dataset, check_dataset, entrenar_modelo, reproducir_wav, reproducir_prediccion, cargar_modelo_para_inferencia, hacer_inferencia, prediccion_multiples_wav, comparar_espectrogramas_4en1, evaluar_modelo, evaluar_benchmark_diverso, PARAM_NAMES
+from logica import get_gen_params, generar_dataset, check_dataset, entrenar_modelo, reproducir_wav, reproducir_prediccion, cargar_modelo_para_inferencia, hacer_inferencia, prediccion_multiples_wav, comparar_espectrogramas_4en1, evaluar_modelo, evaluar_benchmark_diverso, convertir_wavs_a_tensores, PARAM_NAMES
 from models import CNNRegressor5
  
 class App:
@@ -180,7 +180,10 @@ class App:
         self.btn_cargar_ds = tk.Button(top_frame, text="Cargar dataset", width=20,command=self._cargar_dataset)
         self.btn_cargar_ds.grid(row=0, column=1, padx=6, pady=6)
 
-        tk.Label(top_frame, textvariable=self.dataset_status_var).grid(row=1, column=0, columnspan=2, sticky="w", padx=6, pady=(6,0))
+        self.btn_generar_tensores = tk.Button(top_frame, text="Generar solo tensores", width=20, command=self._generar_solo_tensores)
+        self.btn_generar_tensores.grid(row=0, column=2, padx=6, pady=6)
+
+        tk.Label(top_frame, textvariable=self.dataset_status_var).grid(row=1, column=0, columnspan=3, sticky="w", padx=6, pady=(6,0))
 
         # Controles de hiperparámetros 
         params_frame = tk.LabelFrame(p, text="Parámetros de entrenamiento", padx=10, pady=10)
@@ -309,6 +312,61 @@ class App:
 
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo cargar la carpeta:\n{e}")
+
+    def _generar_solo_tensores(self):
+        # Preguntar al usuario qué modo desea (stft o mel)
+        modo_window = tk.Toplevel(self.root)
+        modo_window.title("Generar tensores")
+        modo_window.geometry("300x120")
+        modo_window.grab_set()
+        
+        tk.Label(modo_window, text="Selecciona el modo de espectrograma:", font=("Arial", 10)).pack(pady=10)
+        
+        modo_seleccionado = tk.StringVar(value="mel")
+        
+        frame_radio = tk.Frame(modo_window)
+        frame_radio.pack(pady=5)
+        tk.Radiobutton(frame_radio, text="STFT (lineal)", variable=modo_seleccionado, value="stft").pack(anchor="w")
+        tk.Radiobutton(frame_radio, text="MEL (perceptual)", variable=modo_seleccionado, value="mel").pack(anchor="w")
+        
+        def confirmar():
+            modo_window.destroy()
+            # Seleccionar carpeta con WAVs
+            wav_folder = filedialog.askdirectory(title="Selecciona carpeta con archivos WAV")
+            if not wav_folder:
+                return
+            
+            # Desactivar botones durante la conversión
+            self.btn_generar_ds.config(state="disabled")
+            self.btn_cargar_ds.config(state="disabled")
+            self.btn_generar_tensores.config(state="disabled")
+            
+            try:
+                device = self.device_var.get()
+                modo = modo_seleccionado.get()
+                messagebox.showinfo("Información", f"Convirtiendo WAVs a tensores ({modo})...\nEsto puede tomar varios minutos.")
+                
+                tensor_folder = convertir_wavs_a_tensores(wav_folder, device, mode=modo)
+                
+                # Cargar el dataset generado
+                ds = check_dataset(tensor_folder)
+                self.dataset_obj = ds
+                self.pathDataset = tensor_folder
+                self.spec_mode_var.set(ds.get('spec_mode', 'stft'))
+                
+                self.refresh_entrenamiento_page()
+                self.btn_entrenar.config(state="normal")
+                
+                messagebox.showinfo("Éxito", f"Tensores generados correctamente en:\n{tensor_folder}")
+                
+            except Exception as e:
+                messagebox.showerror("Error", f"No se pudieron generar los tensores:\n{e}")
+            finally:
+                self.btn_generar_ds.config(state="normal")
+                self.btn_cargar_ds.config(state="normal")
+                self.btn_generar_tensores.config(state="normal")
+        
+        tk.Button(modo_window, text="Continuar", command=confirmar).pack(pady=10)
 
     def _entrenar_modelo(self):
         if self.dataset_obj is None:

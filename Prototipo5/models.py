@@ -83,67 +83,72 @@ class CNNRegressorSimple(nn.Module):
         best_val_loss = float('inf')
         best_state_dict = None
 
-        # Entrenamiento
-        for epoch in range(epochs):
-            self.train()
-            running_params = 0.0
-            n_batches = 0
+        # Entrenamiento — envuelto en try/except para permitir cancelación con Ctrl+C
+        # y restaurar los mejores pesos vistos hasta el momento de la interrupción.
+        try:
+            for epoch in range(epochs):
+                self.train()
+                running_params = 0.0
+                n_batches = 0
 
-            for batch_idx, (batch_spec, batch_params) in enumerate(train_loader):
-                # mover a device
-                batch_spec   = batch_spec.to(device)       # (B,1,H,W)
-                batch_params = batch_params.to(device)     # (B, n_params)
+                for batch_idx, (batch_spec, batch_params) in enumerate(train_loader):
+                    # mover a device
+                    batch_spec   = batch_spec.to(device)       # (B,1,H,W)
+                    batch_params = batch_params.to(device)     # (B, n_params)
 
-                optimizer.zero_grad()                          # Reset gradientes
-                pred_params = self(batch_spec)                 # Forward pass (solo params, sin decoder)
-                loss = criterion(pred_params, batch_params)    # SmoothL1 sobre los 8 parámetros
-                loss.backward()                                # Backprop
-                optimizer.step()                               # Descenso de gradientes
+                    optimizer.zero_grad()                          # Reset gradientes
+                    pred_params = self(batch_spec)                 # Forward pass (solo params, sin decoder)
+                    loss = criterion(pred_params, batch_params)    # SmoothL1 sobre los 8 parámetros
+                    loss.backward()                                # Backprop
+                    optimizer.step()                               # Descenso de gradientes
 
-                running_params += loss.item()
-                n_batches += 1
+                    running_params += loss.item()
+                    n_batches += 1
 
-                # (opcional) print por batches si el usuario lo habilita mediante print_every_batches
-                if print_every_batches is not None and print_every_batches > 0:
-                    if (batch_idx + 1) % print_every_batches == 0:
-                        avg = running_params / n_batches
-                        print(f" Epoch {epoch+1}/{epochs}  Batch {batch_idx+1}  Avg params loss: {avg:.6f}")
+                    # (opcional) print por batches si el usuario lo habilita mediante print_every_batches
+                    if print_every_batches is not None and print_every_batches > 0:
+                        if (batch_idx + 1) % print_every_batches == 0:
+                            avg = running_params / n_batches
+                            print(f" Epoch {epoch+1}/{epochs}  Batch {batch_idx+1}  Avg params loss: {avg:.6f}")
 
-            avg_params = running_params / max(1, n_batches)
-            history['total'].append(avg_params)   # total = params (no hay componente espectral)
-            history['params'].append(avg_params)
+                avg_params = running_params / max(1, n_batches)
+                history['total'].append(avg_params)   # total = params (no hay componente espectral)
+                history['params'].append(avg_params)
 
-            # Fase de validación
-            avg_val_loss = 0.0
-            msg_val = ""
+                # Fase de validación
+                avg_val_loss = 0.0
+                msg_val = ""
 
-            if val_loader is not None:
-                self.eval()
-                val_running = 0.0
-                n_val = 0
-                with torch.no_grad():
-                    for v_spec, v_params in val_loader:
-                        v_spec   = v_spec.to(device)
-                        v_params = v_params.to(device)
-                        v_loss   = criterion(self(v_spec), v_params)
-                        val_running += v_loss.item()
-                        n_val += 1
+                if val_loader is not None:
+                    self.eval()
+                    val_running = 0.0
+                    n_val = 0
+                    with torch.no_grad():
+                        for v_spec, v_params in val_loader:
+                            v_spec   = v_spec.to(device)
+                            v_params = v_params.to(device)
+                            v_loss   = criterion(self(v_spec), v_params)
+                            val_running += v_loss.item()
+                            n_val += 1
 
-                avg_val_loss = val_running / max(1, n_val)
-                history['val_total'].append(avg_val_loss)
-                msg_val = f" | Val Loss: {avg_val_loss:.6f}"
+                    avg_val_loss = val_running / max(1, n_val)
+                    history['val_total'].append(avg_val_loss)
+                    msg_val = f" | Val Loss: {avg_val_loss:.6f}"
 
-                # Guardar el mejor modelo si mejora
-                if avg_val_loss < best_val_loss:
-                    best_val_loss = avg_val_loss
-                    best_state_dict = self.state_dict()
-                    msg_val += " (*)"
+                    # Guardar el mejor modelo si mejora
+                    if avg_val_loss < best_val_loss:
+                        best_val_loss = avg_val_loss
+                        best_state_dict = self.state_dict()
+                        msg_val += " (*)"
 
-            print(f"Epoch {epoch+1}/{epochs}  Params loss: {avg_params:.6f}{msg_val}")
+                print(f"Epoch {epoch+1}/{epochs}  Params loss: {avg_params:.6f}{msg_val}")
+
+        except KeyboardInterrupt:
+            print("\n[!] Entrenamiento cancelado por el usuario.")
 
         if best_state_dict is not None:
             self.load_state_dict(best_state_dict)
-            print("Entrenamiento finalizado. Se han restaurado los pesos de la mejor época.")
+            print("Se han restaurado los pesos de la mejor época.")
 
         return history
 
@@ -257,84 +262,89 @@ class CNNRegressor5(nn.Module):
             best_val_loss = float('inf')
             best_state_dict = None
 
-            # Entrenamiento
-            for epoch in range(epochs):
-                self.train()
-                running_total = 0.0
-                running_spec = 0.0
-                running_sc = 0.0
-                running_params = 0.0
-                n_batches = 0
+            # Entrenamiento — envuelto en try/except para permitir cancelación con Ctrl+C
+            # y restaurar los mejores pesos vistos hasta el momento de la interrupción.
+            try:
+                for epoch in range(epochs):
+                    self.train()
+                    running_total = 0.0
+                    running_spec = 0.0
+                    running_sc = 0.0
+                    running_params = 0.0
+                    n_batches = 0
 
-                for batch_idx, (batch_spec, batch_params) in enumerate(train_loader):
-                    # mover a device
-                    batch_spec = batch_spec.to(device)       # (B,1,H,W)
-                    batch_params = batch_params.to(device)   # (B, n_params)
+                    for batch_idx, (batch_spec, batch_params) in enumerate(train_loader):
+                        # mover a device
+                        batch_spec = batch_spec.to(device)       # (B,1,H,W)
+                        batch_params = batch_params.to(device)   # (B, n_params)
 
-                    optimizer.zero_grad()                       # Reset gradientes
-                    pred_params, pred_spec = self(batch_spec)   # Forward pass
-                    loss_total, loss_spec, loss_sc, loss_params = criterion(pred_spec, batch_spec, pred_params, batch_params)
-                    loss_total.backward()                       # Backprop
-                    optimizer.step()                            # Descenso de gradientes
+                        optimizer.zero_grad()                       # Reset gradientes
+                        pred_params, pred_spec = self(batch_spec)   # Forward pass
+                        loss_total, loss_spec, loss_sc, loss_params = criterion(pred_spec, batch_spec, pred_params, batch_params)
+                        loss_total.backward()                       # Backprop
+                        optimizer.step()                            # Descenso de gradientes
 
-                    running_total += loss_total.item()
-                    running_spec += loss_spec.item()
-                    running_sc += loss_sc.item()
-                    running_params += loss_params.item()
-                    n_batches += 1
+                        running_total += loss_total.item()
+                        running_spec += loss_spec.item()
+                        running_sc += loss_sc.item()
+                        running_params += loss_params.item()
+                        n_batches += 1
 
-                    # (opcional) print por batches si el usuario lo habilita mediante print_every_batches
-                    if print_every_batches is not None and print_every_batches > 0:
-                        if (batch_idx + 1) % print_every_batches == 0:
-                            avg_total_sofar = running_total / max(1, n_batches)
-                            avg_spec_sofar = running_spec / max(1, n_batches)
-                            avg_sc_sofar = running_sc / max(1, n_batches)
-                            avg_params_sofar = running_params / max(1, n_batches)
-                            print(f" Epoch {epoch+1}/{epochs}  Batch {batch_idx+1}  Avg total so far: {avg_total_sofar:.6f}  Spec: {avg_spec_sofar:.6f}  SC: {avg_sc_sofar:.6f}  Params: {avg_params_sofar:.6f}")
+                        # (opcional) print por batches si el usuario lo habilita mediante print_every_batches
+                        if print_every_batches is not None and print_every_batches > 0:
+                            if (batch_idx + 1) % print_every_batches == 0:
+                                avg_total_sofar = running_total / max(1, n_batches)
+                                avg_spec_sofar = running_spec / max(1, n_batches)
+                                avg_sc_sofar = running_sc / max(1, n_batches)
+                                avg_params_sofar = running_params / max(1, n_batches)
+                                print(f" Epoch {epoch+1}/{epochs}  Batch {batch_idx+1}  Avg total so far: {avg_total_sofar:.6f}  Spec: {avg_spec_sofar:.6f}  SC: {avg_sc_sofar:.6f}  Params: {avg_params_sofar:.6f}")
 
-                avg_total = running_total / max(1, n_batches)
-                avg_spec = running_spec / max(1, n_batches)
-                avg_sc = running_sc / max(1, n_batches)
-                avg_params = running_params / max(1, n_batches)
+                    avg_total = running_total / max(1, n_batches)
+                    avg_spec = running_spec / max(1, n_batches)
+                    avg_sc = running_sc / max(1, n_batches)
+                    avg_params = running_params / max(1, n_batches)
 
-                history['total'].append(avg_total)
-                history['spec'].append(avg_spec)
-                history['params'].append(avg_params)
+                    history['total'].append(avg_total)
+                    history['spec'].append(avg_spec)
+                    history['params'].append(avg_params)
 
-                # Fase de validación
-                avg_val_loss = 0.0
-                msg_val = ""
+                    # Fase de validación
+                    avg_val_loss = 0.0
+                    msg_val = ""
 
-                if val_loader is not None:
-                    self.eval()
-                    val_running = 0.0
-                    n_val = 0
-                    with torch.no_grad():
-                        for v_spec, v_params in val_loader:
-                            v_spec = v_spec.to(device)
-                            v_params = v_params.to(device)
+                    if val_loader is not None:
+                        self.eval()
+                        val_running = 0.0
+                        n_val = 0
+                        with torch.no_grad():
+                            for v_spec, v_params in val_loader:
+                                v_spec = v_spec.to(device)
+                                v_params = v_params.to(device)
 
-                            v_p, v_s = self(v_spec)
-                            v_loss, _, _, _ = criterion(v_s, v_spec, v_p, v_params)
+                                v_p, v_s = self(v_spec)
+                                v_loss, _, _, _ = criterion(v_s, v_spec, v_p, v_params)
 
-                            val_running += v_loss.item()
-                            n_val += 1
+                                val_running += v_loss.item()
+                                n_val += 1
 
-                    avg_val_loss = val_running / max(1, n_val)
-                    history['val_total'].append(avg_val_loss)
-                    msg_val = f" | Val Loss: {avg_val_loss:.6f}"
+                        avg_val_loss = val_running / max(1, n_val)
+                        history['val_total'].append(avg_val_loss)
+                        msg_val = f" | Val Loss: {avg_val_loss:.6f}"
 
-                    # Guardar el mejor modelo si mejora
-                    if avg_val_loss < best_val_loss:
-                        best_val_loss = avg_val_loss
-                        best_state_dict = self.state_dict()
-                        msg_val += " (*)"
+                        # Guardar el mejor modelo si mejora
+                        if avg_val_loss < best_val_loss:
+                            best_val_loss = avg_val_loss
+                            best_state_dict = self.state_dict()
+                            msg_val += " (*)"
 
-                print(f"Epoch {epoch+1}/{epochs}  Avg total: {avg_total:.6f}  Spec: {avg_spec:.6f}  SC: {avg_sc:.6f}  Params: {avg_params:.6f}{msg_val}")
+                    print(f"Epoch {epoch+1}/{epochs}  Avg total: {avg_total:.6f}  Spec: {avg_spec:.6f}  SC: {avg_sc:.6f}  Params: {avg_params:.6f}{msg_val}")
+
+            except KeyboardInterrupt:
+                print("\n[!] Entrenamiento cancelado por el usuario.")
 
             if best_state_dict is not None:
                 self.load_state_dict(best_state_dict)
-                print("Entrenamiento finalizado. Se han restaurado los pesos de la mejor época.")
+                print("Se han restaurado los pesos de la mejor época.")
 
             return history  # Retorna: history dict con listas 'total', 'spec', 'params' (valores medios por época)
 

@@ -127,7 +127,7 @@ def fm_synthesize(carrier, ratio, index, a_att, a_sus, a_dec, m_att, m_dec, dura
     return car.astype(np.float32), sr
 
 # 1. GENERACIÓN DE WAVs FM + CSV DE ETIQUETAS CON BARRIDO CON NUMPY
-def generar_wavs_FM(num_muestras=30000):   # conviene que este valor se pueda ajustar en un futuro desde la gui
+def generar_wavs_FM(num_muestras=50000):   # conviene que este valor se pueda ajustar en un futuro desde la gui
     # dirs
     t_start = time.time()  
     script_dir = os.path.dirname(os.path.abspath(__file__))   
@@ -343,6 +343,7 @@ def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3
 
     # --- Entrenamiento ---
     print(f"Entrenando modelo!       Usando {device}")
+    print("(Pulsa Ctrl+C para cancelar el entrenamiento; se guardarán los mejores pesos vistos hasta ese momento.)")
     # Split 70/15/15 con semilla fija para reproducibilidad
     generator = torch.Generator().manual_seed(42)
     train_size = int(len(dataset) * 0.70)
@@ -352,10 +353,33 @@ def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     val_loader   = DataLoader(val_dataset,   batch_size=batch_size, shuffle=False)
 
-    history = model.fit(train_loader, val_loader=val_loader, device=device, epochs=epochs, print_every_batches=print_every_batches, criterion=criterion, optimizer=optimizer)
+    # Entrenamiento 
+    interrumpido = False
+    try:
+        history = model.fit(
+            train_loader,
+            val_loader=val_loader,
+            device=device,
+            epochs=epochs,
+            print_every_batches=print_every_batches,
+            criterion=criterion,
+            optimizer=optimizer,
+        )
+    except KeyboardInterrupt:
+        interrumpido = True
+        print("\n[!] Entrenamiento cancelado por el usuario.")
 
     # --- Guardar modelo ---
-    save_path = os.path.join(save_dir, nombreModelo)
+    # Si fue interrumpido añadimos sufijo '_interrumpido' al nombre para no pisar
+    # un posible checkpoint completo previo con el mismo nombre.
+    if interrumpido:
+        base, ext = os.path.splitext(nombreModelo)
+        if not ext:
+            ext = '.pth'
+        nombre_final = f"{base}_interrumpido{ext}"
+    else:
+        nombre_final = nombreModelo
+    save_path = os.path.join(save_dir, nombre_final)
 
     # -- Guardar CHECKPOINT stats, modo de espectrograma y arquitectura ---
     stats = dataset.get_stats()
