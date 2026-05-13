@@ -1,0 +1,203 @@
+This is BibTeX, Version 0.99e
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: TFGTeXiS.aux
+Reallocating 'name_of_file' (item size: 1) to 19 items.
+A level-1 auxiliary file: Cascaras/cover.aux
+Reallocating 'name_of_file' (item size: 1) to 25 items.
+A level-1 auxiliary file: Cascaras/dedicatoria.aux
+Reallocating 'name_of_file' (item size: 1) to 29 items.
+A level-1 auxiliary file: Cascaras/agradecimientos.aux
+Reallocating 'name_of_file' (item size: 1) to 21 items.
+A level-1 auxiliary file: Cascaras/resumen.aux
+Reallocating 'name_of_file' (item size: 1) to 22 items.
+A level-1 auxiliary file: Cascaras/abstract.aux
+Reallocating 'name_of_file' (item size: 1) to 20 items.
+A level-1 auxiliary file: TeXiS/TeXiS_toc.aux
+Reallocating 'name_of_file' (item size: 1) to 27 items.
+A level-1 auxiliary file: Capitulos/Introduccion.aux
+Reallocating 'name_of_file' (item size: 1) to 33 items.
+A level-1 auxiliary file: Capitulos/EstadoDeLaCuestion.aux
+Reallocating 'name_of_file' (item size: 1) to 38 items.
+A level-1 auxiliary file: Capitulos/EvolucionArquitectonica.aux
+Reallocating 'name_of_file' (item size: 1) to 36 items.
+A level-1 auxiliary file: Capitulos/ExperimentacionPrevia.aux
+Reallocating 'name_of_file' (item size: 1) to 32 items.
+A level-1 auxiliary file: Capitulos/ArquitecturaFinal.aux
+Reallocating 'name_of_file' (item size: 1) to 36 items.
+A level-1 auxiliary file: Capitulos/ResultadosYEvaluacion.aux
+Reallocating 'name_of_file' (item size: 1) to 40 items.
+A level-1 auxiliary file: Capitulos/ConclusionesTrabajoFuturo.aux
+Reallocating 'name_of_file' (item size: 1) to 27 items.
+A level-1 auxiliary file: Capitulos/Introduction.aux
+Reallocating 'name_of_file' (item size: 1) to 36 items.
+A level-1 auxiliary file: Capitulos/ConclusionsFutureWork.aux
+Reallocating 'name_of_file' (item size: 1) to 39 items.
+A level-1 auxiliary file: Capitulos/ContribucionesPersonales.aux
+Reallocating 'name_of_file' (item size: 1) to 26 items.
+A level-1 auxiliary file: Cascaras/bibliografia.aux
+Reallocating 'name_of_file' (item size: 1) to 12 items.
+The style file: TeXiS/TeXiS.bst
+Reallocating 'name_of_file' (item size: 1) to 7 items.
+Reallocating 'name_of_file' (item size: 1) to 24 items.
+A level-1 auxiliary file: Apendices/appendixA.aux
+Reallocating 'name_of_file' (item size: 1) to 24 items.
+A level-1 auxiliary file: Apendices/appendixB.aux
+Reallocating 'name_of_file' (item size: 1) to 17 items.
+A level-1 auxiliary file: Cascaras/fin.aux
+Illegal, another \bibstyle command---line 37 of file TFGTeXiS.aux
+ : \bibstyle
+ :          {plainnat}
+I'm skipping whatever remains of this command
+Illegal, another \bibdata command---line 38 of file TFGTeXiS.aux
+ : \bibdata
+ :         {biblio}
+I'm skipping whatever remains of this command
+Database file #1: biblio.bib
+Warning--entry type for "refraction_sampling" isn't style-file defined
+--line 1 of file biblio.bib
+Warning--string name "september" is undefined
+--line 297 of file biblio.bib
+Warning--I didn't find a database entry for "yee2018"
+Warning--I didn't find a database entry for "allen1977"
+Warning--I didn't find a database entry for "kilgour2019"
+Warning--I didn't find a database entry for "agostinelli2023"
+Too many commas in name 1 of "Kevin Kilgour, Mauricio Zuluaga, Dominik Roblek, Matthew Sharif" for entry kilgour19_interspeech
+while executing---line 1775 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Kevin Kilgour, Mauricio Zuluaga, Dominik Roblek, Matthew Sharif" for entry kilgour19_interspeech
+while executing---line 1775 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1775 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1775 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1775 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1775 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1775 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1775 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1775 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1775 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1775 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1775 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1775 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1775 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1775 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1775 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1775 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1775 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1775 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1775 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1775 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1775 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Andrea Agostinelli, Timo I.Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jasen, Adam Roberts, Marco Tagliasacchi, Matt Sharifi, Neil Zeghidour, Christian Frank" for entry agostinelli2023musiclm
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Warning--empty journal in agostinelli2023musiclm
+ptr=1, stack=
+2023
+---the literal stack isn't empty for entry agostinelli2023musiclm
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Kevin Kilgour, Mauricio Zuluaga, Dominik Roblek, Matthew Sharif" for entry kilgour19_interspeech
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Too many commas in name 1 of "Kevin Kilgour, Mauricio Zuluaga, Dominik Roblek, Matthew Sharif" for entry kilgour19_interspeech
+while executing---line 1842 of file TeXiS/TeXiS.bst
+Warning--empty journal in kilgour19_interspeech
+ptr=1, stack=
+2019
+---the literal stack isn't empty for entry kilgour19_interspeech
+while executing---line 1842 of file TeXiS/TeXiS.bst
+You've used 3 entries,
+            2962 wiz_defined-function locations,
+            1111 strings with 13534 characters,
+and the built_in function-call counts, 1274 in all, are:
+= -- 99
+> -- 30
+< -- 3
++ -- 12
+- -- 9
+* -- 65
+:= -- 210
+add.period$ -- 10
+call.type$ -- 3
+change.case$ -- 19
+chr.to.int$ -- 3
+cite$ -- 5
+duplicate$ -- 115
+empty$ -- 102
+format.name$ -- 12
+if$ -- 243
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 24
+newline$ -- 20
+num.names$ -- 12
+pop$ -- 59
+preamble$ -- 1
+purify$ -- 15
+quote$ -- 0
+skip$ -- 48
+stack$ -- 0
+substring$ -- 35
+swap$ -- 39
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 30
+warning$ -- 2
+while$ -- 9
+width$ -- 0
+write$ -- 38
+(There were 48 error messages)

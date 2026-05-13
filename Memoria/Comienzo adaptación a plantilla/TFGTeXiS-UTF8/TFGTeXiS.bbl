@@ -1,0 +1,24 @@
+\begin{thebibliography}{3}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+
+\bibitem[{Andrea~Agostinelli(2023)}]{agostinelli2023musiclm}
+{\sc Andrea~Agostinelli, Z. B. J. E. M. V. A. C. Q. H. A. J. A. R. M. T. M. S.
+  N. Z. C.~F., Timo~I.Denk}.
+\newblock Musiclm: Generating music from text.
+\newblock Disponible en \url{https://arxiv.org/pdf/2301.11325}.
+
+\bibitem[{Kevin~Kilgour(2019)}]{kilgour19_interspeech}
+{\sc Kevin~Kilgour, D. R. M.~S., Mauricio~Zuluaga}.
+\newblock Fréchet audio distance: A reference-free metric for evaluating music
+  enhancement algorithms.
+\newblock Disponible en
+  \url{https://www.isca-archive.org/interspeech_2019/kilgour19_interspeech.pdf}.
+
+\bibitem[{{Refraction Productions}(2023)}]{refraction_sampling}
+{\sc {Refraction Productions}}.
+\newblock ¿qué es frecuencia de muestreo, profundidad de resolución de bits
+  en audio?
+\newblock 2023.
+\newblock Accedido: 13-05-2026.
+
+\end{thebibliography}
