@@ -135,6 +135,37 @@ class App:
 
         tk.Label(p, text="Entrenamiento", font=("Arial", 16)).pack(pady=(6,10))
 
+        # --- NUEVA SECCIÓN: Selección rápida de prototipos ---
+        proto_frame = tk.LabelFrame(p, text="Selección Rápida de Prototipo (P1 - P6)", padx=8, pady=8)
+        proto_frame.pack(fill="x", padx=6, pady=(4,10))
+
+        # Leyenda en fuente monoespaciada para alinear la tabla
+        legend_text = (
+            "+--------+----------+--------+------------+\n"
+            "| MODELO | ESPECTRO | RED    | LOSS       |\n"
+            "+--------+----------+--------+------------+\n"
+            "| P1     | stft     | simple | smoothL1   |\n"
+            "| P2     | mel      | simple | smoothL1   |\n"
+            "| P3     | stft     | full   | HybridLoss |\n"
+            "| P4     | mel      | full   | HybridLoss |\n"
+            "| P5     | stft     | full   | Multiscale |\n"
+            "| P6     | mel      | full   | Multiscale |\n"
+            "+--------+----------+--------+------------+"
+        )
+        tk.Label(proto_frame, text=legend_text, font=("Courier", 10), justify="left").pack(side="left", padx=10)
+
+        # Controles del selector
+        selector_frame = tk.Frame(proto_frame)
+        selector_frame.pack(side="left", padx=20, fill="y", expand=True)
+
+        tk.Label(selector_frame, text="Cargar configuración de Prototipo:").pack(pady=(10, 4))
+        self.proto_var = tk.StringVar(value="Personalizado")
+        proto_menu = tk.OptionMenu(selector_frame, self.proto_var, "Personalizado", "P1", "P2", "P3", "P4", "P5", "P6", command=self._apply_prototype)
+        proto_menu.config(width=15)
+        proto_menu.pack(pady=4)
+        tk.Label(selector_frame, text="(Esto ajustará los controles de abajo automáticamente)", fg="#888", font=("Arial", 8)).pack()
+        # -----------------------------------------------------
+
         # Seccion dispositivo
         device_frame = tk.LabelFrame(p, text="Device", padx=8, pady=8)
         device_frame.pack(fill="x", padx=6, pady=(4,10))
@@ -260,6 +291,59 @@ class App:
             self.loss_menu.config(state="normal")
             self.loss_hint_label.config(text="(hybrid = L1+SC  |  multiscale = multi-escala DDSP)")
 
+    def _apply_prototype(self, selection):
+        """Aplica la configuración según el prototipo seleccionado e incluye hiperparámetros y tamaño del dataset."""
+        if selection == "Personalizado":
+            return
+
+        # 1. Obtenemos los valores actuales de n epochs y batch size
+        eps = self.entry_epochs.get()
+        bs = self.entry_batch.get()
+        
+        # 2. Obtenemos la cantidad de audios/tensores si el dataset ya está cargado
+        num_wavs = ""
+        if self.dataset_obj and "tensores" in self.dataset_obj:
+            cantidad = len(self.dataset_obj["tensores"])
+            num_wavs = f"_w{cantidad}"
+
+        # 3. Creamos un sufijo con el formato _e{epochs}_b{batch}_w{wavs}
+        params_suffix = f"_e{eps}_b{bs}{num_wavs}"
+
+        # 4. Configuramos cada prototipo
+        if selection == "P1":
+            self.spec_mode_var.set("stft")
+            self.arch_var.set("simple")
+            self.hp_name_var.set(f"P1_stft_simple_sL1{params_suffix}.pth")
+        
+        elif selection == "P2":
+            self.spec_mode_var.set("mel")
+            self.arch_var.set("simple")
+            self.hp_name_var.set(f"P2_mel_simple_sL1{params_suffix}.pth")
+            
+        elif selection == "P3":
+            self.spec_mode_var.set("stft")
+            self.arch_var.set("full")
+            self.loss_fn_var.set("hybrid")
+            self.hp_name_var.set(f"P3_stft_full_hybrid{params_suffix}.pth")
+            
+        elif selection == "P4":
+            self.spec_mode_var.set("mel")
+            self.arch_var.set("full")
+            self.loss_fn_var.set("hybrid")
+            self.hp_name_var.set(f"P4_mel_full_hybrid{params_suffix}.pth")
+            
+        elif selection == "P5":
+            self.spec_mode_var.set("stft")
+            self.arch_var.set("full")
+            self.loss_fn_var.set("multiscale")
+            self.hp_name_var.set(f"P5_stft_full_multisc{params_suffix}.pth")
+            
+        elif selection == "P6":
+            self.spec_mode_var.set("mel")
+            self.arch_var.set("full")
+            self.loss_fn_var.set("multiscale")
+            self.hp_name_var.set(f"P6_mel_full_multisc{params_suffix}.pth")
+
     def refresh_entrenamiento_page(self):
         """
         Actualiza los textos y el estado de botones de la página de entrenamiento
@@ -282,6 +366,10 @@ class App:
         else:
             self.modelo_status_var.set(f"Modelo listo: {self.nombreModelo }")
             self.btn_ir_test.config(state="normal")
+
+        # Refrescar nombre del modelo si hay un prototipo seleccionado ---
+        if hasattr(self, 'proto_var') and self.proto_var.get() != "Personalizado":
+            self._apply_prototype(self.proto_var.get())
 
     def _generar_dataset(self):
         try:
