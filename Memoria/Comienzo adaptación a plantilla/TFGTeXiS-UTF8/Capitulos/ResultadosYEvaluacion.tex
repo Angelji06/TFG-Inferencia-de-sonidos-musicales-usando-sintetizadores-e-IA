@@ -35,7 +35,40 @@ Por otro lado, se ha elegido un \textit{Batch Size} de 32. Este, aparte de ser u
 
 \subsection{P1: CNNRegressorSimple: SmoothL1, STFT lineal}
 
+\subsubsection{Evaluación Mediante \textit{Test Set}}
+
+\subsubsection{Evaluación Mediante \textit{Benchmark} Diverso}
+
 \subsection{P2: CNNRegressorSimple: SmoothL1, Mel (log-perceptual)}
+
+\subsubsection{Evaluación Mediante \textit{Test Set}}
+
+\subsubsection{Evaluación Mediante \textit{Benchmark} Diverso}
+
+\begin{figure} 
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/benchmark_P2}
+    \caption{Gráfico obtenido en la evaluación de P2 mediante \textit{benchmark}.}
+    \label{fig:benchmarkP2}
+\end{figure}
+
+\begin{figure} 
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/espectrogramas_muy_bajo_P2}
+    \caption{Espectrograma resultado de la predicción del audio de Benchmark: \textit{muy\_bajo}.}
+    \label{fig:esp_muy_bajo_P2}
+\end{figure}
+
+\begin{figure} 
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/espectrograma_pad_lento_P2}
+    \caption{Espectrograma resultado de la predicción del audio de Benchmark: \textit{muy\_bajo}.}
+    \label{fig:esp_pad_lento_P2}
+\end{figure}
+
+Al aplicar \textit{Mel L1} y \textit{MCD} sobre los resultados del \textit{benchmark}, obtenemos el gráfico \ref{fig:benchmarkP2}. A simple vista se puede apreciar que hay dos casos en los que las métricas, previamente mencionadas, se encuentran muy reducidas, estos casos son con el sonido \textit{bajo\_limpio} y con \textit{muy\_bajo}. Esto se debe a que las frecuencias bajas y limpias poseen patrones visuales muy claros y fáciles de asimilar para la red. Esto se puede ver, por ejemplo, en el espectrograma de \textit{muy\_bajo} y en el de la predicción de la red \ref{fig:esp_muy_bajo_P2}, en los que se aprecia su claridad y la similitud entre el original y la predicción.  
+
+En contraposición, se hayan los resultados sobre el audio \textit{pad\_lento}, que destaca por haber generado un incremento de ambas métricas. Un \textit{pad} es un sonido de sintetizador caracterizado por comenzar muy lento (ataque bajo) y mantenerse. Comparando el espectrograma original de \textit{pad\_lento} y el de la predicción podemos sacar algunas conclusiones de estos resultados. Como se ve en la figura \ref{fig:esp_pad_lento_P2}, la red ha conseguido inferir perfectamente los parámetros relacionados con la envolvente, pero ha fallado considerablemente en la búsqueda de las frecuencias y los parámetros relacionados a estas que marcan el timbre (frecuencia). Por otra parte, también se puede llegar a la conclusión lógica de que, al ser un sonido de gran duración, esto hace que acumule un mayor error en las métricas. Esto es debido a que, a pesar de que dichas métricas calculan la media, como a la red identifica con gran precisión los silencios, los audios que contengan menos parte de audio van a conseguir mejores métricas.
 
 \subsection{P3: CNNRegressor5: HybridLoss, STFT lineal}
 
