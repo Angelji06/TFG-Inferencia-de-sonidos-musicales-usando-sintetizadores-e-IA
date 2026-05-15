@@ -3,6 +3,7 @@ import glob
 import os
 import shutil
 import time
+import json
 import librosa
 import librosa.display
 import matplotlib.pyplot as plt
@@ -353,6 +354,9 @@ def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     val_loader   = DataLoader(val_dataset,   batch_size=batch_size, shuffle=False)
 
+    base_name = os.path.splitext(nombreModelo)[0]
+    history_path = os.path.join(save_dir, f"{base_name}_history.json")
+
     # Entrenamiento 
     interrumpido = False
     try:
@@ -364,6 +368,7 @@ def entrenar_modelo(nombreModelo, dataset_obj, epochs=10, batch_size=16, lr=1e-3
             print_every_batches=print_every_batches,
             criterion=criterion,
             optimizer=optimizer,
+            history_path=history_path
         )
     except KeyboardInterrupt:
         interrumpido = True

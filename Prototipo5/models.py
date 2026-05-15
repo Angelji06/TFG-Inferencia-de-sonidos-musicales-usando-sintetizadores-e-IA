@@ -6,6 +6,7 @@ import pandas as pd
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import json
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -74,7 +75,7 @@ class CNNRegressorSimple(nn.Module):
         b  = self.bottleneck(e3)
         return self.fc_params(self.global_pool(b))  # (B, n_params)
 
-    def fit(self, train_loader, val_loader=None, device='cpu', epochs=10, patience=10, print_every_batches=50, criterion=None, optimizer=None):
+    def fit(self, train_loader, val_loader=None, device='cpu', epochs=10, patience=10, print_every_batches=50, criterion=None, optimizer=None, history_path=None):
         self.to(device)
 
         history = {'total': [], 'params': [], 'val_total': []}
@@ -146,6 +147,11 @@ class CNNRegressorSimple(nn.Module):
                         epochs_no_improve += 1
 
                 print(f"Epoch {epoch+1}/{epochs}  Params loss: {avg_params:.6f}{msg_val}")
+
+                # --- Guardado en tiempo real ---
+                if history_path is not None:
+                    with open(history_path, 'w') as f:
+                        json.dump(history, f, indent=4)
 
                 # Bloque de Early Stopping
                 if epochs_no_improve >= patience:
@@ -261,7 +267,7 @@ class CNNRegressor5(nn.Module):
 
         return params, recon
 
-    def fit(self, train_loader, val_loader=None, device='cpu', epochs=10, patience=10, print_every_batches=50, criterion=None, optimizer=None):
+    def fit(self, train_loader, val_loader=None, device='cpu', epochs=10, patience=10, print_every_batches=50, criterion=None, optimizer=None, history_path=None):
             self.to(device)
             criterion.to(device)
 
@@ -351,6 +357,11 @@ class CNNRegressor5(nn.Module):
                             epochs_no_improve += 1
 
                     print(f"Epoch {epoch+1}/{epochs}  Avg total: {avg_total:.6f}  Spec: {avg_spec:.6f}  SC: {avg_sc:.6f}  Params: {avg_params:.6f}{msg_val}")
+
+                    # --- Guardado en tiempo real ---
+                    if history_path is not None:
+                        with open(history_path, 'w') as f:
+                            json.dump(history, f, indent=4)
 
                     # Bloque de Early Stopping
                     if epochs_no_improve >= patience:
