@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.3.25)  15 MAY 2026 12:01
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.3.25)  15 MAY 2026 13:30
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -766,7 +766,7 @@ Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
 \evensidemarginOriginal=\skip97
 \oddsidemarginOriginal=\skip98
 \longTitulo=\skip99
-<Imagenes/Bitmap/escudoUCMcolor.png, id=231, 600.3228pt x 678.3744pt>
+<Imagenes/Bitmap/escudoUCMcolor.png, id=275, 600.3228pt x 678.3744pt>
 File: Imagenes/Bitmap/escudoUCMcolor.png Graphic file (type png)
 <use Imagenes/Bitmap/escudoUCMcolor.png>
 Package pdftex.def Info: Imagenes/Bitmap/escudoUCMcolor.png  used on input line 189.
@@ -824,8 +824,12 @@ LaTeX Info: Redefining \% on input line 1.
 LaTeX Info: Redefining \. on input line 3.
 LaTeX Info: Redefining \% on input line 3.
  [13]
-LaTeX Info: Redefining \. on input line 52.
-LaTeX Info: Redefining \% on input line 52.
+Overfull \hbox (9.17647pt too wide) in paragraph at lines 56--56
+ [][] [][]\T1/cmr/m/n/12 P6: CNN-Re-gres-sor5: Mul-tiS-ca-leS-pec-tra-lLoss, Mel (log-perceptual)[] [][]  
+ []
+
+LaTeX Info: Redefining \. on input line 63.
+LaTeX Info: Redefining \% on input line 63.
 )
 \tf@toc=\write6
 \openout6 = `TFGTeXiS.toc'.
@@ -962,7 +966,7 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
 ]
-<./Imagenes/Bitmap/sampling.png, id=458, 2007.5pt x 1505.625pt>
+<./Imagenes/Bitmap/sampling.png, id=513, 2007.5pt x 1505.625pt>
 File: ./Imagenes/Bitmap/sampling.png Graphic file (type png)
 <use ./Imagenes/Bitmap/sampling.png>
 Package pdftex.def Info: ./Imagenes/Bitmap/sampling.png  used on input line 41.
@@ -984,7 +988,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 
 Package natbib Warning: Citation `yee2018' on page 9 undefined on input line 64.
 
-<./Imagenes/Bitmap/espectrograma.png, id=469, 501.875pt x 283.0575pt>
+<./Imagenes/Bitmap/espectrograma.png, id=524, 501.875pt x 283.0575pt>
 File: ./Imagenes/Bitmap/espectrograma.png Graphic file (type png)
 <use ./Imagenes/Bitmap/espectrograma.png>
 Package pdftex.def Info: ./Imagenes/Bitmap/espectrograma.png  used on input line 68.
@@ -1212,7 +1216,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 
  (Capitulos/ArquitecturaFinal.tex
 Cap\'itulo 5.
-<Imagenes/Bitmap/diagrama.png, id=565, 1653.17625pt x 1064.97874pt>
+<Imagenes/Bitmap/diagrama.png, id=620, 1653.17625pt x 1064.97874pt>
 File: Imagenes/Bitmap/diagrama.png Graphic file (type png)
 <use Imagenes/Bitmap/diagrama.png>
 Package pdftex.def Info: Imagenes/Bitmap/diagrama.png  used on input line 10.
@@ -1223,8 +1227,8 @@ Package pdftex.def Info: Imagenes/Bitmap/diagrama.png  used on input line 10.
 
 
 ]
-LaTeX Info: Redefining \. on input line 59.
-LaTeX Info: Redefining \% on input line 59.
+LaTeX Info: Redefining \. on input line 63.
+LaTeX Info: Redefining \% on input line 63.
 
 
 Package fancyhdr Warning: \headheight is too small (14.0pt): 
@@ -1234,8 +1238,8 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
 [28 <./Imagenes/Bitmap/diagrama.png>]
-LaTeX Info: Redefining \. on input line 100.
-LaTeX Info: Redefining \% on input line 100.
+LaTeX Info: Redefining \. on input line 95.
+LaTeX Info: Redefining \% on input line 95.
 
 
 Package fancyhdr Warning: \headheight is too small (14.0pt): 
@@ -1245,12 +1249,12 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
 [29]
-Overfull \hbox (29.28894pt too wide) in paragraph at lines 116--117
+Overfull \hbox (29.28894pt too wide) in paragraph at lines 121--122
 []\T1/cmr/bx/n/12 Aislamiento de Da-tos:  \T1/cmr/m/n/12 Con-tie-ne los ín-di-ces del con-jun-to de prue-ba (\T1/cmr/m/it/12 test_indices\T1/cmr/m/n/12 ),
  []
 
-LaTeX Info: Redefining \. on input line 133.
-LaTeX Info: Redefining \% on input line 133.
+LaTeX Info: Redefining \. on input line 131.
+LaTeX Info: Redefining \% on input line 131.
 
 Package fancyhdr Warning: \headheight is too small (14.0pt): 
 (fancyhdr)                Make it at least 14.49998pt, for example:
@@ -1259,8 +1263,8 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
 [30]
-LaTeX Info: Redefining \. on input line 171.
-LaTeX Info: Redefining \% on input line 171.
+LaTeX Info: Redefining \. on input line 176.
+LaTeX Info: Redefining \% on input line 176.
 
 
 Package fancyhdr Warning: \headheight is too small (14.0pt): 
@@ -1270,8 +1274,10 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
 [31]
-LaTeX Info: Redefining \. on input line 191.
-LaTeX Info: Redefining \% on input line 191.
+Underfull \vbox (badness 1616) has occurred while \output is active []
+
+LaTeX Info: Redefining \. on input line 196.
+LaTeX Info: Redefining \% on input line 196.
 
 
 Package fancyhdr Warning: \headheight is too small (14.0pt): 
@@ -1281,25 +1287,25 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
 [32]
-<Imagenes/Bitmap/pantalla1.png, id=603, 522.45187pt x 351.56343pt>
+<Imagenes/Bitmap/pantalla1.png, id=658, 522.45187pt x 351.56343pt>
 File: Imagenes/Bitmap/pantalla1.png Graphic file (type png)
 <use Imagenes/Bitmap/pantalla1.png>
-Package pdftex.def Info: Imagenes/Bitmap/pantalla1.png  used on input line 207.
+Package pdftex.def Info: Imagenes/Bitmap/pantalla1.png  used on input line 216.
 (pdftex.def)             Requested size: 426.79135pt x 287.19489pt.
-<Imagenes/Bitmap/pantallaPruebas.png, id=604, 851.43094pt x 529.22719pt>
+<Imagenes/Bitmap/pantallaPruebas.png, id=659, 851.43094pt x 529.22719pt>
 File: Imagenes/Bitmap/pantallaPruebas.png Graphic file (type png)
 <use Imagenes/Bitmap/pantallaPruebas.png>
-Package pdftex.def Info: Imagenes/Bitmap/pantallaPruebas.png  used on input line 214.
+Package pdftex.def Info: Imagenes/Bitmap/pantallaPruebas.png  used on input line 223.
 (pdftex.def)             Requested size: 426.79135pt x 265.28319pt.
-<Imagenes/Bitmap/sinte.png, id=605, 609.02531pt x 374.90062pt>
+<Imagenes/Bitmap/sinte.png, id=660, 609.02531pt x 374.90062pt>
 File: Imagenes/Bitmap/sinte.png Graphic file (type png)
 <use Imagenes/Bitmap/sinte.png>
-Package pdftex.def Info: Imagenes/Bitmap/sinte.png  used on input line 221.
+Package pdftex.def Info: Imagenes/Bitmap/sinte.png  used on input line 230.
 (pdftex.def)             Requested size: 426.79135pt x 262.73183pt.
-<Imagenes/Bitmap/pantallaEntrenamiento.png, id=606, 843.90282pt x 522.45187pt>
+<Imagenes/Bitmap/pantallaEntrenamiento.png, id=661, 843.90282pt x 522.45187pt>
 File: Imagenes/Bitmap/pantallaEntrenamiento.png Graphic file (type png)
 <use Imagenes/Bitmap/pantallaEntrenamiento.png>
-Package pdftex.def Info: Imagenes/Bitmap/pantallaEntrenamiento.png  used on input line 228.
+Package pdftex.def Info: Imagenes/Bitmap/pantallaEntrenamiento.png  used on input line 237.
 (pdftex.def)             Requested size: 426.79135pt x 264.22275pt.
 )
 LaTeX Info: Redefining \. on input line 145.
@@ -1344,12 +1350,38 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 
 ]
 Cap\'itulo 6.
-<Imagenes/Bitmap/pipelines.png, id=628, 871.255pt x 688.5725pt>
+<Imagenes/Bitmap/pipelines.png, id=686, 871.255pt x 688.5725pt>
 File: Imagenes/Bitmap/pipelines.png Graphic file (type png)
 <use Imagenes/Bitmap/pipelines.png>
-Package pdftex.def Info: Imagenes/Bitmap/pipelines.png  used on input line 12.
+Package pdftex.def Info: Imagenes/Bitmap/pipelines.png  used on input line 17.
 (pdftex.def)             Requested size: 426.79135pt x 337.2984pt.
-) [37]
+[37]
+LaTeX Info: Redefining \. on input line 28.
+LaTeX Info: Redefining \% on input line 28.
+
+
+Package fancyhdr Warning: \headheight is too small (14.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
+
+[38 <./Imagenes/Bitmap/pipelines.png>]
+Overfull \hbox (30.64185pt too wide) in paragraph at lines 38--38
+|[]\T1/cmr/bx/n/14.4 P2: CNN-Re-gres-sor-Sim-ple: SmoothL1, Mel (log-perceptual)| 
+ []
+
+
+Overfull \hbox (0.19516pt too wide) in paragraph at lines 42--42
+|[]\T1/cmr/bx/n/14.4 P4: CNN-Re-gres-sor5: Hy-brid-Loss, Mel (log-perceptual)| 
+ []
+
+
+Overfull \hbox (3.00557pt too wide) in paragraph at lines 46--46
+|[]\T1/cmr/bx/n/14.4 P6: CNN-Re-gres-sor5: Mul-tiS-ca-leS-pec-tra-lLoss, Mel (log-
+ []
+
+)
 LaTeX Info: Redefining \. on input line 146.
 LaTeX Info: Redefining \% on input line 146.
 
@@ -1360,38 +1392,38 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[38 <./Imagenes/Bitmap/pipelines.png>]
+[39]
 \openout2 = `Capitulos/ConclusionesTrabajoFuturo.aux'.
 
- (Capitulos/ConclusionesTrabajoFuturo.tex
-Cap\'itulo 7.
-) [39
+ (Capitulos/ConclusionesTrabajoFuturo.tex [40
 
 
 
 
 ]
+Cap\'itulo 7.
+) [41]
 \openout2 = `Capitulos/Introduction.aux'.
 
- (Capitulos/Introduction.tex [40
-
-
-
-
-]) [41]
-\openout2 = `Capitulos/ConclusionsFutureWork.aux'.
-
- (Capitulos/ConclusionsFutureWork.tex [42
+ (Capitulos/Introduction.tex [42
 
 
 
 
 ]) [43]
+\openout2 = `Capitulos/ConclusionsFutureWork.aux'.
+
+ (Capitulos/ConclusionsFutureWork.tex [44
+
+
+
+
+]) [45]
 LaTeX Info: Redefining \. on input line 156.
 LaTeX Info: Redefining \% on input line 156.
 \openout2 = `Capitulos/ContribucionesPersonales.aux'.
 
- (Capitulos/ContribucionesPersonales.tex [44
+ (Capitulos/ContribucionesPersonales.tex [46
 
 
 
@@ -1399,7 +1431,7 @@ LaTeX Info: Redefining \% on input line 156.
 ]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [45])
+ [47])
 LaTeX Info: Redefining \. on input line 159.
 LaTeX Info: Redefining \% on input line 159.
 
@@ -1410,7 +1442,7 @@ Package fancyhdr Warning: \headheight is too small (14.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-0.49998pt}.
 
-[46]
+[48]
 \openout2 = `Cascaras/bibliografia.aux'.
 
  (Cascaras/bibliografia.tex (TFGTeXiS.bbl
@@ -1418,7 +1450,7 @@ Underfull \hbox (badness 2680) in paragraph at lines 11--16
 \T1/cmr/m/n/12 po-ni-ble en []$\T1/cmtt/m/n/12 https : / / www . isca-[]archive . org / interspeech _ 2019 / kilgour19 _
  []
 
-)) [47
+)) [49
 
 
 
@@ -1426,33 +1458,33 @@ Underfull \hbox (badness 2680) in paragraph at lines 11--16
 ]
 \openout2 = `Apendices/appendixA.aux'.
 
- (Apendices/appendixA.tex [48
+ (Apendices/appendixA.tex [50
 
 
 
 
 ]
 Ap\'{e}ndice A.
-) [49]
+) [51]
 \openout2 = `Apendices/appendixB.aux'.
 
- (Apendices/appendixB.tex [50
+ (Apendices/appendixB.tex [52
 
 
 
 
 ]
 Ap\'{e}ndice B.
-) [51] [52
+) [53] [54
 
 
 
 ]
 \openout2 = `Cascaras/fin.aux'.
 
- (Cascaras/fin.tex [53
+ (Cascaras/fin.tex [55
 
-] [54]) (TFGTeXiS.bbl
+] [56]) (TFGTeXiS.bbl
 pdfTeX warning (ext4): destination with the same identifier (name{cite.agostinelli2023musiclm}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
@@ -1474,7 +1506,7 @@ Package natbib Warning: There were undefined citations.
 
 Package natbib Warning: There were multiply defined citations.
 
-[55
+[57
 
 
 
@@ -1500,20 +1532,20 @@ LaTeX Warning: There were undefined references.
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `TFGTeXiS.out' has not changed.
-(rerunfilecheck)             Checksum: 99C74063AE969652F7821D776A9BEB63;12106.
+(rerunfilecheck)             Checksum: 8CB97555BF26B388CD22ABCFB64832EA;14949.
  ) 
 Here is how much of TeX's memory you used:
- 19720 strings out of 467871
- 344481 string characters out of 5418376
- 864232 words of memory out of 5000000
- 47722 multiletter control sequences out of 15000+600000
+ 19745 strings out of 467871
+ 344814 string characters out of 5418376
+ 864261 words of memory out of 5000000
+ 47734 multiletter control sequences out of 15000+600000
  653631 words of font info for 88 fonts, out of 8000000 for 9000
  1379 hyphenation exceptions out of 8191
  97i,12n,109p,1271b,900s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1095.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\eccc1095.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1095.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbi1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1000.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbi1440.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1000.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1000.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm0700.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm0800.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1095.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1095.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\eccc1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1200.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1440.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm2488.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1440.pk> <C:\Users\angel\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1728.pk><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/Users/angel/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb>
-Output written on TFGTeXiS.pdf (73 pages, 1874032 bytes).
+Output written on TFGTeXiS.pdf (75 pages, 1890240 bytes).
 PDF statistics:
- 1644 PDF objects out of 1728 (max. 8388607)
- 165 named destinations out of 1000 (max. 500000)
- 502 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1722 PDF objects out of 1728 (max. 8388607)
+ 178 named destinations out of 1000 (max. 500000)
+ 590 words of extra memory for PDF output out of 10000 (max. 10000000)
 

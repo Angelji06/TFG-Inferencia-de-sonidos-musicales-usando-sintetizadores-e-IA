@@ -25,6 +25,10 @@ forma de generación del dataset. La ampliación de 3 a 8 parámetros hace compu
 el dataset mediante un barrido de combinaciones posibles. Para dar solución a esta limitación, se genera el dataset
 por muestreo aleatorio. 
 
+
+\subsection{Generación y Tratamiento del Dataset}
+\label{sec:gen_dataset}
+
 El sistema genera un número (N) de muestras de audio con valores continuos aleatorios,
 en base a unos rangos de valores específicos para cada parámetro. Para cada uno de ellos 
 se utiliza una distribución uniforme, a excepción de la frecuencia portadora (\textit{Carrier}) que 
@@ -57,6 +61,7 @@ de los parámetros, consiguiendo igualar las importancias de cada uno en el cál
 Finalmente, el dataset se divide, mediante una semilla fija, en: 70\% para entrenamiento, 15\% validación y se guarda otro 15\%
 como conjunto de pruebas (\textit{Test set}).
 
+\subsection{Entrenamiento}
 La fase de entrenamiento se caracteriza por permitir la elección de diferentes arquitecturas y funciones de pérdida con el fin de experimentar. De esta 
 forma, se pueden probar diferentes combinaciones para ver cual es más interesante en tiempo o precisión.
 \begin{itemize}
@@ -118,6 +123,8 @@ con el resto de información de contexto necesaria:
 
 \end{itemize}
 
+
+\subsection{Inferencia}
 La fase 5 consiste en la inferencia de parámetros de síntesis FM, mediante el modelo entrenado previamente, a partir
 de audios. 
 
@@ -135,6 +142,8 @@ interfaz gráfica (GUI). Por un lado, se puede realizar una comparación visual 
 predicho con el del audio original. Para ello, se sintetizan los parámetros obtenidos y los parametros originales y se 
 calculan sus espectrogramas. También se da la opción de comparar acústicamente el audio original con el sintetizado por los parámetros
 inferidos (mediante \textit{sounddevice}) y de exportar estos a un sintetizador propio, con la opción de modificarlos manualmente. 
+
+\subsection{Evaluación}
 
 La última fase se centra en la evaluación del rendimiento del sistema y en la experimentación en el uso de las
 diferentes combinaciones de arquitecturas y funciones de pérdida. Para ello, la fase se divide en dos vertientes:
