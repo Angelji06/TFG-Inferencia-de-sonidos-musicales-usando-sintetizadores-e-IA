@@ -8,3 +8,15 @@ Prototipo5/__pycache__
 Prototipo5/.claude
 .aider*
 dataset.zip
+*.aux
+*.log
+*.lot
+*.lof
+*.out
+*.toc
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+

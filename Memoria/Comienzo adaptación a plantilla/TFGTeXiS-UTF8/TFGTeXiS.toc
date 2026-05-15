@@ -39,18 +39,29 @@
 \contentsline {subsection}{\numberline {4.2.4}Conclusiones}{25}{subsection.59}%
 \contentsline {chapter}{\numberline {5}Arquitectura Final}{27}{chapter.60}%
 \contentsline {section}{\numberline {5.1}Expansión Paramétrica: Evolventes y Generación Aleatoria del Dataset}{27}{section.62}%
-\contentsline {section}{\numberline {5.2}Interfaz Gráfica de la Aplicación}{32}{section.64}%
-\contentsline {section}{\numberline {5.3}Estructura del Código}{32}{section.65}%
-\contentsline {chapter}{\numberline {6}Resultados y Evaluación}{37}{chapter.70}%
-\contentsline {section}{\numberline {6.1}Definición de los Pipelines Experimentales}{37}{section.71}%
-\contentsline {section}{\numberline {6.2}Evaluación de las Diferentes Arquitecturas y Funciones de Pérdida}{37}{section.73}%
-\contentsline {chapter}{\numberline {7}Conclusiones y Trabajo Futuro}{39}{chapter.75}%
-\contentsline {chapter}{Introduction}{41}{chapter*.76}%
+\contentsline {subsection}{\numberline {5.1.1}Generación y Tratamiento del Dataset}{27}{subsection.63}%
+\contentsline {subsection}{\numberline {5.1.2}Entrenamiento}{29}{subsection.65}%
+\contentsline {subsection}{\numberline {5.1.3}Inferencia}{31}{subsection.66}%
+\contentsline {subsection}{\numberline {5.1.4}Evaluación}{31}{subsection.67}%
+\contentsline {section}{\numberline {5.2}Interfaz Gráfica de la Aplicación}{32}{section.68}%
+\contentsline {section}{\numberline {5.3}Estructura del Código}{33}{section.69}%
+\contentsline {chapter}{\numberline {6}Resultados y Evaluación}{37}{chapter.74}%
+\contentsline {section}{\numberline {6.1}Definición de los Pipelines Experimentales}{37}{section.75}%
+\contentsline {section}{\numberline {6.2}Evaluación de las Diferentes Arquitecturas y Funciones de Pérdida}{37}{section.77}%
+\contentsline {subsection}{\numberline {6.2.1}P1: CNNRegressorSimple: SmoothL1, STFT lineal}{39}{subsection.78}%
+\contentsline {subsection}{\numberline {6.2.2}P2: CNNRegressorSimple: SmoothL1, Mel (log-perceptual)}{39}{subsection.79}%
+\contentsline {subsection}{\numberline {6.2.3}P3: CNNRegressor5: HybridLoss, STFT lineal}{39}{subsection.80}%
+\contentsline {subsection}{\numberline {6.2.4}P4: CNNRegressor5: HybridLoss, Mel (log-perceptual)}{39}{subsection.81}%
+\contentsline {subsection}{\numberline {6.2.5}P5: CNNRegressor5: MultiScaleSpectralLoss, STFT lineal}{39}{subsection.82}%
+\contentsline {subsection}{\numberline {6.2.6}P6: CNNRegressor5: MultiScaleSpectralLoss, Mel (log-perceptual)}{39}{subsection.83}%
+\contentsline {section}{\numberline {6.3}Comparación de los Resultados Obtenidos}{39}{section.84}%
+\contentsline {chapter}{\numberline {7}Conclusiones y Trabajo Futuro}{41}{chapter.86}%
+\contentsline {chapter}{Introduction}{43}{chapter*.87}%
 \babel@toc {english}{}\relax 
-\contentsline {chapter}{Conclusions and Future Work}{43}{chapter*.77}%
-\contentsline {chapter}{Contribuciones Personales}{45}{chapter*.78}%
+\contentsline {chapter}{Conclusions and Future Work}{45}{chapter*.88}%
+\contentsline {chapter}{Contribuciones Personales}{47}{chapter*.89}%
 \babel@toc {spanish}{}\relax 
-\contentsline {chapter}{Bibliograf\'{\i }a}{47}{chapter*.79}%
-\contentsline {chapter}{\numberline {A}Título del Apéndice A}{49}{appendix.80}%
-\contentsline {chapter}{\numberline {B}Título del Apéndice B}{51}{appendix.81}%
-\contentsline {chapter}{Bibliograf\'{\i }a}{55}{appendix*.82}%
+\contentsline {chapter}{Bibliograf\'{\i }a}{49}{chapter*.90}%
+\contentsline {chapter}{\numberline {A}Título del Apéndice A}{51}{appendix.91}%
+\contentsline {chapter}{\numberline {B}Título del Apéndice B}{53}{appendix.92}%
+\contentsline {chapter}{Bibliograf\'{\i }a}{57}{appendix*.93}%
