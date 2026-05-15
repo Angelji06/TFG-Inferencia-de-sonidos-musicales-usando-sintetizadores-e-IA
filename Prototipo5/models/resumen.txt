@@ -1,0 +1,18 @@
++--------+----------+--------+------------+
+| MODELO | ESPECTRO | RED    | LOSS       |
++--------+----------+--------+------------+
+| P1     | stft     | simple | smoothL1   |
+| P2     | mel      | simple | smoothL1   |
+| P3     | stft     | full   | HybridLoss |
+| P4     | mel      | full   | HybridLoss |
+| P5     | stft     | full   | Multiscale |
+| P6     | mel      | full   | Multiscale |
++--------+----------+--------+------------+
+
+RESULTADOS:
+P1 - 
+P2 - 57 epochs - Val Loss: 0.006844
+P3 - 
+P4 - 25 epochs - Val loss: 0.6722766092483033
+P5 - 
+P6 - 60 epochs - Val loss: 0.6974
