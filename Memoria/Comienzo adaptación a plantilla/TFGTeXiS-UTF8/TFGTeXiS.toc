@@ -17,7 +17,7 @@
 \contentsline {subsection}{\numberline {2.1.6}\textit {Mel Frequency Cesptral Coefficients} (MFCC)}{10}{subsection.33}%
 \contentsline {section}{\numberline {2.2}Estado de la cuestión: IA aplicada al audio}{10}{section.34}%
 \contentsline {subsection}{\numberline {2.2.1}CNNs en el dominio del audio}{10}{subsection.35}%
-\contentsline {subsection}{\numberline {2.2.2}Audio Spectrogram Transformer (AST)}{11}{subsection.36}%
+\contentsline {subsection}{\numberline {2.2.2}Transformers en el dominio del audio (AST)}{11}{subsection.36}%
 \contentsline {subsection}{\numberline {2.2.3}Inferencia de parámetros en síntesis}{11}{subsection.37}%
 \contentsline {subsection}{\numberline {2.2.4}Audio End-to-End vs. Parámetros + Espectrograma}{12}{subsection.38}%
 \contentsline {subsection}{\numberline {2.2.5}Datasets de referencia: NSynth y otros}{12}{subsection.39}%
