@@ -74,7 +74,7 @@ class CNNRegressorSimple(nn.Module):
         b  = self.bottleneck(e3)
         return self.fc_params(self.global_pool(b))  # (B, n_params)
 
-    def fit(self, train_loader, val_loader=None, device='cpu', epochs=10, print_every_batches=50, criterion=None, optimizer=None):
+    def fit(self, train_loader, val_loader=None, device='cpu', epochs=10, patience=10, print_every_batches=50, criterion=None, optimizer=None):
         self.to(device)
 
         history = {'total': [], 'params': [], 'val_total': []}
@@ -82,6 +82,7 @@ class CNNRegressorSimple(nn.Module):
         # Variable que guarda el mejor modelo
         best_val_loss = float('inf')
         best_state_dict = None
+        epochs_no_improve = 0
 
         # Entrenamiento — envuelto en try/except para permitir cancelación con Ctrl+C
         # y restaurar los mejores pesos vistos hasta el momento de la interrupción.
@@ -139,9 +140,17 @@ class CNNRegressorSimple(nn.Module):
                     if avg_val_loss < best_val_loss:
                         best_val_loss = avg_val_loss
                         best_state_dict = self.state_dict()
+                        epochs_no_improve = 0  # Reiniciamos la paciencia
                         msg_val += " (*)"
+                    else:
+                        epochs_no_improve += 1
 
                 print(f"Epoch {epoch+1}/{epochs}  Params loss: {avg_params:.6f}{msg_val}")
+
+                # Bloque de Early Stopping
+                if epochs_no_improve >= patience:
+                    print(f"\n[!] Early Stopping activado en la época {epoch+1}. El modelo no ha mejorado en las últimas {patience} épocas.")
+                    break  # Rompe el bucle 'for epoch in range(epochs)'
 
         except KeyboardInterrupt:
             print("\n[!] Entrenamiento cancelado por el usuario.")
@@ -252,7 +261,7 @@ class CNNRegressor5(nn.Module):
 
         return params, recon
 
-    def fit(self, train_loader, val_loader=None, device='cpu', epochs=10, print_every_batches=50, criterion=None, optimizer=None):
+    def fit(self, train_loader, val_loader=None, device='cpu', epochs=10, patience=10, print_every_batches=50, criterion=None, optimizer=None):
             self.to(device)
             criterion.to(device)
 
@@ -261,6 +270,7 @@ class CNNRegressor5(nn.Module):
             # Variable que guarda el mejor modelo
             best_val_loss = float('inf')
             best_state_dict = None
+            epochs_no_improve = 0
 
             # Entrenamiento — envuelto en try/except para permitir cancelación con Ctrl+C
             # y restaurar los mejores pesos vistos hasta el momento de la interrupción.
@@ -335,9 +345,17 @@ class CNNRegressor5(nn.Module):
                         if avg_val_loss < best_val_loss:
                             best_val_loss = avg_val_loss
                             best_state_dict = self.state_dict()
+                            epochs_no_improve = 0  # Reiniciamos la paciencia
                             msg_val += " (*)"
+                        else:
+                            epochs_no_improve += 1
 
                     print(f"Epoch {epoch+1}/{epochs}  Avg total: {avg_total:.6f}  Spec: {avg_spec:.6f}  SC: {avg_sc:.6f}  Params: {avg_params:.6f}{msg_val}")
+
+                    # Bloque de Early Stopping
+                    if epochs_no_improve >= patience:
+                        print(f"\n[!] Early Stopping activado en la época {epoch+1}. El modelo no ha mejorado en las últimas {patience} épocas.")
+                        break  # Rompe el bucle 'for epoch in range(epochs)'
 
             except KeyboardInterrupt:
                 print("\n[!] Entrenamiento cancelado por el usuario.")
