@@ -28,7 +28,7 @@
 \contentsline {subsection}{\numberline {3.1.1}Enfoque de Clasificación}{15}{subsection.44}%
 \contentsline {subsection}{\numberline {3.1.2}Enfoque de Regresión}{16}{subsection.45}%
 \contentsline {section}{\numberline {3.2}El Problema de la Inyectividad y la Necesidad de una Arquitectura Compleja}{17}{section.46}%
-\contentsline {subsection}{\numberline {3.2.1}Prototipo 4: Red Convolucional de Doble Cabeza}{17}{subsection.47}%
+\contentsline {subsection}{\numberline {3.2.1}Prototipo 4: Red Convolucional de Doble Cabeza}{18}{subsection.47}%
 \contentsline {subsection}{\numberline {3.2.2}Prototipo 4: Función de Pérdida Híbrida}{19}{subsection.49}%
 \contentsline {chapter}{\numberline {4}Experimentación Previa}{21}{chapter.53}%
 \contentsline {section}{\numberline {4.1}Limitaciones de Fréchet Audio Distance (FAD)}{21}{section.54}%
