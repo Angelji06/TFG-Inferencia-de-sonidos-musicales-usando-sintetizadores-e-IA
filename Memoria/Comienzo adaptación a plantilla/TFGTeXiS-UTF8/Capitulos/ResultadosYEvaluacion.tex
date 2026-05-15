@@ -2,20 +2,52 @@
 \label{cap:ResultadosYEvaluacion}
 
 % (TODO) Texto introductorio
+En este capítulo se muestran las pruebas realizadas sobre el prototipo 5 (\ref{cap:ArquitecturaFinal}).
 
 \section{Definición de los Pipelines Experimentales}
 
+
 % (ToDO) Texto descriptivo del diagrama de los pipelines
+Como se explicó en el capítulo sobre la arquitectura final (\ref{cap:ArquitecturaFinal}), el prototipo 5 consta de varias posibles arquitecturas y funciones de pérdida, que se pueden combinar dando lugar a seis diferentes configuracinones (o \textit{Pipelines}). El diagrama \ref{fig:pipelines} muestra las diferentes topologías que se dan. Las arquitecturas y funciones de pérdida están ordenadas de tal manera que arriba a la izquierda se encuentra la configuración más simple (de la que se esperan los peores resultados) y abajo a la derecha la más compleja (la más prometedora). 
+
+Con la evaluación y comparación de las diferentes configuraciones, se espera determinar cúal de ellas será la "definitiva", la que ofrezca mejores predicciones, pero teniendo también en cuenta sus tiempos de entrenamiento y la eficiencia general de las mismas. 
 
 \begin{figure} 
     \centering
     \includegraphics[width=1\textwidth]{Imagenes/Bitmap/pipelines}
-    \caption{Flujo de trabajo del Prototipo 5: desde la síntesis matemática hasta la inferencia y posterior aplicación en la interfaz de usuario.}
+    \caption{Representación de las diferentes combinaciones de Arquitecturas y Funciones de Pérdida.}
     \label{fig:pipelines}
 \end{figure}
 
 \section{Evaluación de las Diferentes Arquitecturas y Funciones de Pérdida}
+La evaluación de las diferentes topologías se ha llevado a cabo con un único dataset de 50000 audios (método de generación explicado aquí: \ref{sec:gen_dataset}), un número que ha resultado ser equilibrado, perimitiendo unos resultados decentes sin suponer un incremento demasiado grande en los tiempos de entrenamiento de los modelos. 
 
+El número de épocas no se ha dejado fijo, se ha utilizado un valor de paciencia (\textit{Early Stopping}) de 10 épocas. De esta manera, se comprueba el error de validación en cada época y si despues de 10 seguidas no se ha mejorado su record histórico, la red deja de entrenarse. Así pues, se evita la Sobreadaptación (\textit{Overfitting}) de la red neuronal, puesto que se evita un entrenamiento excesivo, y se ahorra tiempo de entrenamiento innecesario. 
+
+Por otro lado, se ha elegido un \textit{Batch Size} de 32. Este, aparte de ser un estándar, es un valor asumible por cualquier tarjeta gráfica moderna y que consigue una eficiencia adecuada. 
+
+\noindent \textbf{\textit{Benchmark}:}
+\begin{itemize}
+    \item \textbf{Tamaño del Dataset: 50000} 
+    \item \textbf{Valor de Paciencia: 10} 
+    \item \textbf{\textit{Batch Size}: 32} 
+\end{itemize}
+
+\subsection{P1: CNNRegressorSimple: SmoothL1, STFT lineal}
+
+\subsection{P2: CNNRegressorSimple: SmoothL1, Mel (log-perceptual)}
+
+\subsection{P3: CNNRegressor5: HybridLoss, STFT lineal}
+
+\subsection{P4: CNNRegressor5: HybridLoss, Mel (log-perceptual)}
+
+\subsection{P5: CNNRegressor5: MultiScaleSpectralLoss, STFT lineal}
+
+\subsection{P6: CNNRegressor5: MultiScaleSpectralLoss, Mel (log-perceptual)}
+
+
+
+\section{Comparación de los Resultados Obtenidos}
 
 \begin{table}
     \centering

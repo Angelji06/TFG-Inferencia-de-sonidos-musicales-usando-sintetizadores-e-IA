@@ -7,3 +7,14 @@ Prototipo4/__pycache__
 Prototipo5/__pycache__
 Prototipo5/.claude
 .aider*
+*.aux
+*.log
+*.lot
+*.lof
+*.out
+*.toc
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+*.synctex.gz

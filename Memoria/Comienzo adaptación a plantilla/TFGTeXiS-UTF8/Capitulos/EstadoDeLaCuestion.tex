@@ -89,11 +89,7 @@ m = 2595 \cdot \log_{10}(1 + f/700)
 
 \subsection{\textit{Mel Frequency Cesptral Coefficients} (MFCC)}
 
-<<<<<<< HEAD
-Los MFCC son un conjunto de coeficientes que representan \textbf{la "huella" tímbrica de un sonido}, es decir, aislan el instrumento de la nota que este interpreta. Se obtienen aplicando la \textbf{Transformada de Coseno Discreta (DCT)} al espectrograma Mel para simplificar y organizar la información de las frecuencias (Davis & Mermelstein, 1980). 
-=======
 Los MFCC son un conjunto de coeficientes que representan la "huella" tímbrica de un sonido, es decir, aislan el instrumento de la nota que este interpreta. Se obtienen aplicando la \textbf{Transformada de Coseno Discreta (DCT)} al espectrograma Mel para simplificar y organizar la información de las frecuencias (Davis \& Mermelstein, 1980). 
->>>>>>> 399dfabba2330693981c5800cfbfb95cf0a18e98
 
 Si bien fueron el estándar en reconocimiento de voz, la tecnología actual prefiere el uso del espectrograma Mel completo. Este cambio se debe a que las redes neuronales convolucionales (CNN) logran mayor precisión al analizar la imagen sonora total, aprovechando detalles y matices que la compresión de la DCT suele eliminar en el proceso. Sin embargo, \textbf{como métrica de evaluación}, los MFCC siguen siendo útiles para comparar la similitud tímbrica entre el sonido original y el resintetizado.
 
