@@ -1,4 +1,4 @@
-# Estimación automática de Parámetros de Síntesis FM para la obtención de Timbres Musicales mediante Redes Neuronales}
+# Estimación automática de Parámetros de Síntesis FM para la obtención de Timbres Musicales mediante Redes Neuronales
 
 Trabajo de Fin de Grado, Universidad Complutense de Madrid
 
