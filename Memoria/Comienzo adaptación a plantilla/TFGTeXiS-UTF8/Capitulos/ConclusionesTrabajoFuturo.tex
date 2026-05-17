@@ -1,8 +1,18 @@
 \chapter{Conclusiones y Trabajo Futuro}
 \label{cap:conclusiones}
 
-Conclusiones del trabajo y líneas de trabajo futuro.
+A través de este proyecto se ha demostrado la viabilidad de utilizar \textbf{Redes Neuronales Convolucionales (CNNs)} para automatizar la estimación de parámetros en la \textbf{síntesis FM}. El sistema desarrollado logra reducir la barrera técnica del \textit{sound matching}, confirmando que el \textbf{aprendizaje profundo} es una herramienta eficaz para agilizar el flujo de trabajo de productores y diseñadores de sonido, permitiéndoles centrarse en el proceso creativo.
 
-Antes de la entrega de actas de cada convocatoria, en el plazo que se indica en el calendario de los trabajos de fin de grado, el estudiante entregará en el Campus Virtual la versión final de la memoria en PDF.
+Un trabajo de esta naturaleza es fácilmente continuable desde múltiples perspectivas; sin embargo, consideramos relevante destacar las cuatro ramas de investigación y desarrollo más prometedoras:
 
+\begin{enumerate}
+\item \textbf{Implementación de un sintetizador diferenciable:} La integración de librerías como DDSP (\textit{Differentiable Digital Signal Processing}) permitiría integrar el proceso de síntesis directamente en el entrenamiento de la red. Esto posibilitaría un cálculo exacto en el descenso de gradiente (al no tratar el sintetizador como una "caja negra"), optimizando la convergencia del modelo y mejorando notablemente la fidelidad de los resultados.
 
+\item \textbf{Escalabilidad a otros métodos de síntesis:} El flujo de trabajo establecido sienta las bases para expandir el sistema más allá de síntesis por modulación de frecuencia. Sería de gran interés adaptar el modelo para estimar parámetros en síntesis aditiva, sustractiva, de modelado físico o granular.
+
+\item \textbf{Exploración arquitectónica y optimización:} Para superar los límites de rendimiento actuales, se propone un estudio más exhaustivo de hiperparámetros, la evaluación de arquitecturas de red alternativas y el diseño de funciones de pérdida personalizadas. Esto permitiría aportar enfoques propios y novedosos, reduciendo la dependencia de los modelos estandarizados en la literatura actual.
+
+\item \textbf{Desarrollo de un plugin VST:} De cara a su viabilidad comercial y práctica, el paso lógico es encapsular el modelo en un formato VST para su integración directa en cualquier DAW (\textit{Digital Audio Workstation}). Esto requerirá el diseño de una interfaz gráfica de usuario (GUI) intuitiva y la programación de un sistema más robusto para el manejo de excepciones, evitando que la aplicación falle ante entradas imprevistas o casos límite (\textit{edge cases}) por parte del usuario final.
+
+\item \textbf{Evaluación perceptual mediante pruebas de escucha:} Aunque el rendimiento del modelo se ha medido utilizando métricas cuantitativas, la incorporación de una validación cualitativa a través de usuarios reales supondría un avance significativo. La realización de pruebas de percepción subjetiva con productores y diseñadores de sonido permitiría evaluar la similitud tímbrica desde una perspectiva psicoacústica real, aportando una métrica de éxito empírica y directamente alineada con el oído humano.
+\end{enumerate}

@@ -2,6 +2,19 @@
 \label{cap:conclusions}
 \addcontentsline{toc}{chapter}{Conclusions and Future Work}
 
-Conclusions and future lines of work. This chapter contains the translation of Chapter \ref{cap:conclusiones}.
+Through this project, the feasibility of using \textbf{Convolutional Neural Networks (CNNs)} to automate parameter estimation in \textbf{FM synthesis} has been demonstrated. The developed system succeeds in reducing the technical barrier of \textit{sound matching}, confirming that \textbf{deep learning} is an effective tool to streamline the workflow of producers and sound designers, allowing them to focus on the creative process.
 
+A work of this nature can be easily continued from multiple perspectives; however, we consider it relevant to highlight the five most promising branches of research and development:
+
+\begin{enumerate}
+\item \textbf{Implementation of a differentiable synthesizer:} The integration of libraries such as DDSP (\textit{Differentiable Digital Signal Processing}) would allow the synthesis process to be integrated directly into the network training. This would enable an exact calculation in gradient descent (by not treating the synthesizer as a "black box"), optimizing model convergence and significantly improving the fidelity of the results.
+
+\item \textbf{Scalability to other synthesis methods:} The established workflow lays the groundwork for expanding the system beyond frequency modulation synthesis. It would be of great interest to adapt the model to estimate parameters in additive, subtractive, physical modeling, or granular synthesis.
+
+\item \textbf{Architectural exploration and optimization:} To overcome current performance limits, a more exhaustive study of hyperparameters, the evaluation of alternative network architectures, and the design of custom loss functions are proposed. This would allow for the contribution of novel, proprietary approaches, reducing the reliance on standardized models in current literature.
+
+\item \textbf{Development of a VST plugin:} Looking toward its commercial and practical viability, the logical step is to encapsulate the model in a VST format for direct integration into any DAW (\textit{Digital Audio Workstation}). This will require the design of an intuitive graphical user interface (GUI) and the programming of a more robust system for exception handling, preventing the application from crashing due to unforeseen inputs or \textit{edge cases} from the end user.
+
+\item \textbf{Perceptual evaluation through listening tests:} Although the model's performance has been measured using quantitative metrics, incorporating qualitative validation through real users would represent a significant advancement. Conducting subjective perception tests with producers and sound designers would allow for the evaluation of timbral similarity from a real psychoacoustic perspective, providing an empirical success metric directly aligned with human hearing.
+\end{enumerate}
 
