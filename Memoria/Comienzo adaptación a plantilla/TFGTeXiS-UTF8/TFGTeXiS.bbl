@@ -1,24 +1,141 @@
-\begin{thebibliography}{3}
+\begin{thebibliography}{21}
 \expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
 
-\bibitem[{Andrea~Agostinelli(2023)}]{agostinelli2023musiclm}
-{\sc Andrea~Agostinelli, Z. B. J. E. M. V. A. C. Q. H. A. J. A. R. M. T. M. S.
-  N. Z. C.~F., Timo~I.Denk}.
-\newblock Musiclm: Generating music from text.
-\newblock Disponible en \url{https://arxiv.org/pdf/2301.11325}.
-
-\bibitem[{Kevin~Kilgour(2019)}]{kilgour19_interspeech}
-{\sc Kevin~Kilgour, D. R. M.~S., Mauricio~Zuluaga}.
-\newblock Fréchet audio distance: A reference-free metric for evaluating music
-  enhancement algorithms.
+\bibitem[{algfisica()}]{fourier}
+{\sc algfisica}.
+\newblock 10. teorema de fourier.
 \newblock Disponible en
-  \url{https://www.isca-archive.org/interspeech_2019/kilgour19_interspeech.pdf}.
+  \url{https://lalgfisica.readthedocs.io/es/latest/Oscilaciones_Termo/40_Fourier.html}.
 
-\bibitem[{{Refraction Productions}(2023)}]{refraction_sampling}
-{\sc {Refraction Productions}}.
-\newblock ¿qué es frecuencia de muestreo, profundidad de resolución de bits
-  en audio?
-\newblock 2023.
-\newblock Accedido: 13-05-2026.
+\bibitem[{Allen(1977)}]{allen1977}
+{\sc Allen, J.~B.}
+\newblock Short term spectral analysis, synthesis, and modification by discrete
+  fourier transform.
+\newblock {\em IEEE Transactions on Acoustics, Speech, and Signal
+  Processing\/}, Disponible en
+  \url{https://ieeexplore.ieee.org/document/1162950}.
+
+\bibitem[{Barkan et\ al.(2019)Barkan, Tsiris y Koenigstein}]{barkan2019}
+{\sc Barkan, O.}, {\sc Tsiris, D.} y {\sc Koenigstein, N.}
+\newblock Inversynth: Deep neural network for musical synthesizer parameter
+  extraction.
+\newblock En {\em IEEE/ACM Transactions on Audio, Speech, and Language
+  Processing\/}. 2019.
+
+\bibitem[{Chowning(1973)}]{chowning1973}
+{\sc Chowning, J.~M.}
+\newblock The synthesis of complex audio spectra by means of frequency
+  modulation.
+\newblock {\em Journal of the Audio Engineering Society\/}, 1973.
+
+\bibitem[{Davis y Mermelstein(1980)}]{davis1980}
+{\sc Davis, S.~B.} y {\sc Mermelstein, P.}
+\newblock Comparison of parametric representations for monosyllabic word
+  recognition in continuously spoken sentences.
+\newblock {\em IEEE Transactions on Acoustics, Speech, and Signal
+  Processing\/}, 1980.
+
+\bibitem[{Engel et\ al.(2020)Engel, Hantrakul, Gu y Roberts}]{engel2020}
+{\sc Engel, J.}, {\sc Hantrakul, L.}, {\sc Gu, C.} y {\sc Roberts, A.}
+\newblock {DDSP}: Differentiable digital signal processing.
+\newblock En {\em International Conference on Learning Representations
+  (ICLR)\/}. 2020.
+
+\bibitem[{Engel et\ al.(2017)Engel, Resnick, Roberts, Sander, Norouzi y
+  Eck}]{engel2017}
+{\sc Engel, J.}, {\sc Resnick, C.}, {\sc Roberts, A.}, {\sc Sander, D.}, {\sc
+  Norouzi, M.} y {\sc Eck, D.}
+\newblock Neural audio synthesis of musical notes with wavenet autoencoders.
+\newblock En {\em Proceedings of the 34th International Conference on Machine
+  Learning (ICML)\/}. PMLR, 2017.
+
+\bibitem[{Gong et\ al.(2021)Gong, Chung y Glass}]{gong2021}
+{\sc Gong, Y.}, {\sc Chung, Y.-A.} y {\sc Glass, J.}
+\newblock {AST}: Audio spectrogram transformer.
+\newblock En {\em Proc. Interspeech 2021\/}. 2021.
+
+\bibitem[{{Green Musicians}()}]{dexed}
+{\sc {Green Musicians}}.
+\newblock Dexed.
+\newblock Disponible en
+  \url{https://www.greenmusicians.com/es/vst-gratuito-de-sintetizador/asb2m10/4459-asb2m10-dexed-3701701228270.html}.
+
+\bibitem[{{Hispasonic}()}]{DX7}
+{\sc {Hispasonic}}.
+\newblock Yamaha dx7.
+\newblock Disponible en
+  \url{https://www.hispasonic.com/productos/yamaha-dx7/19868}.
+
+\bibitem[{Hispasónic(2026)}]{sintesis_aditiva}
+{\sc Hispasónic}.
+\newblock Síntesis (5): síntesis aditiva.
+\newblock Disponible en
+  \url{https://www.hispasonic.com/tutoriales/sintesis-5-sintesis-aditiva/38297}.
+
+\bibitem[{Kong et\ al.(2020)Kong, Cao, Iqbal, Wang, Wang y Plumbley}]{kong2020}
+{\sc Kong, Q.}, {\sc Cao, Y.}, {\sc Iqbal, T.}, {\sc Wang, Y.}, {\sc Wang, W.}
+  y {\sc Plumbley, M.~D.}
+\newblock Panns: Large-scale pretrained audio neural networks for audio pattern
+  recognition.
+\newblock {\em IEEE/ACM Transactions on Audio, Speech, and Language
+  Processing\/}, 2020.
+
+\bibitem[{Krizhevsky et\ al.(2012)Krizhevsky, Sutskever y
+  Hinton}]{krizhevsky2012}
+{\sc Krizhevsky, A.}, {\sc Sutskever, I.} y {\sc Hinton, G.~E.}
+\newblock Imagenet classification with deep convolutional neural networks.
+\newblock En {\em Advances in Neural Information Processing Systems\/}. Curran
+  Associates, Inc., 2012.
+
+\bibitem[{LeCun et\ al.(1998)LeCun, Bottou, Bengio y Haffner}]{lecun1998}
+{\sc LeCun, Y.}, {\sc Bottou, L.}, {\sc Bengio, Y.} y {\sc Haffner, P.}
+\newblock Gradient-based learning applied to document recognition.
+\newblock {\em Proceedings of the IEEE\/}, 1998.
+
+\bibitem[{van~den Oord et\ al.(2016)van~den Oord, Dieleman, Zen, Simonyan,
+  Vinyals, Graves, Kalchbrenner, Senior y Kavukcuoglu}]{oord2016}
+{\sc van~den Oord, A.}, {\sc Dieleman, S.}, {\sc Zen, H.}, {\sc Simonyan, K.},
+  {\sc Vinyals, O.}, {\sc Graves, A.}, {\sc Kalchbrenner, N.}, {\sc Senior, A.}
+  y {\sc Kavukcuoglu, K.}
+\newblock Wavenet: A generative model for raw audio.
+\newblock {\em arXiv preprint arXiv:1609.03499\/}, 2016.
+
+\bibitem[{Stevens et\ al.(1937)Stevens, Volkmann y Newman}]{stevens1937}
+{\sc Stevens, S.~S.}, {\sc Volkmann, J.} y {\sc Newman, E.~B.}
+\newblock A scale for the measurement of the psychological magnitude pitch.
+\newblock {\em The Journal of the Acoustical Society of America\/}, Disponible
+  en \url{https://doi.org/10.1121/1.1915893}.
+
+\bibitem[{Vaswani et\ al.(2017)Vaswani, Shazeer, Parmar, Uszkoreit, Jones,
+  Gomez, Kaiser y Polosukhin}]{vaswani2017}
+{\sc Vaswani, A.}, {\sc Shazeer, N.}, {\sc Parmar, N.}, {\sc Uszkoreit, J.},
+  {\sc Jones, L.}, {\sc Gomez, A.~N.}, {\sc Kaiser, {\L}.} y {\sc Polosukhin,
+  I.}
+\newblock Attention is all you need.
+\newblock En {\em Advances in Neural Information Processing Systems\/}. Curran
+  Associates, Inc., 2017.
+
+\bibitem[{{Wikipedia}({\natexlab{a}})}]{sampling}
+{\sc {Wikipedia}}.
+\newblock Audio bit depth.
+\newblock Disponible en \url{https://en.wikipedia.org/wiki/Audio_bit_depth}.
+
+\bibitem[{{Wikipedia}({\natexlab{b}})}]{espectrograma}
+{\sc {Wikipedia}}.
+\newblock Espectrograma.
+\newblock Disponible en \url{https://es.wikipedia.org/wiki/Espectrograma}.
+
+\bibitem[{Wikipedia(2026)}]{sintesis_sustractiva}
+{\sc Wikipedia}.
+\newblock Síntesis sustractiva.
+\newblock Disponible en
+  \url{https://es.wikipedia.org/wiki/S%C3%ADntesis_substractiva}.
+
+\bibitem[{Yee-King et\ al.(2018)Yee-King, Fedden y d'Inverno}]{yee2018}
+{\sc Yee-King, M.}, {\sc Fedden, L.} y {\sc d'Inverno, M.}
+\newblock Automatic programming of {VST} sound synthesizers using deep networks
+  and other techniques.
+\newblock {\em IEEE Transactions on Emerging Topics in Computational
+  Intelligence\/}, 2018.
 
 \end{thebibliography}

@@ -1,55 +1,61 @@
 \chapter{Introducción}
 \label{cap:introduccion}
 
-\chapterquote{Frase célebre dicha por alguien inteligente}{Autor}
-
-Según la normativa  para Trabajos de Fin de Grado\footnote{\url{https://informatica.ucm.es/file/normativatfg-2021-2022?ver} (ver versión actualizada para cada curso académico)}, la memoria incluirá una portada normalizada con la siguiente información: título en castellano, título en inglés, autores, profesor director, codirector si es el caso, curso
-académico e identificación de la asignatura (Trabajo de fin de grado del Grado en -
-nombre del grado correspondiente-, Facultad de Informática, Universidad Complutense de Madrid). Los datos referentes al título y director (y codirector en su caso) deben corresponder a los publicados en la página web de TFG.
-
-La memoria debe incluir la descripción detallada de la propuesta hardware/software realizada y ha de contener:
-\begin{enumerate}
-\renewcommand{\theenumi}{\alph{enumi}}
-	\item un índice,
-	\item un resumen y una lista de no más de 10 palabras clave para su búsqueda bibliográfica, ambos en castellano e inglés,
-	\item una introducción con los antecedentes, objetivos y plan de trabajo,
-	\item resultados y discusión crítica y razonada de los mismos, con sus conclusiones,
-	\item bibliografía.
-\end{enumerate}
-Para facilitar la escritura de la memoria siguiendo esta estructura, el estudiante podrá usar las plantillas en LaTeX o Word preparadas al efecto y publicadas en la página web de TFG.
-
-La memoria constará de un mínimo de 25 páginas para los proyectos realizados por un único estudiante, y de al menos 5 páginas más por cada integrante adicional del grupo. En este número de páginas solo se tiene en cuenta el contenido correspondiente a los apartados c y d del punto anterior.
-
-La memoria puede estar escrita en castellano o inglés, pero en el primer caso la introducción y las conclusiones deben aparecer también en inglés. Las memorias de los TFG matriculados en el grupo I deberán estar escritas íntegramente en inglés, excepto por lo especificado en los puntos 1 y 2 anteriores (título, resumen y lista de palabras clave).
-
-En caso de trabajos no unipersonales, cada participante indicará en la memoria su contribución al proyecto con una extensión de al menos dos páginas por cada uno de los participantes.
-
-Todo el material no original, ya sea texto o figuras, deberá ser convenientemente citado y referenciado. En el caso de material complementario se deben respetar las licencias y \emph{copyrights} asociados al software y hardware que se emplee. En caso contrario no se autorizará la defensa, sin menoscabo de otras acciones que correspondan.
-
+\chapterquote{Sueño con instrumentos que obedezcan a mi pensamiento y que, con el aporte de un mundo de sonidos insospechados, se presten a las exigencias de mi ritmo interior.}{Edgard Varèse}
 
 \section{Motivación}
-Introducción al tema del TFG.
+\label{sec:motivacion}
 
+La producción musical moderna ha experimentado una transformación radical en las últimas décadas, consolidando al ordenador y al \textit{software} como los ejes centrales del proceso creativo. En este paradigma digital, la generación de señales de audio artificiales mediante sintetizadores se ha convertido en una herramienta indispensable para artistas, productores y diseñadores de sonido. Históricamente, los primeros sintetizadores analógicos, basados en métodos de síntesis aditiva\footnote{La síntesis aditiva busca la construcción de sonidos combinando (sumando, es decir, ‘por adición’) elementos más simples que el sonido original. \citep{sintesis_aditiva}.} y sustractiva\footnote{Es un método de síntesis donde una señal es generada por un oscilador y después filtrada \citep{sintesis_sustractiva}.}, ofrecían un flujo de trabajo relativamente accesible; su interfaz física y visual, controlada a través de potenciómetros y filtros, permitía a los músicos esculpir el sonido de una manera intuitiva y directa.
+
+Sin embargo, el panorama de la síntesis cambió drásticamente a finales de los años sesenta con el descubrimiento de la Síntesis por Modulación de Frecuencia (FM) y, de forma masiva, con la comercialización del emblemático \textbf{Yamaha DX7} en 1983. Esta tecnología supuso una revolución en el mercado al permitir la creación de timbres metálicos, eléctricos y campanados, acústicamente imposibles de lograr con la tecnología sustractiva de la época. No obstante, esta innovación trajo consigo un dilema significativo: \textbf{su programación es notoriamente contraintuitiva}. A diferencia de los sistemas tradicionales, en la síntesis FM un cambio mínimo en un solo parámetro (como el índice de modulación o la frecuencia de un operador) puede destruir por completo la estructura armónica del sonido. Esta extrema sensibilidad paramétrica y la pronunciada curva de aprendizaje han alejado históricamente a la mayoría de los creadores del diseño sonoro FM, relegándolos al uso de \textit{presets} preconfigurados.
+
+Este nivel de complejidad técnica manifiesta su mayor obstáculo en el proceso conocido como \textbf{\textit{Sound Matching}} o igualación tímbrica. Es una situación cotidiana en el estudio de grabación que un productor escuche un sonido específico y desee replicarlo. Realizar esta tarea ``a oído'' con un sintetizador FM es un proceso de ensayo y error que puede resultar profundamente frustrante. Desde una perspectiva matemática y acústica, este problema radica en la \textbf{falta de inyectividad} del motor de síntesis: combinaciones de parámetros drásticamente diferentes pueden generar resultados acústicos que el oído humano percibe como idénticos, mientras que ajustes minúsculos pueden derivar en texturas sonoras completamente opuestas. En consecuencia, el diseño manual de sonidos se convierte en una barrera técnica que interrumpe el flujo creativo del artista.
+
+Ante esta problemática, la Inteligencia Artificial y, en concreto, el \textbf{aprendizaje profundo} (\textit{Deep Learning}), se presentan como el puente ideal entre la abstracción creativa del músico y la complejidad matemática del sintetizador. Al delegar la inferencia de parámetros a un modelo computacional, se puede automatizar la búsqueda del sonido objetivo. Para lograrlo, el sistema debe ser capaz de ``escuchar'' y procesar la señal de una forma asimilable por la red. Mediante la transformación del audio unidimensional a un \textbf{espectrograma}, se logra ``fotografiar'' el sonido, adaptando las frecuencias a una escala logarítmica que imita fielmente la percepción del sistema auditivo humano.
+
+Una vez que el audio se representa como una imagen bidimensional, las \textbf{Redes Neuronales Convolucionales (CNNs)} emergen como la arquitectura idónea para abordar el problema. Estas redes están diseñadas para extraer características espaciales y, en el dominio del espectrograma, son excepcionalmente precisas al ``ver'' y clasificar las densas texturas tímbricas y armónicas del audio. 
 
 \section{Objetivos}
-Descripción de los objetivos del trabajo.
+\label{sec:objetivos}
 
+\textbf{Objetivo General:} \\
+Desarrollar un sistema basado en \textbf{Redes Neuronales Convolucionales (CNNs)} capaz de estimar automáticamente los parámetros de un sintetizador de \textbf{modulación de frecuencia (FM)} a partir de una muestra de audio, con el fin de replicar su timbre (\textit{sound matching}). Además, se estudiará y comparará el uso de distintas representaciones del espectrograma, arquitecturas de red y funciones de pérdida.
+
+\vspace{1em}
+\textbf{Objetivos Específicos:}
+
+\begin{itemize}
+    \item \textbf{Comprensión de la síntesis FM:} Estudiar y comprender la arquitectura paramétrica de la síntesis FM, desde su versión más simple hasta una versión más compleja que involucre envolventes de amplitud y modulación.
+    \item \textbf{Revisión bibliográfica:} Investigar y leer la literatura relacionada con el uso de la \textbf{Inteligencia Artificial aplicada al audio} para tomar las decisiones de diseño fundamentales del proyecto.
+    \item \textbf{Generación del dataset:} Diseñar e implementar un motor de síntesis capaz de generar un \textit{dataset} masivo de audios sintéticos (\texttt{.wav}) y sus correspondientes etiquetas (parámetros), así como su conversión a tensores de PyTorch (\texttt{.pt}).
+    \item \textbf{Procesamiento de señal:} Establecer un \textit{pipeline} de procesamiento de señales para transformar el audio crudo en representaciones visuales (\textbf{espectrogramas}) aptas para la CNN, aplicando las transformaciones y normalizaciones del dato que maximicen su rendimiento.
+    \item \textbf{Desarrollo del modelo:} Diseñar, entrenar y optimizar varias arquitecturas de Redes Neuronales Convolucionales y funciones de pérdida en Python usando \textbf{PyTorch}.
+    \item \textbf{Evaluación psicoacústica:} Evaluar el rendimiento del modelo mediante métricas de error sobre parámetros y medidas de \textbf{similitud tímbrica} que simulen la percepción del oído humano.
+    \item \textbf{Desarrollo de la interfaz:} Desarrollar un sistema con una interfaz funcional que permita acceder a todas las utilidades del proyecto de manera fácil e intuitiva.
+\end{itemize}
 
 \section{Plan de trabajo}
-Aquí se describe el plan de trabajo a seguir para la consecución de los objetivos descritos en el apartado anterior.
+El desarrollo de este Trabajo de Fin de Grado abarca desde septiembre de 2025 hasta mayo de 2026. La evolución del proyecto a lo largo de estos meses se divide en cinco etapas claramente definidas:
 
+\begin{itemize}
+    \item \textbf{Fase 1 (Septiembre - Octubre): Exploración y pruebas de concepto} \\
+    \textbf{Hito principal:} Etapa de investigación general sobre Inteligencia Artificial aplicada a la música. \\
+    Durante estos meses, comenzamos a asentar las bases técnicas del aprendizaje profundo y su aplicación al audio leyendo la literatura actual. Empezamos haciendo pruebas muy básicas para ver de qué era capaz la IA. Tras barajar opciones como un asistente inteligente de mezcla o un generador de efectos de sonido, finalmente nos orientamos hacia su aplicación con sintetizadores. Los dos primeros prototipos reflejan nuestro progreso en este campo nuevo para nosotros, experimentando con la predicción de formas de onda y la generación de espectrogramas.
 
+    \item \textbf{Fase 2 (Noviembre): Definición del proyecto, \textit{Sound Matching} y primeros prototipos funcionales} \\
+    \textbf{Hito principal:} Toma de decisión por el \textit{Sound Matching} FM y logro del primer prototipo real. \\
+    Aquí el proyecto tomó su rumbo definitivo. Nos decantamos por la Síntesis por Modulación de Frecuencia (FM) y comenzamos a generar \textit{datasets} masivos etiquetados. Entrenamos un primer modelo de regresión CNN cuyos resultados iniciales fueron malos, lo que nos llevó a reestructurar el código, así como refactorizarlo a Programación Orientada a Objetos (POO) y a crear una Interfaz Gráfica (GUI) básica. Finalmente, logramos la primera prueba funcional de \textit{sound matching}, aunque todavía con problemas en las frecuencias graves y falta de consistencia.
 
-\section{Explicaciones adicionales sobre el uso de esta plantilla}
-Si quieres cambiar el \textbf{estilo del título} de los capítulos del documento, edita el fichero \verb|TeXiS\TeXiS_pream.tex| y comenta la línea \verb|\usepackage[Lenny]{fncychap}| para dejar el estilo básico de \LaTeX.
+    \item \textbf{Fase 3 (Diciembre - Febrero): Escalado de complejidad y métricas de evaluación} \\
+    \textbf{Hito principal:} Mejora de la síntesis y evaluación del modelo. \\
+    Una vez que la base funcionaba, añadimos complejidad incorporando nuevos parametros de envolventes y logaritmos a la generación de sonido. Reimplementamos la generación del dataset para este nuevo paradigma (de 3 a 8 parámetros), además, unificamos el tratamiento del dato en todo el programa para asegurar consistencia en la obtención de los espectrogramas y la normalización necesaria para el correcto funcionamiento de la red neuronal. También implementamos las primeras métricas de validación, la métrica FAD (\textit{Fréchet Audio Distance}) para evaluar los resultados y las herramientas para visualizar y comparar los espectrogramas.
 
-Si no te gusta que no haya \textbf{espacios entre párrafos} y quieres dejar un pequeño espacio en blanco, no metas saltos de línea (\verb|\\|) al final de los párrafos. En su lugar, busca el comando  \verb|\setlength{\parskip}{0.2ex}| en \verb|TeXiS\TeXiS_pream.tex| y aumenta el valor de $0.2ex$ a, por ejemplo, $1ex$.
+    \item \textbf{Fase 4 (Febrero - Abril): Optimización arquitectónica y comienzo de la memoria} \\
+    \textbf{Hito principal:} Cambios profundos en la red neuronal e inicio de la redacción. \\
+    Estos fueron los meses en los que más se trabajó en el desarrollo del prototipo final. En esta fase comenzamos a recopilar todo lo anotado y a redactar la memoria. A nivel de código dimos un salto de calidad: implementamos espectrogramas en escala Mel, probamos una arquitectura sin decodificador (\textit{decoder}), creamos una nueva función de pérdida basada en ventaneo (\textit{windowing}) y programamos un \textit{benchmark} FM. A nivel de documentación, redactamos los avances de los prototipos 1 al 3 y comenzamos a escribir la teoría sobre la escala Mel y los coeficientes MFCC.
 
-TFGTeXiS se ha elaborado a partir de la plantilla de TeXiS\footnote{\url{http://gaia.fdi.ucm.es/research/texis/}}, creada por Marco Antonio y Pedro Pablo Gómez Martín para escribir su tesis doctoral. Para explicaciones más extensas y detalladas sobre cómo usar esta plantilla, recomendamos la lectura del documento \texttt{TeXiS-Manual-1.0.pdf} que acompaña a esta plantilla.
-
-El siguiente texto se genera con el comando \verb|\lipsum[2-20]| que viene a continuación en el fichero .tex. El único propósito es mostrar el aspecto de las páginas usando esta plantilla. Quita este comando y, si quieres, comenta o elimina el paquete \textit{lipsum} al final de \verb|TeXiS\TeXiS_pream.tex|
-
-\subsection{Texto de prueba}
-
-
-\lipsum[2-20]
+    \item \textbf{Fase 5 (Abril - Mayo): Redacción final, entrenamiento de modelos definitivos y cierre} \\
+    \textbf{Hito principal:} Finalización de la memoria y entrenamiento de los modelos de producción (P1 a P6). \\
+    El desarrollo principal de código finalizó; todo lo programado en estos meses fue para cubrir necesidades de la memoria (métricas de evaluación, \textit{early stopping} para la red y registro del historial de entrenamiento). Nos centramos de lleno en redactar la memoria, elaborar diagramas, limpiar el código, recopilar la bibliografía y preparar los \textit{scripts} para Linux y Windows. Para terminar, entrenamos los seis modelos finales utilizando las máquinas proporcionadas por la UCM.
+\end{itemize}
