@@ -8,9 +8,9 @@ En este capítulo se muestran las pruebas realizadas sobre el prototipo 5 (\ref{
 
 
 % (ToDO) Texto descriptivo del diagrama de los pipelines
-Como se explicó en el capítulo sobre la arquitectura final (\ref{cap:ArquitecturaFinal}), el prototipo 5 consta de varias posibles arquitecturas y funciones de pérdida, que se pueden combinar dando lugar a seis diferentes configuracinones (o \textit{Pipelines}). El diagrama \ref{fig:pipelines} muestra las diferentes topologías que se dan. Las arquitecturas y funciones de pérdida están ordenadas de tal manera que arriba a la izquierda se encuentra la configuración más simple (de la que se esperan los peores resultados) y abajo a la derecha la más compleja (la más prometedora). 
+Como se explicó en el capítulo sobre la arquitectura final (\ref{cap:ArquitecturaFinal}), el prototipo 5 consta de varias posibles arquitecturas y funciones de pérdida, que se pueden combinar dando lugar a seis diferentes configuracinones (o \textit{Pipelines}). El diagrama \ref{fig:pipelines} muestra las diferentes topologías que se dan.
 
-Con la evaluación y comparación de las diferentes configuraciones, se espera determinar cúal de ellas será la "definitiva", la que ofrezca mejores predicciones, pero teniendo también en cuenta sus tiempos de entrenamiento y la eficiencia general de las mismas. 
+Con la evaluación y comparación de las diferentes configuraciones, se espera determinar cúal de ellas será la "definitiva", la que ofrezca mejores predicciones, teniendo también en cuenta sus tiempos de entrenamiento, la consistencia de sus predicciones y su eficiencia general. 
 
 \begin{figure} 
     \centering
@@ -19,18 +19,24 @@ Con la evaluación y comparación de las diferentes configuraciones, se espera d
     \label{fig:pipelines}
 \end{figure}
 
+\section{Características del \textit{Hardware} empleado en el entrenamiento de los modelos}
+
+Para la contextualización de los datos de tiempos requeridos en el entrenamiento de los diferente modelos, se especifican las características de la máquina empleada (cedida por la universidad):
+
+%(TODO) Insertar tabla con las características
+
 \section{Evaluación de las Diferentes Arquitecturas y Funciones de Pérdida}
-La evaluación de las diferentes topologías se ha llevado a cabo con un único dataset de 50000 audios (método de generación explicado aquí: \ref{sec:gen_dataset}), un número que ha resultado ser equilibrado, perimitiendo unos resultados decentes sin suponer un incremento demasiado grande en los tiempos de entrenamiento de los modelos. 
+La evaluación de las diferentes topologías (\ref{sec:entrenamiento_final}) se ha llevado a cabo con un único dataset de 50000 audios (método de generación explicado aquí: \ref{sec:gen_dataset}), un número que ha resultado ser equilibrado, perimitiendo unos resultados decentes sin suponer un incremento demasiado grande en los tiempos de entrenamiento de los modelos. 
 
-El número de épocas no se ha dejado fijo, se ha utilizado un valor de paciencia (\textit{Early Stopping}) de 10 épocas. De esta manera, se comprueba el error de validación en cada época y si despues de 10 seguidas no se ha mejorado su record histórico, la red deja de entrenarse. Así pues, se evita la Sobreadaptación (\textit{Overfitting}) de la red neuronal, puesto que se evita un entrenamiento excesivo, y se ahorra tiempo de entrenamiento innecesario. 
+El número de épocas no se ha mantenido fijo, se ha utilizado un valor de paciencia (\textit{Early Stopping}) de 10 épocas. De esta manera, se comprueba el error de validación en cada época y si despues de 10 seguidas no se ha mejorado su record histórico, la red deja de entrenarse. Así pues, se evita la Sobreadaptación (\textit{Overfitting}) de la red neuronal, puesto que se evita un entrenamiento excesivo, y se ahorra tiempo. 
 
-Por otro lado, se ha elegido un \textit{Batch Size} de 32. Este, aparte de ser un estándar, es un valor asumible por cualquier tarjeta gráfica moderna y que consigue una eficiencia adecuada. 
+Por otro lado, se ha elegido un \textit{Batch Size} de tamaño 32. Este, aparte de ser un estándar, es un valor asumible por cualquier tarjeta gráfica moderna y que consigue una eficiencia adecuada. 
 
 \noindent \textbf{\textit{Benchmark}:}
 \begin{itemize}
-    \item \textbf{Tamaño del Dataset: 50000} 
-    \item \textbf{Valor de Paciencia: 10} 
-    \item \textbf{\textit{Batch Size}: 32} 
+    \item \textbf{Tamaño del Dataset: }50000
+    \item \textbf{Valor de Paciencia: }10 
+    \item \textbf{\textit{Batch Size}: }32
 \end{itemize}
 
 \subsection{P1: CNNRegressorSimple: SmoothL1, STFT lineal}
@@ -40,8 +46,20 @@ Por otro lado, se ha elegido un \textit{Batch Size} de 32. Este, aparte de ser u
 \subsubsection{Evaluación Mediante \textit{Benchmark} Diverso}
 
 \subsection{P2: CNNRegressorSimple: SmoothL1, Mel (log-perceptual)}
+El modelo con estructura de \textit{CNNRegressorSimple}, con función de pérdida \textit{SmoothL1} (explicada también en el apartado \ref{sec:entrenamiento_final}) y espectrogramas Mel ha necesitado 57 minutos y 57 épocas para entrenarse, acabando con un error de validación 0.006844. Este valor indica que la red está consiguiendo predecir los parámetros con una precisión altísima. Sin embargo, debemos de tener en cuenta que en la síntesis FM, una pequeña desviación en un parámetro como indice de modulación, podría ocasionar la producción de un sonido completamente diferente al original. Además, cabe destacar que mediante la función de pérdida \textit{SmoothL1}, se está ignorando la inyectividad nula que caracteriza a FM. 
 
 \subsubsection{Evaluación Mediante \textit{Test Set}}
+
+\begin{figure} 
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/graficas_test_set_P2}
+    \caption{Graficas que muestran los resultados de evaluar el conjunto de tests sobre el modelo P2 con las métricas Mel L1 y MCD.}
+    \label{fig:gr_test_set_P2}
+\end{figure}
+
+%(TODO) Hablar de la varianza y desviación estándar y así explicar la consistencia del modelo, lo cual puede ser interensante para compararlos también
+
+En la gráfica \ref{fig:gr_test_set_P2}, se muestran los resultados de la evaluación del modelo con las métricas Mel L1 y MCD, sobre el conjunto de test (\textit{Test Set}) del dataset. 
 
 \subsubsection{Evaluación Mediante \textit{Benchmark} Diverso}
 
@@ -66,17 +84,49 @@ Por otro lado, se ha elegido un \textit{Batch Size} de 32. Este, aparte de ser u
     \label{fig:esp_pad_lento_P2}
 \end{figure}
 
-Al aplicar \textit{Mel L1} y \textit{MCD} sobre los resultados del \textit{benchmark}, obtenemos el gráfico \ref{fig:benchmarkP2}. A simple vista se puede apreciar que hay dos casos en los que las métricas, previamente mencionadas, se encuentran muy reducidas, estos casos son con el sonido \textit{bajo\_limpio} y con \textit{muy\_bajo}. Esto se debe a que las frecuencias bajas y limpias poseen patrones visuales muy claros y fáciles de asimilar para la red. Esto se puede ver, por ejemplo, en el espectrograma de \textit{muy\_bajo} y en el de la predicción de la red \ref{fig:esp_muy_bajo_P2}, en los que se aprecia su claridad y la similitud entre el original y la predicción.  
+Al aplicar \textit{Mel L1} y \textit{MCD} sobre los resultados del \textit{benchmark}, obtenemos el gráfico \ref{fig:benchmarkP2}. A simple vista se aprecia que hay dos casos en los que las métricas, previamente mencionadas, se encuentran muy por debajo de la media. Estos casos son con el sonido \textit{bajo\_limpio} y con \textit{muy\_bajo}. Este hecho se debe a que las frecuencias bajas y limpias poseen patrones visuales muy claros y fáciles de asimilar para la red. Por ejemplo, si se observa el espectrograma de \textit{muy\_bajo} y el de la predicción de la red ante el mismo \ref{fig:esp_muy_bajo_P2}, se puede apreciar la claridad y similitud entre el original y la predicción.  
 
-En contraposición, se hayan los resultados sobre el audio \textit{pad\_lento}, que destaca por haber generado un incremento de ambas métricas. Un \textit{pad} es un sonido de sintetizador caracterizado por comenzar muy lento (ataque bajo) y mantenerse. Comparando el espectrograma original de \textit{pad\_lento} y el de la predicción podemos sacar algunas conclusiones de estos resultados. Como se ve en la figura \ref{fig:esp_pad_lento_P2}, la red ha conseguido inferir perfectamente los parámetros relacionados con la envolvente, pero ha fallado considerablemente en la búsqueda de las frecuencias y los parámetros relacionados a estas que marcan el timbre (frecuencia). Por otra parte, también se puede llegar a la conclusión lógica de que, al ser un sonido de gran duración, esto hace que acumule un mayor error en las métricas. Esto es debido a que, a pesar de que dichas métricas calculan la media, como a la red identifica con gran precisión los silencios, los audios que contengan menos parte de audio van a conseguir mejores métricas.
+En contraposición, se hayan los resultados sobre el audio \textit{pad\_lento}, que destaca por haber generado un incremento de ambas métricas. Un \textit{pad} es un sonido de sintetizador caracterizado por comenzar muy lento (ataque bajo) y mantenerse. Comparando el espectrograma original de \textit{pad\_lento} y el de la predicción podemos sacar algunas conclusiones de estos resultados. Como se ve en la figura \ref{fig:esp_pad_lento_P2}, la red ha conseguido inferir perfectamente los parámetros relacionados con la envolvente, pero ha fallado considerablemente en la búsqueda de las frecuencias y los parámetros que las afectan, de los que depende el timbre (frecuencia). Por otra parte, también se puede llegar a la conclusión lógica de que, al ser un sonido de gran duración, se puede acumular un mayor error en las métricas. Esto es debido a que, a pesar de que dichas métricas calculan la media, como a la red identifica con gran precisión los silencios, los audios que contengan una mayor parte en silencio van a conseguir mejores métricas.
+
+\noindent \textbf{Media Obtenida en las Métricas:}
+\begin{itemize}
+    \item \textbf{Mel L1 por sonido: }0.028
+    \item \textbf{MCD por sonido: }214.520
+\end{itemize}
 
 \subsection{P3: CNNRegressor5: HybridLoss, STFT lineal}
 
+\subsubsection{Evaluación Mediante \textit{Test Set}}
+
+\subsubsection{Evaluación Mediante \textit{Benchmark} Diverso}
+
 \subsection{P4: CNNRegressor5: HybridLoss, Mel (log-perceptual)}
+La red neuronal con estructura \textit{CNNRegressor5}, función de pérdida híbrida (\textit{HybridLoss}) y espectrogramas Mel, ha requerido de un total de 27 épocas para entrenarse, consiguiendo reducir el error de validación a 0.672. Este valor de error es indicativo de un entrenamiento exitoso. Como la función de pérdida híbrida da prioridad a la diferencia media (L1) entre el espectrograma original y el reconstruido (con un peso de 1.0), significa que se está calculando una diferencia media de menos de 0.672 decibelios por pixel, confirmando una gran similitud entre los espectrogramas. Al tratarse de espectrogramas de Mel, que consiguen una representación similar a la forma de percibir los audios de los humanos, se puede esperar que sean muy similares acústicamente. 
+
+\subsubsection{Evaluación Mediante \textit{Test Set}}
+
+\subsubsection{Evaluación Mediante \textit{Benchmark} Diverso}
+
+\begin{figure} 
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/benchmark_P3}
+    \caption{Gráfico obtenido en la evaluación de P3 mediante \textit{benchmark}.}
+    \label{fig:bench_p3}
+\end{figure}
+
+
 
 \subsection{P5: CNNRegressor5: MultiScaleSpectralLoss, STFT lineal}
 
+\subsubsection{Evaluación Mediante \textit{Test Set}} 
+
+\subsubsection{Evaluación Mediante \textit{Benchmark} Diverso}
+
 \subsection{P6: CNNRegressor5: MultiScaleSpectralLoss, Mel (log-perceptual)}
+
+\subsubsection{Evaluación Mediante \textit{Test Set}}
+
+\subsubsection{Evaluación Mediante \textit{Benchmark} Diverso}
 
 
 
