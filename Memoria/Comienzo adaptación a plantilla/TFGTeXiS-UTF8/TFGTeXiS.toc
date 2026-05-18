@@ -21,7 +21,7 @@
 \contentsline {subsection}{\numberline {2.2.5}Datasets}{11}{subsection.34}%
 \contentsline {chapter}{\numberline {3}Metodología y Diseño del Sistema}{13}{chapter.36}%
 \contentsline {section}{\numberline {3.1}Generación del Dataset}{13}{section.37}%
-\contentsline {section}{\numberline {3.2}Preprocesamiento de Datos: normalizaciones y espectrogramas}{14}{section.39}%
+\contentsline {section}{\numberline {3.2}Preprocesamiento de Datos: normalizaciones y espectrogramas}{13}{section.38}%
 \contentsline {section}{\numberline {3.3}Diseño de la Arquitectura CNN}{14}{section.40}%
 \contentsline {section}{\numberline {3.4}Funciones de Pérdida}{15}{section.41}%
 \contentsline {subsection}{\numberline {3.4.1}El problema de la inyectividad}{15}{subsection.42}%

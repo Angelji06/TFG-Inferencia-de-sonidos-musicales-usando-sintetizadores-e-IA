@@ -2,18 +2,23 @@
 \label{cap:MetodologiaDisenoSistema}
 
 \section{Generación del Dataset}
+\textcolor{red}{FALTA MENCIONAR LAS PRUEBAS INICIALES CON PYO}
 El sistema genera un número (N) de muestras de audio con valores continuos aleatorios,
 en base a unos rangos de valores específicos para cada parámetro. Para cada uno de ellos 
 se utiliza una distribución uniforme, a excepción de la frecuencia portadora (\textit{Carrier}) que 
 se realiza en escala logarítmica. De esta forma se simula la percepción humana del sonido. 
 
-En primer lugar, se sintetizan los N archivos \textit{.wav} mediante la librería \textbf{NumPy} y la formulación matemática de la FM (Fase 1). 
+Se sintetizan los N archivos \textit{.wav} mediante la librería \textbf{NumPy} y la formulación matemática de la FM (Fase 1). 
 Se define una frecuencia de muestreo (\textit{sample rate}) de 44100 Hz
 y se incrementa el tiempo de duración de 1 a 2 segundos, con el fin de asegurar un margen temporal
 necesario para analizar y percibir las variaciones en el sonido provocadas por las envolventes. 
 Estas envolventes se generan sobre un vector de tiempo unificado. 
 
-En la Fase 2, los audios generados \textit{.wav} se convierten a tensores nativos de \textit{PyTorch}. Se cargan mediante \textit{torchaudio} y
+En la Fase 2, 
+\section{Preprocesamiento de Datos: normalizaciones y espectrogramas}
+
+Una vez generado el dataset, este debe ser preprocesado para que la red lo pueda manejar correctamente.
+Así pues, los audios \textit{.wav} se convierten a tensores nativos de \textit{PyTorch}. Se cargan mediante \textit{torchaudio} y
 se les aplica un suavizado de amplitud en los extremos (\textit{fade-in} y \textit{fade-out}) con el objetivo de 
 evitar chasquidos o ruidos indeseados. Tras una normalización de pico, se aplican las dos transformaciones principales:
 de audio a espectrograma y de amplitud lineal a logarítmica (dB). Para la representación acustica, el programa permite elegir
@@ -24,10 +29,7 @@ $1024 / 2 + 1 = 513$ intervalos o \textit{bins} de frecuencias}de frecuencia. Y 
 se da lugar a elegir un formato logarítmico-perceptual (\textbf{Mel} con 128 bandas), el cual tiene un mayor potencial para
 la representación del sonido de manera similar a la percibida por el humano.
 
-\section{Preprocesamiento de Datos: normalizaciones y espectrogramas}
-
-Una vez generado el dataset, este debe ser preprocesado para que la red lo pueda manejar correctamente.
-Así pues, se extrae la magnitud de la señal, se convierte a decibelios (dB) y se guarda como tensores (formato \textit{.pt}). Además,
+Posteriormente, se extrae la magnitud de la señal, se convierte a decibelios (dB) y se guarda como tensores (formato \textit{.pt}). Además,
 se genera un archivo (spec\_mode.txt) que indica el tipo de espectrograma utilizado.
 
 Para terminar con el tratamiento del dataset, se estructuran los tensores en una clase Dataset de PyTorch
@@ -82,7 +84,9 @@ Con el fin de experimentar con distintos modelos en el entrenamiento, se propone
     del sonido.
 \end{itemize}
 
-\section{Funciones de Pérdida} %falta hablar de los papers
+\section{Funciones de Pérdida}
+
+\textcolor{red}{FALTA HABLAR DE LOS PAPERS}
 
 \subsection{El problema de la inyectividad}
 La busqueda de una función de pérdida se vio totalmente condicionada por una característica esencial de la síntesis FM: su inyectividad es nula. Esto quiere decir que diferentes combinaciones de parámetros pueden dar lugar a sonidos idénticos.
