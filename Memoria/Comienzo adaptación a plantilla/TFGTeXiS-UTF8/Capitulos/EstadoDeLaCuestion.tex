@@ -13,7 +13,7 @@ x(t) = A \sin(2\pi f t + \phi)
 \label{eq:sine_wave_synthesis}
 \end{equation}
 
-donde $A$ representa la \textbf{amplitud} (la altura del sonido, relacionada con el volumen), $f$ es la \textbf{frecuencia} en hercios (que determina el tono, con mayores valores produciendo sonidos más agudos), $t$ es el \textbf{tiempo}, y $\phi$ es la \textbf{fase inicial} en radianes (que define el punto de inicio de la oscilación). Esta onda senoidal pura es el elemento básico de toda síntesis, del cual se generan todos los sonidos.
+donde $A$ representa la \textbf{amplitud} (la altura del sonido, relacionada con el volumen), $f$ es la \textbf{frecuencia} en hercios (que determina el tono, con mayores valores produciendo sonidos más agudos), $t$ es el \textbf{tiempo}, y $\phi$ es la \textbf{fase inicial} en radianes (que define el punto de inicio de la oscilación). Esta onda de seno pura es el elemento básico de toda síntesis, del cual se generan todos los sonidos.
 
 El \textbf{teorema de Fourier} \citep{fourier} establece que cualquier forma de onda periódica, por compleja que sea, puede descomponerse en una suma de ondas sinusoidales de diferentes frecuencias, amplitudes y fases. Por esta razón, dominar la generación y manipulación de ondas sinusoidales es esencial para comprender cualquier técnica de síntesis sonora.
 
@@ -43,13 +43,13 @@ x(t) = A_c \sin\left(2\pi f_c t + I \sin(2\pi f_m t)\right)
 Donde sus componentes principales son:
 
 \begin{itemize}[noitemsep, topsep=0pt]
-    \item $A_c$: Es la \textbf{amplitud del portador}, que define el volumen o ganancia estática de la señal.
+    \item $A_c$: Es la \textbf{amplitud del portador}, que define el volumen o ganancia de la señal.
     \item $f_c$: Es la \textbf{frecuencia portadora}, la frecuencia base del tono que se va a modular.
     \item $f_m$: Es la \textbf{frecuencia moduladora}, que determina la velocidad a la que oscila la frecuencia del portador.
     \item $I$: Es el \textbf{índice de modulación}, un factor escalar que controla cuánto se desplaza la fase del portador y, por tanto, la riqueza armónica del sonido resultante.
 \end{itemize}
 
-En nuestro proyecto se implementó una versión más compleja, la ecuación se expande a la siguiente versión con envolventes de amplitud y modulación:
+En nuestro proyecto se implementó una versión más compleja, su ecuación se expande a la siguiente versión, con envolventes\footnote{Una envolvente sirve para controlar la evolución de un sonido en el tiempo\citep{envolvente}} de amplitud y modulación:
 
 \begin{equation}
 x(t) = A_{env}(t) \sin\left(2\pi f_c t + I \cdot M_{env}(t) \sin(2\pi f_m t)\right)
@@ -119,7 +119,7 @@ m = 2595 \cdot \log_{10}(1 + f/700)
 
 \subsection{\textit{Mel Frequency Cesptral Coefficients} (MFCC)}
 
-Los MFCC son un conjunto de coeficientes que representan la "huella" tímbrica de un sonido, es decir, aislan el instrumento de la nota que este interpreta. Se obtienen aplicando la \textbf{Transformada de Coseno Discreta (DCT)} al espectrograma Mel para simplificar y organizar la información de las frecuencias \citep{davis1980}. 
+Los MFCC son un conjunto de coeficientes que representan la ``huella'' tímbrica de un sonido, es decir, aislan el instrumento de la nota que este interpreta. Se obtienen aplicando la \textbf{Transformada de Coseno Discreta (DCT)} al espectrograma Mel para simplificar y organizar la información de las frecuencias \citep{davis1980}. 
 
 Si bien fueron el estándar en reconocimiento de voz, la tecnología actual prefiere el uso del espectrograma Mel completo. Este cambio se debe a que las redes neuronales convolucionales (CNN) logran mayor precisión al analizar la imagen sonora total, aprovechando detalles y matices que la compresión de la DCT suele eliminar en el proceso. Sin embargo, \textbf{como métrica de evaluación}, los MFCC siguen siendo útiles para comparar la similitud tímbrica entre el sonido original y el resintetizado.
 
