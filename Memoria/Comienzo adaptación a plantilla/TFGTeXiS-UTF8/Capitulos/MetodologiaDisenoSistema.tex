@@ -2,18 +2,23 @@
 \label{cap:MetodologiaDisenoSistema}
 
 \section{Generación del Dataset}
+\textcolor{red}{FALTA MENCIONAR LAS PRUEBAS INICIALES CON PYO}
 El sistema genera un número (N) de muestras de audio con valores continuos aleatorios,
 en base a unos rangos de valores específicos para cada parámetro. Para cada uno de ellos 
 se utiliza una distribución uniforme, a excepción de la frecuencia portadora (\textit{Carrier}) que 
 se realiza en escala logarítmica. De esta forma se simula la percepción humana del sonido. 
 
-En primer lugar, se sintetizan los N archivos \textit{.wav} mediante la librería \textbf{NumPy} y la formulación matemática de la FM (Fase 1). 
+Se sintetizan los N archivos \textit{.wav} mediante la librería \textbf{NumPy} y la formulación matemática de la FM (Fase 1). 
 Se define una frecuencia de muestreo (\textit{sample rate}) de 44100 Hz
 y se incrementa el tiempo de duración de 1 a 2 segundos, con el fin de asegurar un margen temporal
 necesario para analizar y percibir las variaciones en el sonido provocadas por las envolventes. 
 Estas envolventes se generan sobre un vector de tiempo unificado. 
 
-En la Fase 2, los audios generados \textit{.wav} se convierten a tensores nativos de \textit{PyTorch}. Se cargan mediante \textit{torchaudio} y
+En la Fase 2, 
+\section{Preprocesamiento de Datos: normalizaciones y espectrogramas}
+
+Una vez generado el dataset, este debe ser preprocesado para que la red lo pueda manejar correctamente.
+Así pues, los audios \textit{.wav} se convierten a tensores nativos de \textit{PyTorch}. Se cargan mediante \textit{torchaudio} y
 se les aplica un suavizado de amplitud en los extremos (\textit{fade-in} y \textit{fade-out}) con el objetivo de 
 evitar chasquidos o ruidos indeseados. Tras una normalización de pico, se aplican las dos transformaciones principales:
 de audio a espectrograma y de amplitud lineal a logarítmica (dB). Para la representación acustica, el programa permite elegir
@@ -24,10 +29,7 @@ $1024 / 2 + 1 = 513$ intervalos o \textit{bins} de frecuencias}de frecuencia. Y 
 se da lugar a elegir un formato logarítmico-perceptual (\textbf{Mel} con 128 bandas), el cual tiene un mayor potencial para
 la representación del sonido de manera similar a la percibida por el humano.
 
-\section{Preprocesamiento de Datos: normalizaciones y espectrogramas}
-
-Una vez generado el dataset, este debe ser preprocesado para que la red lo pueda manejar correctamente.
-Así pues, se extrae la magnitud de la señal, se convierte a decibelios (dB) y se guarda como tensores (formato \textit{.pt}). Además,
+Posteriormente, se extrae la magnitud de la señal, se convierte a decibelios (dB) y se guarda como tensores (formato \textit{.pt}). Además,
 se genera un archivo (spec\_mode.txt) que indica el tipo de espectrograma utilizado.
 
 Para terminar con el tratamiento del dataset, se estructuran los tensores en una clase Dataset de PyTorch
@@ -82,7 +84,53 @@ Con el fin de experimentar con distintos modelos en el entrenamiento, se propone
     del sonido.
 \end{itemize}
 
-\section{Función de Pérdida y Métricas}
-Para ampliar el espacio de pruebas, se permite también el uso de diferentes funciones de pérdida.
+\section{Funciones de Pérdida}
 
+\textcolor{red}{FALTA HABLAR DE LOS PAPERS}
+
+\subsection{El problema de la inyectividad}
+La busqueda de una función de pérdida se vio totalmente condicionada por una característica esencial de la síntesis FM: su inyectividad es nula. Esto quiere decir que diferentes combinaciones de parámetros pueden dar lugar a sonidos idénticos.
+
+Una red implementada con una función de pérdida que trate de predecir los parámetros exactos del audio original, puede verse afectada negativamente por esta característica, cosa que se comprobó en un primer prototipo cuya pérdida se media de esta forma utilizando el Error Cuadrático Medio (\textit{MSELoss}). Un ejemplo que sufría este modelo, radical pero que explica muy bien este resultado, es un caso en el que el índice de modulación sea 0. En ese caso no es verdaderamente relevante el valor del ratio, sin embargo, 
+la función de pérdida, implementada con \textit{MSE}, penaliza gravemente que este difiera del original. 
+
+Otro ejemplo, más común, ocurre en los casos en los que se trabaja sobre un índice de modulación alto, de tal forma que la frecuencia moduladora predomina sobre la portadora. Si tenemos un \textit{Carrier} de 1000 Hz y un \textit{Ratio} de 1.0, la frecuencia moduladora resultante será de 1000 Hz, generándose los armónicos en saltos de mil en mil hercios. Por otro lado, con un \textit{Carrier} de 2000 Hz y un \textit{Ratio} de 0.5, se obtiene la misma moduladora de 1000 Hz y, por lo tanto, los mismos armónicos. Todo esto sumado a un índice de modulación alto, harían que estos dos audios, paramétricamente muy distantes, suenen muy similares al oído humano. 
+
+\subsection{Funciones}
+
+Manteniendo el objetivo de ampliar el espacio de pruebas, se permite también el uso de diferentes funciones de pérdida.
+
+El modelo simple, evalua la diferencia paramétrica únicamente mediante
+\textbf{SmoothL1 Loss}. Esta se utiliza por su robustez y versatilidad en la regresión numérica: cuando la diferencia 
+entre el valor real y el predicho es muy pequeña, se comporta como un Error Cuadrático (L2), lo que suaviza la convergencia
+de gradientes; y ante desviaciones grandes, se asemeja al Error Absoluto (L1), de forma que los casos aislados que se alejan del resto 
+no desestabilicen la red. Esta función de pérdida tiene la desventaja de no tener en cuenta la no-inyectividad de la síntesis FM.
+
+En cuanto al modelo CNNRegressor5, se permite la elección de una de las siguientes funciones de pérdida:
+\begin{itemize}
+    \item \textbf{HybridLoss: }
+    Es una función de pérdida híbrida, que combina el Error Absoluto Medio (L1) de la reconstrucción del 
+    espectrograma, un refuerzo estructural de Convegencia Espectral (SC), y la penalización paramétrica anterior.
+    La primera se lleva el peso principal (de 1.0), calcula el Error Absoluto Medio píxel a píxel entre el espectrograma original y el reconstruido (en decibelios).
+    La Convergencia Espectral (SC) se aplica con un peso medio (de 0.5) para evitar los espectros borrosos generados por L1. Esta métrica calcula la norma de Frobenius 
+    para evaluar la energía global (relación armónica), regularizando el timbre. A la penalización paramétrica se le da una importancia muy baja (0.05), ya que no es demasiado importante
+    debido al carácter no inyectivo de la síntesis FM.
+        
+    \item \textbf{MultiScaleSpectralLoss: } Esta función está inspirada en el modelo de síntesis diferencial DDSP. Al estar utilizando 
+    espectrogramas, se simulan los distintos tamaños de ventana de Fourier mediante agrupamientos espaciales temporales (\textit{Average Pooling}).
+    Se agrupa en seis factores (de 1, 2, 4, 8, 16 y 32) y se mide el error en cada una de esas escalas, siendo la media aritmética de esos errores
+    el valor de pérdida total. El cálculo del error de cada escala primero se calcula la diferencia sobre las magnitudes
+    lineales, la cual es útil para capturar picos de energía que pueden ser breves. A esto se le suma después la diferencia sobre las magnitudes en decibelios (logarítmico),
+    multiplicada por un factor $\alpha$ de 1.0, por lo que se le está danto la misma relevancia que el error lineal, capturando así perfectamente
+    la envolvente global y los momentos de baja energía. Mediante esta función, se consigue compara el sonido obtenido del original
+    en varios niveles de resolución simultáneamente. Por último, se le suma el error paramétrico (\textit{SmoothL1}) con un peso muy bajo (0.05) con el objetivo
+    de que la red no deje de tener mínimamente en cuenta los valores de los parámetros.   
+\end{itemize}
+
+
+\subsection{Modelo de Pruebas simplificado}
+
+Se decide mantener un modelo simplificado, para la realización de pruebas, que infiere únicamente 3 parámetros: frecuencia portadora (\textit{carrier}), frecuencia moduladora (\textit{ratio}) e índice de modulación (\textit{index}). 
+
+La topología de la red (\textit{CNNRegressor4}) es igual a la compleja del modelo principal (\textit{CNNRegressor5}), solo que la salida son 3 parámetros en vez de 8. La función de pérdida es la \textit{HybridLoss} explicada en el apartado anterior. 
 
