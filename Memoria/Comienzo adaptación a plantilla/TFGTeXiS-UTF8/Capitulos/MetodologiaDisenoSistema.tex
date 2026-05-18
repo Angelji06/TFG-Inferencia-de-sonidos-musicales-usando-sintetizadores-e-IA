@@ -60,8 +60,7 @@ Con el fin de experimentar con distintos modelos en el entrenamiento, se propone
     mezclar los patrones que el \textbf{Encoder} ha extraído previamente, creando una representación
     densa y unificada.
 
-    Después se pasa por la fase de Inferencia Numérica, donde ocurre la regresión de los parámetros del sintetizador FM
-    (frecuencia portadora, ratio e índice). Se aplica una capa de agrupamiento global (Adaptive Average Pooling) ya que los 
+    Después se pasa por la fase de Inferencia Numérica, donde ocurre la regresión de los parámetros del sintetizador FM. Se aplica una capa de agrupamiento global (Adaptive Average Pooling) ya que los 
     parámetros describen el sonido completo y no un punto temporal concreto en el espectrograma.
     Para ello, se calcula la media de todas las posiciones de cada canal, quedándose con un único
     número como resumen por canal. Finalmente, el vector unidimensional, resultado del proceso anterior,
@@ -70,11 +69,20 @@ Con el fin de experimentar con distintos modelos en el entrenamiento, se propone
     A pesar de que la red ejecuta un entrenamiento rápido, al carecer de reconstrucción 
     no se garantiza que el \textit{Encoder} esté extrayendo de manera acertada la estructura del espectrograma, prediciendo únicamente números.
         
-    \item \textbf{CNNRegressor5: }Se trata de una expansión del modelo anterior, incorporando una segunda cabeza de predicción. 
-    Se añade un \textit{Decoder} que consta de 3 capas convoluvionales traspuestas, las cuales tratan de reconstruir el espectrograma 
-    a partir del espacio latente. Así pues, esta etapa fuerza al \textit{Encoder} a capturar la riqueza temporal y tímbrica del sonido para evitar
-    un error grande.
+    \item \textbf{CNNRegressor5: }Se trata de una expansión del modelo anterior, incorporando una segunda cabeza de predicción. Se añade la fase de Reconstrucción (\textbf{Decoder}), la cual se encarga de reconstruir 
+    el espectrograma original a partir de la representación comprimida del \textbf{Bottleneck}. 
+    Como el \textbf{Encoder} comprime tres veces, el \textbf{Decoder} descomprime tres veces. Para ello,
+    utiliza tres capas convolucionales transpuestas (\textit{ConvTranspose2d}).
+
+    El motivo para utilizar el \textbf{Decoder} es como método de regularización forzada del \textbf{Encoder}.
+    En el caso en el que el codificador borre información importante, como armónicos o patrones temporales, que no afecte directamente a los parámetros
+    de la regresión, el \textbf{Decoder} no será capaz de redibujar correctamente el espectrograma, disparando así
+    el error en la función de pérdida híbrida. Aparte, si el \textbf{Bottleneck} no guarda suficiente información, ocurrirá lo mismo.
+    Todo esto fuerza, mediante el cálculo de gradientes, a que las capas iniciales aprendan a conservar el timbre y la representación
+    del sonido.
 \end{itemize}
 
 \section{Función de Pérdida y Métricas}
+Para ampliar el espacio de pruebas, se permite también el uso de diferentes funciones de pérdida.
+
 
