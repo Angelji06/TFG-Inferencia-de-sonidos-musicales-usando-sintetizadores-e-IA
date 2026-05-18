@@ -2,6 +2,7 @@
 \label{cap:MetodologiaDisenoSistema}
 
 \section{Generación del Dataset}
+\label{sec:GeneracionDataset}
 \textcolor{red}{FALTA MENCIONAR LAS PRUEBAS INICIALES CON PYO}
 El sistema genera un número (N) de muestras de audio con valores continuos aleatorios,
 en base a unos rangos de valores específicos para cada parámetro. Para cada uno de ellos 
@@ -14,8 +15,8 @@ y se incrementa el tiempo de duración de 1 a 2 segundos, con el fin de asegurar
 necesario para analizar y percibir las variaciones en el sonido provocadas por las envolventes. 
 Estas envolventes se generan sobre un vector de tiempo unificado. 
 
-En la Fase 2, 
 \section{Preprocesamiento de Datos: normalizaciones y espectrogramas}
+\label{sec:Preprocesamiento}
 
 Una vez generado el dataset, este debe ser preprocesado para que la red lo pueda manejar correctamente.
 Así pues, los audios \textit{.wav} se convierten a tensores nativos de \textit{PyTorch}. Se cargan mediante \textit{torchaudio} y
@@ -41,7 +42,7 @@ Finalmente, el dataset se divide, mediante una semilla fija, en: 70\% para entre
 como conjunto de pruebas (\textit{Test set}).
 
 \section{Diseño de la Arquitectura CNN}
-\label{sec:entrenamiento_final}
+\label{sec:ArquitecturaCNN}
 Con el fin de experimentar con distintos modelos en el entrenamiento, se proponen dos arquitecturas distintas.
 
 \begin{itemize}
@@ -85,6 +86,7 @@ Con el fin de experimentar con distintos modelos en el entrenamiento, se propone
 \end{itemize}
 
 \section{Funciones de Pérdida}
+\label{sec:FuncionPerdida}
 
 \textcolor{red}{FALTA HABLAR DE LOS PAPERS}
 

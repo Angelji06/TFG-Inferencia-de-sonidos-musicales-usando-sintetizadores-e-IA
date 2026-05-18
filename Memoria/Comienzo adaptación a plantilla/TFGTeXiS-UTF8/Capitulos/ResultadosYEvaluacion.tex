@@ -1,8 +1,40 @@
 \chapter{Resultados y Evaluación}
 \label{cap:ResultadosYEvaluacion}
 
-% (TODO) Texto introductorio
-En este capítulo se muestran las pruebas realizadas sobre el prototipo 5 (\ref{cap:ArquitecturaFinal}).
+En este capítulo se muestran las pruebas realizadas sobre el modelo. El objetivo es el de evaluación del rendimiento del sistema y en la experimentación en el uso de las
+diferentes combinaciones de arquitecturas y funciones de pérdida. Para ello, la fase se divide en dos vertientes:
+evaluación sobre \textit{Test Set} y evaluación sobre \textit{Benchmark}. En la primera, se utilizan las muestras reservadas en la división inicial del dataset (un 15\%).
+Los índices exactos de dicha muestra, se consiguen del archivo de punto de control (\textit{checkpoint}), evitando datos cruzados 
+con los vistos en el entrenamiento. Y en cuanto a la evaluación sobre \textit{Benchmark}, su objetivo 
+es poner a prueba el manejo del modelo dada la característica inyectividad nula de la síntesis FM. Para
+ello, se diseña un banco de pruebas (\textit{benchmark}) con 12 sonidos de referencia que abarcan todo el espacio tímbrico
+del sintetizador (desde un bajo limpio a sonidos agudos, complejos y muy ruidosos).
+
+Sobre los resultados obtenidos por las dos vertientes previas, se pueden calcular diferentes métricas
+para la evaluación del modelo en ambos ámbitos:
+
+\begin{itemize}
+
+\item \textbf{Métricas Sobre Parámetros: } Estas evalúan el modelo en función de la precisión obtenida
+en los parámetros inferidos. Se emplean las métricas de: Error Cuadrático Medio (MSE), que penaliza las desviaciones paramétricas grandes 
+entre predicción y original; Raíz del Error Cuadrático Medio (RMSE), que devuelve el error en las unidades originales de cada parámetro, consiguiendo
+ver de forma directa la precisión y así poder hacer comparaciones objetivas entre las distintas arquitecturas y funciones de pérdida;
+y Error Absoluto Medio (MAE), el cual es más robusto frente a valores atípicos. Estas métricas sufren ante e problema de la inyectividad 
+nula en la síntesis FM, por lo que se utilizan principalmente como diagnóstico rápido.
+
+\item \textbf{Métricas de Audio: } Estas son mucho más interesantes para conseguir una evaluación
+similar a la que daría un oído experto, ya que vuelven a sintetizar los parámetros y realizan una comparativa
+perceptual de los sonidos. Primero se aplica la Distancia L1 en Espectrogramas Mel (\textit{Mel l1}), la cual calcula el 
+Error Absoluto Medio (L1) sobre las señales previamente transformadas a la escala Mel, consiguiendo así la sensibilidad logarítmica
+del oído humano. De igual manera se aplica la Distorsión Cepstral Mel (MCD - \textit{Mel-Cepstral Distortion}). Es una métrica que trata 
+de evaluar la similitud del timbre de los audios, extrayendo 13 Coeficientes Cepstrales en las Frecuencias de Mel (MFCC). 
+El primer coeficiente, que representa la energía global, es descartado para que la métrica refleje exclusivamente el timbre (textura del sonido).
+
+\item \textbf{Métrica de Reconstrucción (Decoder L1): } En el caso en el que se utilice la arquitectura
+\textbf{CNNRegressor5}. Calcula el Error Absoluto Medio (L1) entre el espectrograma original y el reconstruido por la red,
+de forma que se consigue evaluar la asimilación de información en el espacio latente. 
+
+\end{itemize} 
 
 \section{Definición de los Pipelines Experimentales}
 
