@@ -91,9 +91,11 @@ parámetros no garantiza la similitud acústica del sonido generado y de la nece
 El Prototipo 3 contiene una limitación fundamental muy relevante en la sintesís FM:
 su inyectividad es nula. Esto quiere decir que diferentes combinaciones de parámetros pueden dar lugar
 a sonidos idénticos. Un ejemplo, radical pero que explica muy bien este resultado, es un caso en el que
-el índice de modulación sea 0. En ese caso, no es verdaderamente relevante el valor del ratio, sin embargo, 
+el índice de modulación sea 0. En ese caso no es verdaderamente relevante el valor del ratio, sin embargo, 
 la función de pérdida, implementada con \textbf{MSE}, penaliza gravemente que este difiera del original. 
 Este obstáculo hace que se tenga que replantear la función de pérdida.
+
+Otro ejemplo, más común, ocurre en los casos en los que se trabaja sobre un índice de modulación alto, de tal forma que la frecuencia moduladora predomina sobre la portadora. Si tenemos un \textit{Carrier} de 1000 Hz y un \textit{Ratio} de 1.0, la frecuencia moduladora resultante será de 1000 Hz, generándose los armónicos en saltos de mil en mil hercios. Por otro lado, con un \textit{Carrier} de 2000 Hz y un \textit{Ratio} de 0.5, se obtiene la misma moduladora de 1000 Hz y, por lo tanto, los mismos armónicos. Todo esto sumado a un índice de modulación alto, harían que estos dos audios, paramétricamente muy distantes, suenen muy similares al oído humano. 
 
 \subsection{Prototipo 4: Red Convolucional de Doble Cabeza}
 El \textbf{Prototipo 4} se diseña para solucionar el problema de la inyectividad, tratando de asegurar
