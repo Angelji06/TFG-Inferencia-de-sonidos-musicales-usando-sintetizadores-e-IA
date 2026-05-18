@@ -1,0 +1,80 @@
+\chapter{Metodología y Diseño del Sistema}
+\label{cap:MetodologiaDisenoSistema}
+
+\section{Generación del Dataset}
+El sistema genera un número (N) de muestras de audio con valores continuos aleatorios,
+en base a unos rangos de valores específicos para cada parámetro. Para cada uno de ellos 
+se utiliza una distribución uniforme, a excepción de la frecuencia portadora (\textit{Carrier}) que 
+se realiza en escala logarítmica. De esta forma se simula la percepción humana del sonido. 
+
+En primer lugar, se sintetizan los N archivos \textit{.wav} mediante la librería \textbf{NumPy} y la formulación matemática de la FM (Fase 1). 
+Se define una frecuencia de muestreo (\textit{sample rate}) de 44100 Hz
+y se incrementa el tiempo de duración de 1 a 2 segundos, con el fin de asegurar un margen temporal
+necesario para analizar y percibir las variaciones en el sonido provocadas por las envolventes. 
+Estas envolventes se generan sobre un vector de tiempo unificado. 
+
+En la Fase 2, los audios generados \textit{.wav} se convierten a tensores nativos de \textit{PyTorch}. Se cargan mediante \textit{torchaudio} y
+se les aplica un suavizado de amplitud en los extremos (\textit{fade-in} y \textit{fade-out}) con el objetivo de 
+evitar chasquidos o ruidos indeseados. Tras una normalización de pico, se aplican las dos transformaciones principales:
+de audio a espectrograma y de amplitud lineal a logarítmica (dB). Para la representación acustica, el programa permite elegir
+entre dos métodos, con el fin de llevar a cabo diferentes pruebas de experimentación. Por un lado, se encuentran 
+los espectrogramas en formato lineal, mediante \textbf{STFT} con 513  \textit{bins}\footnote{El término \textit{bin} hace referencia los intervalos de la Tranformada de Fourier (FFT). 
+El tamaño de ventana utilizado para la creación de los espectrogramas es de 1024 ($N_{fft} = 1024$), lo que genera
+$1024 / 2 + 1 = 513$ intervalos o \textit{bins} de frecuencias}de frecuencia. Y por el otro lado, 
+se da lugar a elegir un formato logarítmico-perceptual (\textbf{Mel} con 128 bandas), el cual tiene un mayor potencial para
+la representación del sonido de manera similar a la percibida por el humano.
+
+\section{Preprocesamiento de Datos: normalizaciones y espectrogramas}
+
+Una vez generado el dataset, este debe ser preprocesado para que la red lo pueda manejar correctamente.
+Así pues, se extrae la magnitud de la señal, se convierte a decibelios (dB) y se guarda como tensores (formato \textit{.pt}). Además,
+se genera un archivo (spec\_mode.txt) que indica el tipo de espectrograma utilizado.
+
+Para terminar con el tratamiento del dataset, se estructuran los tensores en una clase Dataset de PyTorch
+(\textit{SpectrogramTensorDataset}). Se lee el registro de etiquetas (\textit{labels.cvs}), el cual contiene todos los
+valores de los parámetros de cada audio, y se calcula la media y desviación estándar global de cada uno de ellos. Con estas estadísticas
+se aplica una normalización de puntuación estándar (\textit{Z-score}), nivelando así las diferencias entre las escalas
+de los parámetros, consiguiendo igualar las importancias de cada uno en el cálculo del gradiente.
+Finalmente, el dataset se divide, mediante una semilla fija, en: 70\% para entrenamiento, 15\% validación y se guarda otro 15\%
+como conjunto de pruebas (\textit{Test set}).
+
+\section{Diseño de la Arquitectura CNN}
+\label{sec:entrenamiento_final}
+Con el fin de experimentar con distintos modelos en el entrenamiento, se proponen dos arquitecturas distintas.
+
+\begin{itemize}
+    \item \textbf{CNNRegressorSimple: }Está formada por un \textit{Encoder} de tres bloques convolucionales,
+    un \textit{Bottleneck} y una cabeza de regresión pura (\textit{Global Average Pooling}). 
+
+    Primero se pasa por un Codificador (\textbf{Encoder}), el cual consta de una secuencia de tres bloques
+    convolucionales que convierten el espectrograma inicial en una representación comprimida, extrayendo así sus 
+    características fundamentales. Para ello, cada bloque aplica núcleos (kernels) de 3x3. Se pasa por una capa de normalización por lotes (Batch Normalization), que estabiliza y acelera el entrenamiento, y 
+    una activación no lineal ReLU. Finalmente, se aplica una reducción espacial en cada bloque (Max Pooling).
+    Con todo esto, la matriz se ha reducido a una octava parte de su tamaño original y la profundidad de la red
+    ha incrementado de 1 a 128 canales. Como resultado, se obtiene una representación comprimida fiel al sonido original.
+
+    Al salir del \textbf{Encoder}, el flujo de datos atraviesa lo que se denomina como
+    cuello de botella (\textbf{Bottleneck}). Este bloque convolucional no
+    aplica una reducción espacial, manteniendo estables las dimensiones de la matriz. Su función es duplicar el número
+    de canales (profundidad del tensor), pasando de 128 a 256 canales. Esto se hace con la finalidad de 
+    mezclar los patrones que el \textbf{Encoder} ha extraído previamente, creando una representación
+    densa y unificada.
+
+    Después se pasa por la fase de Inferencia Numérica, donde ocurre la regresión de los parámetros del sintetizador FM
+    (frecuencia portadora, ratio e índice). Se aplica una capa de agrupamiento global (Adaptive Average Pooling) ya que los 
+    parámetros describen el sonido completo y no un punto temporal concreto en el espectrograma.
+    Para ello, se calcula la media de todas las posiciones de cada canal, quedándose con un único
+    número como resumen por canal. Finalmente, el vector unidimensional, resultado del proceso anterior,
+    atraviesa un \textbf{Perceptrón Multicapa}, que lo proyecta hacia las 8 neuronas de salida.
+    
+    A pesar de que la red ejecuta un entrenamiento rápido, al carecer de reconstrucción 
+    no se garantiza que el \textit{Encoder} esté extrayendo de manera acertada la estructura del espectrograma, prediciendo únicamente números.
+        
+    \item \textbf{CNNRegressor5: }Se trata de una expansión del modelo anterior, incorporando una segunda cabeza de predicción. 
+    Se añade un \textit{Decoder} que consta de 3 capas convoluvionales traspuestas, las cuales tratan de reconstruir el espectrograma 
+    a partir del espacio latente. Así pues, esta etapa fuerza al \textit{Encoder} a capturar la riqueza temporal y tímbrica del sonido para evitar
+    un error grande.
+\end{itemize}
+
+\section{Función de Pérdida y Métricas}
+
