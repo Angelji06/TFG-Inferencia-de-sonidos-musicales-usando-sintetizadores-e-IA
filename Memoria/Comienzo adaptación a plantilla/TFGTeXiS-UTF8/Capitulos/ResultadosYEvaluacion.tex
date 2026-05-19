@@ -1,11 +1,15 @@
 \chapter{Resultados y Evaluación}
 \label{cap:ResultadosYEvaluacion}
 
-En este capítulo se muestran las pruebas realizadas sobre el modelo. El objetivo es el de evaluación del rendimiento del sistema y en la experimentación en el uso de las
+En este capítulo se muestran las pruebas realizadas sobre el modelo. El objetivo es el de evaluación del rendimiento del sistema y la experimentación en el uso de las
 diferentes combinaciones de arquitecturas y funciones de pérdida. Para ello, la fase se divide en dos vertientes:
-evaluación sobre \textit{Test Set} y evaluación sobre \textit{Benchmark}. En la primera, se utilizan las muestras reservadas en la división inicial del dataset (un 15\%).
+evaluación sobre \textit{Test Set} y evaluación sobre \textit{Benchmark}. 
+
+En la primera, se utilizan las muestras reservadas en la división inicial del dataset (un 15\%).
 Los índices exactos de dicha muestra, se consiguen del archivo de punto de control (\textit{checkpoint}), evitando datos cruzados 
-con los vistos en el entrenamiento. Y en cuanto a la evaluación sobre \textit{Benchmark}, su objetivo 
+con los vistos en el entrenamiento. 
+
+En cuanto a la evaluación sobre \textit{Benchmark}, su objetivo 
 es poner a prueba el manejo del modelo dada la característica inyectividad nula de la síntesis FM. Para
 ello, se diseña un banco de pruebas (\textit{benchmark}) con 12 sonidos de referencia que abarcan todo el espacio tímbrico
 del sintetizador (desde un bajo limpio a sonidos agudos, complejos y muy ruidosos).
@@ -38,18 +42,14 @@ de forma que se consigue evaluar la asimilación de información en el espacio l
 
 \section{Definición de los Pipelines Experimentales}
 
-
-% (ToDO) Texto descriptivo del diagrama de los pipelines
-Como se explicó en el capítulo sobre la arquitectura final (\ref{cap:ArquitecturaFinal}), el prototipo 5 consta de varias posibles arquitecturas y funciones de pérdida, que se pueden combinar dando lugar a seis diferentes configuracinones (o \textit{Pipelines}). El diagrama \ref{fig:pipelines} muestra las diferentes topologías que se dan.
-
-Con la evaluación y comparación de las diferentes configuraciones, se espera determinar cúal de ellas será la "definitiva", la que ofrezca mejores predicciones, teniendo también en cuenta sus tiempos de entrenamiento, la consistencia de sus predicciones y su eficiencia general. 
-
-\begin{figure} 
+\begin{figure}[H] 
     \centering
     \includegraphics[width=1\textwidth]{Imagenes/Bitmap/pipelines}
     \caption{Representación de las diferentes combinaciones de Arquitecturas y Funciones de Pérdida.}
     \label{fig:pipelines}
 \end{figure}
+
+El diagrama \ref{fig:pipelines} muestra las diferentes topologías que se dan combinando las arquitecturas y funciones de pérdida previamente definidas.
 
 \section{Características del \textit{Hardware} empleado en el entrenamiento de los modelos}
 
@@ -58,7 +58,7 @@ Para la contextualización de los datos de tiempos requeridos en el entrenamient
 %(TODO) Insertar tabla con las características
 
 \section{Evaluación de las Diferentes Arquitecturas y Funciones de Pérdida}
-La evaluación de las diferentes topologías (\ref{sec:entrenamiento_final}) se ha llevado a cabo con un único dataset de 50000 audios (método de generación explicado aquí: \ref{sec:gen_dataset}), un número que ha resultado ser equilibrado, perimitiendo unos resultados decentes sin suponer un incremento demasiado grande en los tiempos de entrenamiento de los modelos. 
+La evaluación de las topologías se ha llevado a cabo con un único dataset de 50000 audios (método de generación explicado aquí: \ref{sec:GeneracionDataset}), un número que ha resultado ser equilibrado, perimitiendo unos resultados decentes sin suponer un incremento demasiado grande en los tiempos de entrenamiento de los modelos. 
 
 El número de épocas no se ha mantenido fijo, se ha utilizado un valor de paciencia (\textit{Early Stopping}) de 10 épocas. De esta manera, se comprueba el error de validación en cada época y si despues de 10 seguidas no se ha mejorado su record histórico, la red deja de entrenarse. Así pues, se evita la Sobreadaptación (\textit{Overfitting}) de la red neuronal, puesto que se evita un entrenamiento excesivo, y se ahorra tiempo. 
 
@@ -82,43 +82,53 @@ El modelo con estructura de \textit{CNNRegressorSimple}, con función de pérdid
 
 \subsubsection{Evaluación Mediante \textit{Test Set}}
 
-\begin{figure} 
+\begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/graficas_test_set_P2}
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/test_set_p2}
     \caption{Graficas que muestran los resultados de evaluar el conjunto de tests sobre el modelo P2 con las métricas Mel L1 y MCD.}
-    \label{fig:gr_test_set_P2}
+    \label{fig:test_set_p2}
 \end{figure}
 
 %(TODO) Hablar de la varianza y desviación estándar y así explicar la consistencia del modelo, lo cual puede ser interensante para compararlos también
 
-En la gráfica \ref{fig:gr_test_set_P2}, se muestran los resultados de la evaluación del modelo con las métricas Mel L1 y MCD, sobre el conjunto de test (\textit{Test Set}) del dataset. 
+En la gráfica \ref{fig:test_set_p2}, se muestran los resultados de la evaluación del modelo con las métricas Mel L1 y MCD, sobre el conjunto de test (\textit{Test Set}) del dataset. Al no tener todavía la referencia de los resultados de los otros modelos, se hace un análisis inicial de la dispersión de los valores obtenidos en las métricas para así evaluar la consistencia del modelo. 
+
+Al analizar los resultados obtenidos con \textit{Mel L1}, se pueden observar los siguientes datos: la media es de 0.063 y la \textbf{desviación estándar} es de 0.037. Esto indica una dispersión estadística alta. Lo mismo pasa al interpretar los resultados del \textit{MCD}: la media es de 244.662 y la desviación estándar es de 154.292, un número grande en proporción con la media. 
+
+Estos resultados pueden indicar una consistencia pobre en el modelo, sin embargo, en la gráfica (\ref{fig:test_set_p2}) se visualiza perfectamente la razón de los valores obtenidos. En el caso de \textit{MCD}, el grueso de los valores no se aleja demasiado de la media, pero existen unos pocos valores muy distantes que aumentan la desviación estándar en gran medida.
+
+El caso de \textit{Mel L1} difiere del anterior debido a que la distribución es más uniforme, pero se compensa consiguiendo mejores errores máximos. 
+
+Este comportamiento nos indica que el modelo probablemente gestione mejor unos tipos de audios que otros. Para ello, se pasa a la fase de la evaluación mediante \textit{benchmark}, poniendo a prueba sonidos muy dispares. 
 
 \subsubsection{Evaluación Mediante \textit{Benchmark} Diverso}
 
-\begin{figure} 
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{Imagenes/Bitmap/benchmark_P2}
     \caption{Gráfico obtenido en la evaluación de P2 mediante \textit{benchmark}.}
     \label{fig:benchmarkP2}
 \end{figure}
 
-\begin{figure} 
+
+
+Al aplicar \textit{Mel L1} y \textit{MCD} sobre los resultados del \textit{benchmark}, obtenemos el gráfico \ref{fig:benchmarkP2}. A simple vista se aprecia que hay dos casos en los que las métricas, previamente mencionadas, se encuentran muy por debajo de la media. Estos casos son con el sonido \textit{bajo\_limpio} y con \textit{muy\_bajo}. Este hecho se debe a que las frecuencias bajas y limpias poseen patrones visuales muy claros y fáciles de asimilar para la red. Por ejemplo, si se observa el espectrograma de \textit{muy\_bajo} y el de la predicción de la red ante el mismo \ref{fig:esp_muy_bajo_P2}, se puede apreciar la claridad y similitud entre el original y la predicción.  
+
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{Imagenes/Bitmap/espectrogramas_muy_bajo_P2}
     \caption{Espectrograma resultado de la predicción del audio de Benchmark: \textit{muy\_bajo}.}
     \label{fig:esp_muy_bajo_P2}
 \end{figure}
 
-\begin{figure} 
+En contraposición, se hayan los resultados sobre el audio \textit{pad\_lento}, que destaca por haber generado un incremento de ambas métricas. Un \textit{pad} es un sonido de sintetizador caracterizado por comenzar muy lento (ataque bajo) y mantenerse. Comparando el espectrograma original de \textit{pad\_lento} y el de la predicción podemos sacar algunas conclusiones de estos resultados. Como se ve en la figura \ref{fig:esp_pad_lento_P2}, la red ha conseguido inferir perfectamente los parámetros relacionados con la envolvente, pero ha fallado considerablemente en la búsqueda de las frecuencias y los parámetros que las afectan, de los que depende el timbre (frecuencia). Por otra parte, también se puede llegar a la conclusión lógica de que, al ser un sonido de gran duración, se puede acumular un mayor error en las métricas. Esto es debido a que, a pesar de que dichas métricas calculan la media, como a la red identifica con gran precisión los silencios, los audios que contengan una mayor parte en silencio van a conseguir mejores métricas.
+
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{Imagenes/Bitmap/espectrograma_pad_lento_P2}
-    \caption{Espectrograma resultado de la predicción del audio de Benchmark: \textit{muy\_bajo}.}
+    \caption{Espectrograma resultado de la predicción del audio de Benchmark: \textit{pad\_lento}.}
     \label{fig:esp_pad_lento_P2}
 \end{figure}
-
-Al aplicar \textit{Mel L1} y \textit{MCD} sobre los resultados del \textit{benchmark}, obtenemos el gráfico \ref{fig:benchmarkP2}. A simple vista se aprecia que hay dos casos en los que las métricas, previamente mencionadas, se encuentran muy por debajo de la media. Estos casos son con el sonido \textit{bajo\_limpio} y con \textit{muy\_bajo}. Este hecho se debe a que las frecuencias bajas y limpias poseen patrones visuales muy claros y fáciles de asimilar para la red. Por ejemplo, si se observa el espectrograma de \textit{muy\_bajo} y el de la predicción de la red ante el mismo \ref{fig:esp_muy_bajo_P2}, se puede apreciar la claridad y similitud entre el original y la predicción.  
-
-En contraposición, se hayan los resultados sobre el audio \textit{pad\_lento}, que destaca por haber generado un incremento de ambas métricas. Un \textit{pad} es un sonido de sintetizador caracterizado por comenzar muy lento (ataque bajo) y mantenerse. Comparando el espectrograma original de \textit{pad\_lento} y el de la predicción podemos sacar algunas conclusiones de estos resultados. Como se ve en la figura \ref{fig:esp_pad_lento_P2}, la red ha conseguido inferir perfectamente los parámetros relacionados con la envolvente, pero ha fallado considerablemente en la búsqueda de las frecuencias y los parámetros que las afectan, de los que depende el timbre (frecuencia). Por otra parte, también se puede llegar a la conclusión lógica de que, al ser un sonido de gran duración, se puede acumular un mayor error en las métricas. Esto es debido a que, a pesar de que dichas métricas calculan la media, como a la red identifica con gran precisión los silencios, los audios que contengan una mayor parte en silencio van a conseguir mejores métricas.
 
 \noindent \textbf{Media Obtenida en las Métricas:}
 \begin{itemize}
@@ -137,13 +147,23 @@ La red neuronal con estructura \textit{CNNRegressor5}, función de pérdida híb
 
 \subsubsection{Evaluación Mediante \textit{Test Set}}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/test_set_p4}
+    \caption{Graficas que muestran los resultados de evaluar el conjunto de tests sobre el modelo P4 con las métricas Mel L1 y MCD.}
+    \label{fig:test_set_p4}
+\end{figure}
+
+La gráfica \ref{fig:test_set_p4} muestra unos valores de media y desviación estándar en ambas métricas que indican una muy baja consistencia. Visualmente, se puede observar una distribución de gran uniformidad en la métrica \textit{Mel L1} y también, en menor medida, en \textit{MCD}, lo que implica que la calidad de las predicciones varían mucho entre distintos tipos de audio. 
+
+
 \subsubsection{Evaluación Mediante \textit{Benchmark} Diverso}
 
-\begin{figure} 
+\begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/benchmark_P3}
-    \caption{Gráfico obtenido en la evaluación de P3 mediante \textit{benchmark}.}
-    \label{fig:bench_p3}
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/benchmark_P4}
+    \caption{Gráfico obtenido en la evaluación de P4 mediante \textit{benchmark}.}
+    \label{fig:bench_p4}
 \end{figure}
 
 

@@ -3,88 +3,66 @@
 \babel@toc {spanish}{}\relax 
 \contentsline {chapter}{\numberline {1}Introducción}{1}{chapter.8}%
 \contentsline {section}{\numberline {1.1}Motivación}{1}{section.9}%
-\contentsline {section}{\numberline {1.2}Objetivos}{2}{section.12}%
-\contentsline {section}{\numberline {1.3}Plan de trabajo}{3}{section.13}%
-\contentsline {chapter}{\numberline {2}Estado de la Cuestión}{5}{chapter.14}%
-\contentsline {section}{\numberline {2.1}Estado de la cuestión: Audio}{5}{section.15}%
-\contentsline {subsection}{\numberline {2.1.1}Síntesis sonora}{5}{subsection.16}%
-\contentsline {subsection}{\numberline {2.1.2}Síntesis por Modulación de Frecuencia (FM)}{5}{subsection.18}%
-\contentsline {subsection}{\numberline {2.1.3}Representación digital del sonido: La onda como vector}{7}{subsection.23}%
-\contentsline {subsection}{\numberline {2.1.4}Representación espectral: STFT y Espectrogramas}{7}{subsection.25}%
-\contentsline {subsection}{\numberline {2.1.5}Escala de Mel}{8}{subsection.27}%
-\contentsline {subsection}{\numberline {2.1.6}\textit {Mel Frequency Cesptral Coefficients} (MFCC)}{8}{subsection.29}%
-\contentsline {section}{\numberline {2.2}Estado de la cuestión: IA aplicada al audio}{9}{section.30}%
-\contentsline {subsection}{\numberline {2.2.1}CNNs en el dominio del audio}{9}{subsection.31}%
-\contentsline {subsection}{\numberline {2.2.2}Transformers en el dominio del audio (AST)}{9}{subsection.32}%
-\contentsline {subsection}{\numberline {2.2.3}Inferencia automática de parámetros en síntesis}{10}{subsection.33}%
-\contentsline {subsection}{\numberline {2.2.4}Representación del audio usada en otros proyectos}{10}{subsection.34}%
-\contentsline {subsection}{\numberline {2.2.5}Datasets}{11}{subsection.35}%
-\contentsline {chapter}{\numberline {3}Metodología y Diseño del Sistema}{13}{chapter.37}%
-\contentsline {section}{\numberline {3.1}Generación del Dataset}{13}{section.38}%
-\contentsline {section}{\numberline {3.2}Preprocesamiento de Datos: normalizaciones y espectrogramas}{13}{section.39}%
-\contentsline {section}{\numberline {3.3}Diseño de la Arquitectura CNN}{14}{section.41}%
-\contentsline {section}{\numberline {3.4}Funciones de Pérdida}{15}{section.42}%
-\contentsline {subsection}{\numberline {3.4.1}El problema de la inyectividad}{15}{subsection.43}%
-\contentsline {subsection}{\numberline {3.4.2}Funciones}{16}{subsection.44}%
-\contentsline {subsection}{\numberline {3.4.3}Modelo de Pruebas simplificado}{17}{subsection.45}%
-\contentsline {chapter}{\numberline {4}Implementación}{19}{chapter.46}%
-\contentsline {section}{\numberline {4.1}Herramientas y Librerías: \textit {stack} tecnológico}{19}{section.47}%
-\contentsline {section}{\numberline {4.2}\textit {Pipeline} de Entrenamiento}{19}{section.48}%
-\contentsline {section}{\numberline {4.3}Inferencia de parámetros}{20}{section.50}%
-\contentsline {section}{\numberline {4.4}Interfaz Gráfica de la aplicación}{21}{section.51}%
-\contentsline {section}{\numberline {4.5}Estructura del Código}{21}{section.52}%
-\contentsline {chapter}{\numberline {5}Evolución Arquitectónica}{25}{chapter.57}%
-\contentsline {section}{\numberline {5.1}Exploración de Paradigmas: Clasificación vs. Regresión}{25}{section.58}%
-\contentsline {subsection}{\numberline {5.1.1}Enfoque de Clasificación}{25}{subsection.59}%
-\contentsline {subsection}{\numberline {5.1.2}Enfoque de Regresión}{26}{subsection.60}%
-\contentsline {section}{\numberline {5.2}El Problema de la Inyectividad y la Necesidad de una Arquitectura Compleja}{27}{section.61}%
-\contentsline {subsection}{\numberline {5.2.1}Prototipo 4: Red Convolucional de Doble Cabeza}{28}{subsection.62}%
-\contentsline {subsection}{\numberline {5.2.2}Prototipo 4: Función de Pérdida Híbrida}{29}{subsection.64}%
-\contentsline {chapter}{\numberline {6}Experimentación Previa}{31}{chapter.68}%
-\contentsline {section}{\numberline {6.1}Limitaciones de Fréchet Audio Distance (FAD)}{31}{section.69}%
-\contentsline {section}{\numberline {6.2}Validación por Fuerza Bruta (Grid Search)}{31}{section.70}%
-\contentsline {subsection}{\numberline {6.2.1}Diseño experimental y parametrización del Grid Search}{32}{subsection.71}%
-\contentsline {subsection}{\numberline {6.2.2}Espectrograma de Mel}{32}{subsection.72}%
-\contentsline {subsection}{\numberline {6.2.3}Espectrograma MFCC}{34}{subsection.73}%
-\contentsline {subsection}{\numberline {6.2.4}Conclusiones}{35}{subsection.74}%
-\contentsline {chapter}{\numberline {7}Arquitectura Final}{37}{chapter.75}%
-\contentsline {section}{\numberline {7.1}Expansión Paramétrica: Evolventes y Generación Aleatoria del Dataset}{37}{section.77}%
-\contentsline {subsection}{\numberline {7.1.1}Generación y Tratamiento del Dataset}{37}{subsection.78}%
-\contentsline {subsection}{\numberline {7.1.2}Entrenamiento}{39}{subsection.80}%
-\contentsline {subsection}{\numberline {7.1.3}Inferencia}{41}{subsection.81}%
-\contentsline {subsection}{\numberline {7.1.4}Evaluación}{41}{subsection.82}%
-\contentsline {section}{\numberline {7.2}Interfaz Gráfica de la Aplicación}{42}{section.83}%
-\contentsline {section}{\numberline {7.3}Estructura del Código}{43}{section.84}%
-\contentsline {chapter}{\numberline {8}Resultados y Evaluación}{47}{chapter.89}%
-\contentsline {section}{\numberline {8.1}Definición de los Pipelines Experimentales}{48}{section.90}%
-\contentsline {section}{\numberline {8.2}Características del \textit {Hardware} empleado en el entrenamiento de los modelos}{48}{section.92}%
-\contentsline {section}{\numberline {8.3}Evaluación de las Diferentes Arquitecturas y Funciones de Pérdida}{48}{section.93}%
-\contentsline {subsection}{\numberline {8.3.1}P1: CNNRegressorSimple: SmoothL1, STFT lineal}{50}{subsection.94}%
-\contentsline {subsubsection}{\numberline {8.3.1.1}Evaluación Mediante \textit {Test Set}}{50}{subsubsection.95}%
-\contentsline {subsubsection}{\numberline {8.3.1.2}Evaluación Mediante \textit {Benchmark} Diverso}{50}{subsubsection.96}%
-\contentsline {subsection}{\numberline {8.3.2}P2: CNNRegressorSimple: SmoothL1, Mel (log-perceptual)}{50}{subsection.97}%
-\contentsline {subsubsection}{\numberline {8.3.2.1}Evaluación Mediante \textit {Test Set}}{50}{subsubsection.98}%
-\contentsline {subsubsection}{\numberline {8.3.2.2}Evaluación Mediante \textit {Benchmark} Diverso}{50}{subsubsection.100}%
-\contentsline {subsection}{\numberline {8.3.3}P3: CNNRegressor5: HybridLoss, STFT lineal}{53}{subsection.104}%
-\contentsline {subsubsection}{\numberline {8.3.3.1}Evaluación Mediante \textit {Test Set}}{53}{subsubsection.105}%
-\contentsline {subsubsection}{\numberline {8.3.3.2}Evaluación Mediante \textit {Benchmark} Diverso}{53}{subsubsection.106}%
-\contentsline {subsection}{\numberline {8.3.4}P4: CNNRegressor5: HybridLoss, Mel (log-perceptual)}{53}{subsection.107}%
-\contentsline {subsubsection}{\numberline {8.3.4.1}Evaluación Mediante \textit {Test Set}}{54}{subsubsection.108}%
-\contentsline {subsubsection}{\numberline {8.3.4.2}Evaluación Mediante \textit {Benchmark} Diverso}{54}{subsubsection.109}%
-\contentsline {subsection}{\numberline {8.3.5}P5: CNNRegressor5: MultiScaleSpectralLoss, STFT lineal}{54}{subsection.111}%
-\contentsline {subsubsection}{\numberline {8.3.5.1}Evaluación Mediante \textit {Test Set}}{54}{subsubsection.112}%
-\contentsline {subsubsection}{\numberline {8.3.5.2}Evaluación Mediante \textit {Benchmark} Diverso}{54}{subsubsection.113}%
-\contentsline {subsection}{\numberline {8.3.6}P6: CNNRegressor5: MultiScaleSpectralLoss, Mel (log-perceptual)}{54}{subsection.114}%
-\contentsline {subsubsection}{\numberline {8.3.6.1}Evaluación Mediante \textit {Test Set}}{54}{subsubsection.115}%
-\contentsline {subsubsection}{\numberline {8.3.6.2}Evaluación Mediante \textit {Benchmark} Diverso}{54}{subsubsection.116}%
-\contentsline {section}{\numberline {8.4}Comparación de los Resultados Obtenidos}{54}{section.117}%
-\contentsline {chapter}{\numberline {9}Conclusiones y Trabajo Futuro}{57}{chapter.119}%
-\contentsline {chapter}{\numberline {10}Introduction}{59}{chapter.125}%
-\contentsline {section}{\numberline {10.1}Motivation}{59}{section.126}%
-\contentsline {section}{\numberline {10.2}Objectives}{60}{section.129}%
-\contentsline {section}{\numberline {10.3}Work Plan}{61}{section.130}%
+\contentsline {section}{\numberline {1.2}Objetivos}{3}{section.14}%
+\contentsline {section}{\numberline {1.3}Plan de trabajo}{4}{section.15}%
+\contentsline {chapter}{\numberline {2}Estado de la Cuestión}{7}{chapter.16}%
+\contentsline {section}{\numberline {2.1}Estado de la cuestión: Audio}{7}{section.17}%
+\contentsline {subsection}{\numberline {2.1.1}Síntesis sonora}{7}{subsection.18}%
+\contentsline {subsection}{\numberline {2.1.2}Síntesis por Modulación de Frecuencia (FM)}{7}{subsection.20}%
+\contentsline {subsection}{\numberline {2.1.3}Representación digital del sonido: La onda como vector}{9}{subsection.25}%
+\contentsline {subsection}{\numberline {2.1.4}Representación espectral: STFT y Espectrogramas}{9}{subsection.27}%
+\contentsline {subsection}{\numberline {2.1.5}Escala de Mel}{10}{subsection.29}%
+\contentsline {subsection}{\numberline {2.1.6}\textit {Mel Frequency Cesptral Coefficients} (MFCC)}{10}{subsection.31}%
+\contentsline {section}{\numberline {2.2}Estado de la cuestión: IA aplicada al audio}{11}{section.32}%
+\contentsline {subsection}{\numberline {2.2.1}CNNs en el dominio del audio}{11}{subsection.33}%
+\contentsline {subsection}{\numberline {2.2.2}Transformers en el dominio del audio (AST)}{12}{subsection.35}%
+\contentsline {subsection}{\numberline {2.2.3}Inferencia automática de parámetros en síntesis}{12}{subsection.36}%
+\contentsline {subsection}{\numberline {2.2.4}Representación del audio usada en otros proyectos}{12}{subsection.37}%
+\contentsline {subsection}{\numberline {2.2.5}Datasets}{13}{subsection.38}%
+\contentsline {chapter}{\numberline {3}Metodología y Diseño del Sistema}{15}{chapter.40}%
+\contentsline {section}{\numberline {3.1}Generación del Dataset}{15}{section.41}%
+\contentsline {section}{\numberline {3.2}Preprocesamiento de Datos: normalizaciones y espectrogramas}{16}{section.42}%
+\contentsline {section}{\numberline {3.3}Diseño de la Arquitectura CNN}{17}{section.44}%
+\contentsline {section}{\numberline {3.4}Funciones de Pérdida}{18}{section.45}%
+\contentsline {subsection}{\numberline {3.4.1}El problema de la inyectividad}{18}{subsection.46}%
+\contentsline {subsection}{\numberline {3.4.2}Funciones}{18}{subsection.47}%
+\contentsline {subsection}{\numberline {3.4.3}Modelo de Pruebas simplificado}{19}{subsection.48}%
+\contentsline {chapter}{\numberline {4}Implementación}{21}{chapter.49}%
+\contentsline {section}{\numberline {4.1}Herramientas y Librerías: \textit {stack} tecnológico}{21}{section.50}%
+\contentsline {section}{\numberline {4.2}\textit {Pipeline} de Entrenamiento}{21}{section.52}%
+\contentsline {section}{\numberline {4.3}Inferencia de parámetros}{23}{section.54}%
+\contentsline {section}{\numberline {4.4}Interfaz Gráfica de la aplicación}{24}{section.55}%
+\contentsline {section}{\numberline {4.5}Estructura del Código}{24}{section.56}%
+\contentsline {chapter}{\numberline {5}Resultados y Evaluación}{29}{chapter.61}%
+\contentsline {section}{\numberline {5.1}Definición de los Pipelines Experimentales}{30}{section.62}%
+\contentsline {section}{\numberline {5.2}Características del \textit {Hardware} empleado en el entrenamiento de los modelos}{31}{section.64}%
+\contentsline {section}{\numberline {5.3}Evaluación de las Diferentes Arquitecturas y Funciones de Pérdida}{31}{section.65}%
+\contentsline {subsection}{\numberline {5.3.1}P1: CNNRegressorSimple: SmoothL1, STFT lineal}{31}{subsection.66}%
+\contentsline {subsubsection}{\numberline {5.3.1.1}Evaluación Mediante \textit {Test Set}}{31}{subsubsection.67}%
+\contentsline {subsubsection}{\numberline {5.3.1.2}Evaluación Mediante \textit {Benchmark} Diverso}{31}{subsubsection.68}%
+\contentsline {subsection}{\numberline {5.3.2}P2: CNNRegressorSimple: SmoothL1, Mel (log-perceptual)}{31}{subsection.69}%
+\contentsline {subsubsection}{\numberline {5.3.2.1}Evaluación Mediante \textit {Test Set}}{32}{subsubsection.70}%
+\contentsline {subsubsection}{\numberline {5.3.2.2}Evaluación Mediante \textit {Benchmark} Diverso}{33}{subsubsection.72}%
+\contentsline {subsection}{\numberline {5.3.3}P3: CNNRegressor5: HybridLoss, STFT lineal}{35}{subsection.76}%
+\contentsline {subsubsection}{\numberline {5.3.3.1}Evaluación Mediante \textit {Test Set}}{35}{subsubsection.77}%
+\contentsline {subsubsection}{\numberline {5.3.3.2}Evaluación Mediante \textit {Benchmark} Diverso}{35}{subsubsection.78}%
+\contentsline {subsection}{\numberline {5.3.4}P4: CNNRegressor5: HybridLoss, Mel (log-perceptual)}{35}{subsection.79}%
+\contentsline {subsubsection}{\numberline {5.3.4.1}Evaluación Mediante \textit {Test Set}}{36}{subsubsection.80}%
+\contentsline {subsubsection}{\numberline {5.3.4.2}Evaluación Mediante \textit {Benchmark} Diverso}{37}{subsubsection.82}%
+\contentsline {subsection}{\numberline {5.3.5}P5: CNNRegressor5: MultiScaleSpectralLoss, STFT lineal}{37}{subsection.84}%
+\contentsline {subsubsection}{\numberline {5.3.5.1}Evaluación Mediante \textit {Test Set}}{37}{subsubsection.85}%
+\contentsline {subsubsection}{\numberline {5.3.5.2}Evaluación Mediante \textit {Benchmark} Diverso}{37}{subsubsection.86}%
+\contentsline {subsection}{\numberline {5.3.6}P6: CNNRegressor5: MultiScaleSpectralLoss, Mel (log-perceptual)}{37}{subsection.87}%
+\contentsline {subsubsection}{\numberline {5.3.6.1}Evaluación Mediante \textit {Test Set}}{37}{subsubsection.88}%
+\contentsline {subsubsection}{\numberline {5.3.6.2}Evaluación Mediante \textit {Benchmark} Diverso}{37}{subsubsection.89}%
+\contentsline {section}{\numberline {5.4}Comparación de los Resultados Obtenidos}{37}{section.90}%
+\contentsline {chapter}{\numberline {6}Conclusiones y Trabajo Futuro}{39}{chapter.92}%
+\contentsline {chapter}{\numberline {7}Introduction}{41}{chapter.98}%
+\contentsline {section}{\numberline {7.1}Motivation}{41}{section.99}%
+\contentsline {section}{\numberline {7.2}Objectives}{42}{section.102}%
+\contentsline {section}{\numberline {7.3}Work Plan}{43}{section.103}%
 \babel@toc {english}{}\relax 
-\contentsline {chapter}{Conclusions and Future Work}{63}{chapter*.131}%
-\contentsline {chapter}{Contribuciones Personales}{65}{chapter*.137}%
+\contentsline {chapter}{Conclusions and Future Work}{45}{chapter*.104}%
+\contentsline {chapter}{Contribuciones Personales}{47}{chapter*.110}%
 \babel@toc {spanish}{}\relax 
-\contentsline {chapter}{Bibliograf\'{\i }a}{67}{chapter*.138}%
+\contentsline {chapter}{Bibliograf\'{\i }a}{49}{chapter*.111}%

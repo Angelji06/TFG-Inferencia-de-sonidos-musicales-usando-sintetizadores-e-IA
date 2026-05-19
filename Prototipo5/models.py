@@ -529,8 +529,12 @@ class CNNRegressor5(nn.Module):
                 (axes[0], mel_l1_list, "Distribución Mel L1", "Mel L1"),
                 (axes[1], mcd_list,    "Distribución MCD",    "MCD (dB)"),
             ]:
-                ax.hist(values, bins=40, edgecolor='black')                                              # histograma con 40 barras
-                ax.axvline(np.mean(values), color='red', linestyle='--', label=f'media={np.mean(values):.3f}')  # línea vertical en la media
+                ax.hist(values, bins=40, edgecolor='black')       
+                mean_val = np.mean(values)
+                std_val = np.std(values)
+                var_val = np.var(values)
+                etiqueta = f'mean={mean_val:.3f}\nstd={std_val:.3f}\nvar={var_val:.3f}'
+                ax.axvline(mean_val, color='red', linestyle='--', label=etiqueta)                 # histograma con 40 barras
                 ax.set_title(title)
                 ax.set_xlabel(xlabel)
                 ax.set_ylabel("Frecuencia")       # frecuencia = nº de muestras en cada barra
