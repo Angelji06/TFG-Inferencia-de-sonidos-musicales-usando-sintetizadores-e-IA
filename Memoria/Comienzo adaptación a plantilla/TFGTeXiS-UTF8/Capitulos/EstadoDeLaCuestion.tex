@@ -129,6 +129,13 @@ Si bien fueron el estándar en reconocimiento de voz, la tecnología actual pref
 
 Las \textbf{Redes Neuronales Convolucionales (CNNs)} son un tipo de arquitectura de aprendizaje profundo diseñada para explotar la estructura espacial de los datos, es precisamente por esto que se usan tanto en tareas de imagen. Fueron propuestas originalmente por \citep{lecun1998} para el reconocimiento de caracteres escritos a mano. Su principio fundamental es el uso de filtros convolucionales de pequeño tamaño (\textbf{kernels}), dichos filtros recorren la entrada realizando productos escalares. Esto les permite detectar patrones sin importar dónde estén ubicados y usar muchos menos parámetros que una red tradicional.
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{./Imagenes/Bitmap/cnn.png}
+\caption[Estructura clásica de las CNN.]{Estructura clásica de las CNN. {\small Fuente \citep{CNNOpenCV}.}}
+\label{fig:cnn}
+\end{figure}
+
 La arquitectura típica alterna \textbf{capas convolucionales}, que extraen características locales, con \textbf{capas de pooling}, que reducen la dimensionalidad, construyendo así una jerarquía de características que va desde elementos simples, como bordes o gradientes, hacia representaciones abstractas de formas y texturas \citep{krizhevsky2012}.
 
 En el dominio del audio, las CNNs son eficaces son eficaces porque pueden aprender patrones locales en el espectrograma, como la estructura armónica y el ruido de ataque. Se ha demostrado que modelos entrenados con grandes cantidades de datos pueden aplicar su conocimiento general a tareas específicas de síntesis \citep{kong2020}. Al aplicar filtros convolucionales sobre las dimensiones de tiempo y frecuencia, la red identifica texturas tímbricas con una eficiencia muy superior a las redes densas tradicionales.
@@ -164,7 +171,7 @@ No obstante, en este proyecto. con el objetivo de acotar el problema, se ha opta
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.6\textwidth]{./Imagenes/Bitmap/Dexed.jpg}
+\includegraphics[width=0.5\textwidth]{./Imagenes/Bitmap/Dexed.jpg}
 \caption{Foto del VST Dexed. \small{Fuente: \cite{dexed}.}}
 \label{fig:dexed}
 \end{figure}
