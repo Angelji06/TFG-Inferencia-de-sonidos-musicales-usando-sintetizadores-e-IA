@@ -49,20 +49,20 @@
 \contentsline {subsection}{\numberline {5.3.4}P4: CNNRegressor5: HybridLoss, Mel (log-perceptual)}{35}{subsection.79}%
 \contentsline {subsubsection}{\numberline {5.3.4.1}Evaluación Mediante \textit {Test Set}}{36}{subsubsection.80}%
 \contentsline {subsubsection}{\numberline {5.3.4.2}Evaluación Mediante \textit {Benchmark} Diverso}{37}{subsubsection.82}%
-\contentsline {subsection}{\numberline {5.3.5}P5: CNNRegressor5: MultiScaleSpectralLoss, STFT lineal}{37}{subsection.84}%
-\contentsline {subsubsection}{\numberline {5.3.5.1}Evaluación Mediante \textit {Test Set}}{37}{subsubsection.85}%
-\contentsline {subsubsection}{\numberline {5.3.5.2}Evaluación Mediante \textit {Benchmark} Diverso}{37}{subsubsection.86}%
-\contentsline {subsection}{\numberline {5.3.6}P6: CNNRegressor5: MultiScaleSpectralLoss, Mel (log-perceptual)}{37}{subsection.87}%
-\contentsline {subsubsection}{\numberline {5.3.6.1}Evaluación Mediante \textit {Test Set}}{37}{subsubsection.88}%
-\contentsline {subsubsection}{\numberline {5.3.6.2}Evaluación Mediante \textit {Benchmark} Diverso}{37}{subsubsection.89}%
-\contentsline {section}{\numberline {5.4}Comparación de los Resultados Obtenidos}{37}{section.90}%
-\contentsline {chapter}{\numberline {6}Conclusiones y Trabajo Futuro}{39}{chapter.92}%
-\contentsline {chapter}{\numberline {7}Introduction}{41}{chapter.98}%
-\contentsline {section}{\numberline {7.1}Motivation}{41}{section.99}%
-\contentsline {section}{\numberline {7.2}Objectives}{42}{section.102}%
-\contentsline {section}{\numberline {7.3}Work Plan}{43}{section.103}%
+\contentsline {subsection}{\numberline {5.3.5}P5: CNNRegressor5: MultiScaleSpectralLoss, STFT lineal}{39}{subsection.86}%
+\contentsline {subsubsection}{\numberline {5.3.5.1}Evaluación Mediante \textit {Test Set}}{39}{subsubsection.87}%
+\contentsline {subsubsection}{\numberline {5.3.5.2}Evaluación Mediante \textit {Benchmark} Diverso}{39}{subsubsection.88}%
+\contentsline {subsection}{\numberline {5.3.6}P6: CNNRegressor5: MultiScaleSpectralLoss, Mel (log-perceptual)}{39}{subsection.89}%
+\contentsline {subsubsection}{\numberline {5.3.6.1}Evaluación Mediante \textit {Test Set}}{39}{subsubsection.90}%
+\contentsline {subsubsection}{\numberline {5.3.6.2}Evaluación Mediante \textit {Benchmark} Diverso}{39}{subsubsection.91}%
+\contentsline {section}{\numberline {5.4}Comparación de los Resultados Obtenidos}{39}{section.92}%
+\contentsline {chapter}{\numberline {6}Conclusiones y Trabajo Futuro}{41}{chapter.94}%
+\contentsline {chapter}{\numberline {7}Introduction}{43}{chapter.100}%
+\contentsline {section}{\numberline {7.1}Motivation}{43}{section.101}%
+\contentsline {section}{\numberline {7.2}Objectives}{44}{section.104}%
+\contentsline {section}{\numberline {7.3}Work Plan}{45}{section.105}%
 \babel@toc {english}{}\relax 
-\contentsline {chapter}{Conclusions and Future Work}{45}{chapter*.104}%
-\contentsline {chapter}{Contribuciones Personales}{47}{chapter*.110}%
+\contentsline {chapter}{Conclusions and Future Work}{47}{chapter*.106}%
+\contentsline {chapter}{Contribuciones Personales}{49}{chapter*.112}%
 \babel@toc {spanish}{}\relax 
-\contentsline {chapter}{Bibliograf\'{\i }a}{49}{chapter*.111}%
+\contentsline {chapter}{Bibliograf\'{\i }a}{51}{chapter*.113}%

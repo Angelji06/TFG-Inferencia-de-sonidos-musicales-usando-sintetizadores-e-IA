@@ -154,7 +154,9 @@ La red neuronal con estructura \textit{CNNRegressor5}, función de pérdida híb
     \label{fig:test_set_p4}
 \end{figure}
 
-La gráfica \ref{fig:test_set_p4} muestra unos valores de media y desviación estándar en ambas métricas que indican una muy baja consistencia. Visualmente, se puede observar una distribución de gran uniformidad en la métrica \textit{Mel L1} y también, en menor medida, en \textit{MCD}, lo que implica que la calidad de las predicciones varían mucho entre distintos tipos de audio. 
+Los resultados de la evaluación mediante el conjunto de prueba aparecen reflecados en la gráfica \ref{fig:test_set_p4}. Esta muestra unos valores de media y desviación estándar en ambas métricas que indican una muy baja consistencia. Visualmente, se puede observar una distribución de gran uniformidad en la métrica \textit{Mel L1} y también, en menor medida, en \textit{MCD}, lo que implica que la calidad de las predicciones varía mucho entre distintos tipos de audio. 
+
+Para ello se analiza el comportamiento de la red ante el \textit{benchmark}.
 
 
 \subsubsection{Evaluación Mediante \textit{Benchmark} Diverso}
@@ -165,6 +167,30 @@ La gráfica \ref{fig:test_set_p4} muestra unos valores de media y desviación es
     \caption{Gráfico obtenido en la evaluación de P4 mediante \textit{benchmark}.}
     \label{fig:bench_p4}
 \end{figure}
+
+Como muestra la gráfica \ref{fig:bench_p4}, hay ciertos audios con los que el modelo consigue métricas reducidas respecto a la media y otros que reciben valores muy por encima de la media.
+
+El audio \textit{percusivo} consigue las mejores métricas, aun así si nos fijamos en el espectrograma original y en el de la predicción, se aprecia perfectamente que el modelo no ha conseguido replicar las envolventes, llegando incluso a cortar el audio antes de tiempo. Aparte, consigue representar bastante bien los armónicos pero asigna más energía de la original en las frecuencias más bajas. La razón de haber conseguido colocarse como el sonido con mejor resultado para el modelo en el benchmark probablemente esté muy ligado a ser un audio muy corto, lo que le da ventaja (como se explicó en P2).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/espectrograma_percusivo_P4}
+    \caption{Espectrograma resultado de la predicción del audio de Benchmark: \textit{percusivo}.}
+    \label{fig:esp_percusivo_P4}
+\end{figure}
+
+Por esta última razón, tiene sentido analizar también el siguiente mejor audio, el cual es \textit{bajo\_limpio}. De este se pueden sacar conclusiones mucho más claras observando la imagen \ref{fig:bajo_limpio_P4}, donde se observa que el modelo consigue representar fielmente los armónicos pero sin demasiada resolución, lo que hace que suenen muy distintos al oído. Además, sigue fallando en las envolventes, a pesar de no ser radicales, y no ha parado el audio en el momento exacto.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/espectrograma_bajo_limpio_P4}
+    \caption{Espectrograma resultado de la predicción del audio de Benchmark: \textit{bajo\_limpio}.}
+    \label{fig:bajo_limpio_P4}
+\end{figure}
+
+El peor resultado lo ha obtenido \textit{bajo\_rico}, lo que es coherente con lo mencionado con anterioridad, ya que este audio destaca por sus envolventes muy definidas.  
+
+
 
 
 
