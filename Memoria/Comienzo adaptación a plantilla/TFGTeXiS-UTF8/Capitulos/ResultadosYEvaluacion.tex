@@ -53,7 +53,14 @@ El diagrama \ref{fig:pipelines} muestra las diferentes topologías que se dan co
 
 \section{Características del \textit{Hardware} empleado en el entrenamiento de los modelos}
 
-Para la contextualización de los datos de tiempos requeridos en el entrenamiento de los diferente modelos, se especifican las características de la máquina empleada (cedida por la universidad):
+Para la contextualización de los datos de tiempos requeridos en el entrenamiento de los diferente modelos, se especifican las características de las máquinas empleadas:
+\noindent \textbf{\textit{GPUs}:}
+\begin{itemize}
+    \item \textbf{Máquina Cedida por la Universidad: }NVIDIA GeForce RTX 3070
+    \item \textbf{Ordenador Personal David: }NVIDIA GeForce RTX 3050 
+\end{itemize}
+
+En cada apartado se especifica la máquina utilizada para su entrenamiento.
 
 %(TODO) Insertar tabla con las características
 
@@ -72,8 +79,10 @@ Por otro lado, se ha elegido un \textit{Batch Size} de tamaño 32. Este, aparte 
 \end{itemize}
 
 \subsection{P1: CNNRegressorSimple: SmoothL1, STFT lineal}
+P1 es un modelo con una arquitectura simple (\textit{CNNRegressorSimple}), una función de pérdida \textit{SmoothL1} y que gestiona espectrogramas de tipo \textit{STFT} lineales. El número de épocas que ha requerido para cumplir con el valor de paciencia ha sido de 35, obteniendo un error de validación final de 0.015953. Este valor indica que la red está consiguiendo predecir los parámetros con gran precisión. Sin embargo, debemos de tener en cuenta que en la síntesis FM, una pequeña desviación en un parámetro como indice de modulación, podría ocasionar la producción de un sonido completamente diferente al original. Además, cabe destacar que mediante la función de pérdida \textit{SmoothL1}, se está ignorando la inyectividad nula que caracteriza a FM. 
 
 \subsubsection{Evaluación Mediante \textit{Test Set}}
+
 
 \begin{figure}[H]
     \centering
@@ -82,10 +91,25 @@ Por otro lado, se ha elegido un \textit{Batch Size} de tamaño 32. Este, aparte 
     \label{fig:test_set_p1}
 \end{figure}
 
+Las gráficas de los resultados de evaluar el modelo mediante el conjunto de prueba (\ref{fig:test_set_p1}) muestran una desviación estándar elevada en relación con la media para ambas métricas, lo que indica unos resultados muy dispersos. 
+
+En el caso de \textit{Mel L1}, el resultado anterior se debe a que hay una gran cantidad de valores a ambos lados de la media a pesar de que no se alejen demasiado de esta. 
+
+Con \textit{MCD} se puede apreciar que una gran parte de los valores se encuentran a la izquierda de la media (valores mejores que la media), sin embargo hay unos pocos que se alejan de manera exagerada de la media por la derecha, lo que aumenta la desviación estándar y empeora la media. 
+
+Así pues, se llega a la conclusión que hay ciertos audios que la red gestiona peor que otros, por lo que se pasa a evaluar mediante el \textit{benchmark} de audios variados para analizar este comportamiento. 
+
 \subsubsection{Evaluación Mediante \textit{Benchmark} Diverso}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/benchmark_P1}
+    \caption{Gráfico obtenido en la evaluación de P1 mediante \textit{benchmark}.}
+    \label{fig:benchmarkP1}
+\end{figure}
+
 \subsection{P2: CNNRegressorSimple: SmoothL1, Mel (log-perceptual)}
-El modelo con estructura de \textit{CNNRegressorSimple}, con función de pérdida \textit{SmoothL1} (explicada también en el apartado \ref{sec:entrenamiento_final}) y espectrogramas Mel ha necesitado 57 minutos y 57 épocas para entrenarse, acabando con un error de validación 0.006844. Este valor indica que la red está consiguiendo predecir los parámetros con una precisión altísima. Sin embargo, debemos de tener en cuenta que en la síntesis FM, una pequeña desviación en un parámetro como indice de modulación, podría ocasionar la producción de un sonido completamente diferente al original. Además, cabe destacar que mediante la función de pérdida \textit{SmoothL1}, se está ignorando la inyectividad nula que caracteriza a FM. 
+El modelo con estructura de \textit{CNNRegressorSimple}, con función de pérdida \textit{SmoothL1} (explicada en el apartado \ref{sec:FuncionPerdida}) y espectrogramas Mel ha necesitado 57 minutos y 57 épocas para entrenarse, acabando con un error de validación 0.006844. Este resultado indica una desviación en la predicción de parámetros mínima. A pesar de esto, se da la misma situación que en el modelo P1, ya que se sigue sin tener en cuenta la inyectividad nula de la síntesis FM.  
 
 \subsubsection{Evaluación Mediante \textit{Test Set}}
 
