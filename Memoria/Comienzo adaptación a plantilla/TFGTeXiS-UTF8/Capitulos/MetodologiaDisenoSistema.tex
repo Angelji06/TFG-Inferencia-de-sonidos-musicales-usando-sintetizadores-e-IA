@@ -20,22 +20,48 @@ en base a unos rangos de valores específicos para cada parámetro. Para cada un
 se utiliza una distribución uniforme, a excepción de la frecuencia portadora (\textit{Carrier}) que 
 se realiza en escala logarítmica. De esta forma se simula la percepción humana del sonido. 
 
-Se sintetizan los N archivos \textit{.wav} mediante la librería \textbf{NumPy} y la formulación matemática de la FM (Fase 1). 
+Se sintetizan los N archivos \textit{.wav} mediante la librería \textbf{NumPy} y la formulación matemática de la FM. 
 Se define una frecuencia de muestreo (\textit{sample rate}) de 44100 Hz
 y se incrementa el tiempo de duración de 1 a 2 segundos, con el fin de asegurar un margen temporal
 necesario para analizar y percibir las variaciones en el sonido provocadas por las envolventes. 
 Estas envolventes se generan sobre un vector de tiempo unificado. 
-\textcolor{red}{FALTA mostrar los GEN PARAMS (figura)}
-\textcolor{red}{FALTA mencionar pruebas inciales pyo}... 
-Sin embargo se usó numpy de forma que todo el pipeline se
-mantuviese unificado en un único programa python, además, debido a la naturaleza cambiante del programa, su simplicidad nos
-permitía modificar el algoritmo de generación rápidamente. Por ejemplo, al principio del proyecto, cuando teníamos solo 3
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lcc}
+        \toprule
+        \textbf{Parámetro} & \textbf{Valor Mínimo} & \textbf{Valor Máximo} \\
+        \midrule
+        Frecuencia Portadora (\textit{Carrier}) & 100 Hz & 2000 Hz \\
+        Ratio (\textit{Ratio}) & 0.05 & 2.0 \\
+        Índice de Modulación (\textit{Index}) & 1 & 10 \\
+        Ataque Amplitud (\textit{Amp. Attack}) & 0.015 s & 1.9 s \\
+        \textit{Sustain} Amplitud (\textit{Amp. Sustain}) & 0.015 s & 1.9 s \\
+        \textit{Decay} Amplitud (\textit{Amp.Decay}) & 0.015 s & 1.9 s \\
+        Ataque Modulación (\textit{Mod. Attack}) & 0.01 s & 1.9 s \\
+        \textit{Decay} Modulación (\textit{Amp.Decay}) & 0.01 s & 1.9 s \\
+        % Añade aquí el resto de parámetros (Sustain, Decay, Mod. Attack, Mod. Decay) siguiendo este formato...
+        \bottomrule
+    \end{tabular}
+    \caption{Rangos de los parámetros (\texttt{GEN\_PARAMS}) utilizados para la generación aleatoria del \textit{dataset}.}
+    \label{tab:gen_params}
+\end{table}
+Las pruebas de generación iniciales se llevaron a cabo mediante un barrido de parámetros en un sintetizador FM de \textbf{pyo}. 
+Sin embargo, este método se sustituyó por \textbf{Numpy} de forma que todo el pipeline se
+mantuviese unificado en un único programa python. Además, debido a la naturaleza cambiante del programa, su simplicidad nos
+permite modificar el algoritmo de generación rápidamente. Por ejemplo, al principio del proyecto, cuando teníamos solo 3
 parámetros (carrier, ratio, index), aplicabamos un triple bucle for que generaba los parámetros en base a un valor de 
 aumento. Sin embargo esta idea da problemas de \textit{overfitting}\footnote{Suceso que ocurre en \textit{Machine Learning} cuando la red neuronal, en lugar de aprender patrones, "memoriza" los datos de entrenamiento.} al generar una
 rejilla definida que el modelo acababa memorizando, incluso aplicando \textit{jitter}\footnote{Técnica de inyección de ruido de forma aleatoria en los datos.} para solventarlo.
 
-Para la generación de envolventes...
-\textcolor{red}{FALTA explicar algoritmos de generación de envolventes }
+La generación de envolventes se lleva a cabo de manera puramente matemática con \textbf{NumPy} sobre un vector de tiempo unificado ($t$). Se utiliza el mismo algoritmo geométrico para ambas envolventes, indicando un \textit{sustain} de 0.0 en la de modulación porque carece de él. 
+
+Para el ataque, en el caso de la amplitud, se sube progresivamente el volumen de 0.0 a 1.0, y en el caso de la modulación se sube de 0.0 a 1.0 el valor que multiplica al índice de modulación. Ambos en el tiempo que va desde el segundo 0, al marcado por la variable \textit{attack}, con la fórmula $t / \textit{attack}$. 
+
+En la fase de \textit{sustain} (únicamente necesaria para la envolvente de amplitud), se mantiene el volumen fijo a 1.0 durante el tiempo indicado por la variable \textit{sustain}.
+
+En cuanto al \textit{decay}, se hace lo mismo que en el ataque pero, en vez de aumentar, decreciendo linealmente de 1.0 a 0.0.
+
+Los valores de estas envolventes se generan aleatoriamente en la función \texttt{generar\_wavs\_FM()}, donde se comprueba que no sumen más del tiempo total de 2 segundos, y en caso de que esto no se cumpla, se reescalan proporcionalmente para que respeten el tiempo máximo. 
 
 \section{Preprocesamiento de Datos: normalizaciones y espectrogramas}
 \label{sec:Preprocesamiento}
