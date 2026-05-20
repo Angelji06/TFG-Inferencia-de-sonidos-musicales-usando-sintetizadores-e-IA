@@ -2,7 +2,7 @@
 \label{cap:ResultadosYEvaluacion}
 
 En este capítulo se muestran las pruebas realizadas sobre el modelo. El objetivo es el de evaluación del rendimiento del sistema y la experimentación en el uso de las
-diferentes combinaciones de arquitecturas y funciones de pérdida. Para ello, la fase se divide en dos vertientes:
+diferentes combinaciones de espectrogramas, arquitecturas y funciones de pérdida. Para ello, la fase se divide en dos vertientes:
 evaluación sobre \textit{Test Set} y evaluación sobre \textit{Benchmark}. 
 
 En la primera, se utilizan las muestras reservadas en la división inicial del dataset (un 15\%).
@@ -23,7 +23,7 @@ para la evaluación del modelo en ambos ámbitos:
 en los parámetros inferidos. Se emplean las métricas de: Error Cuadrático Medio (MSE), que penaliza las desviaciones paramétricas grandes 
 entre predicción y original; Raíz del Error Cuadrático Medio (RMSE), que devuelve el error en las unidades originales de cada parámetro, consiguiendo
 ver de forma directa la precisión y así poder hacer comparaciones objetivas entre las distintas arquitecturas y funciones de pérdida;
-y Error Absoluto Medio (MAE), el cual es más robusto frente a valores atípicos. Estas métricas sufren ante e problema de la inyectividad 
+y Error Absoluto Medio (MAE), el cual es más robusto frente a valores atípicos. Estas métricas sufren ante el problema de la inyectividad 
 nula en la síntesis FM, por lo que se utilizan principalmente como diagnóstico rápido.
 
 \item \textbf{Métricas de Audio: } Estas son mucho más interesantes para conseguir una evaluación
