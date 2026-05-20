@@ -129,7 +129,12 @@ Con el fin de experimentar con distintos modelos en el entrenamiento, se propone
     
     A pesar de que la red ejecuta un entrenamiento rápido, al carecer de reconstrucción 
     no se garantiza que el \textit{Encoder} esté extrayendo de manera acertada la estructura del espectrograma, prediciendo únicamente los valores numéricos de los parámetros.
-    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=1\textwidth]{Imagenes/Bitmap/DiagramaCNNRegresorSimple}
+        \caption{Representación de la estructura interna de CNNRegressorSimple.}
+        \label{fig:DiagramaCNNRegresorSimple}
+    \end{figure}
     \textcolor{red}{DIAGRAMA}
 
     \item \textbf{CNNRegressor5: }Se trata de una expansión del modelo anterior, incorporando una segunda cabeza de predicción. Se añade la fase de Reconstrucción (\textbf{Decoder}), la cual se encarga de reconstruir 
@@ -146,6 +151,7 @@ Con el fin de experimentar con distintos modelos en el entrenamiento, se propone
 
     Esta representación es más costosa computacionalmente pero a priori debería funcionar mejor que la simple.
 
+   
     \textcolor{red}{DIAGRAMA}
 \end{itemize}
 
