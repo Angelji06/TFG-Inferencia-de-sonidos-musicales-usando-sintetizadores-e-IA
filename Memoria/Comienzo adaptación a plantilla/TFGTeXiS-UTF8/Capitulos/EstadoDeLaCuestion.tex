@@ -1,7 +1,9 @@
 \chapter{Estado de la Cuestión}
 \label{cap:estadoDeLaCuestion}
 
-\section {Estado de la cuestión: Audio}
+En este apartado se presenta una revisión del estado de la cuestión en relación a los temas centrales de este proyecto: la síntesis sonora, la representación digital del audio, y sus intersecciones con la Inteligencia Artificial. Se abordan tanto los fundamentos teóricos como las aplicaciones prácticas, destacando los avances más relevantes y las metodologías empleadas en investigaciones recientes.
+
+\section {Síntesis sonora y representación del audio}
 
 \subsection{Síntesis sonora}
 La síntesis de sonido es el proceso de generar señales de audio artificialmente mediante hardware electrónico o software, sin depender de la grabación de una fuente acústica real. Las herramientas diseñadas para este propósito se denominan sintetizadores, los cuales generan sonidos en base a unos parámetros modificables. 
@@ -13,7 +15,7 @@ x(t) = A \sin(2\pi f t + \phi)
 \label{eq:sine_wave_synthesis}
 \end{equation}
 
-donde $A$ representa la \textbf{amplitud} (la altura del sonido, relacionada con el volumen), $f$ es la \textbf{frecuencia} en hercios (que determina el tono, con mayores valores produciendo sonidos más agudos), $t$ es el \textbf{tiempo}, y $\phi$ es la \textbf{fase inicial} en radianes (que define el punto de inicio de la oscilación). Esta onda de seno pura es el elemento básico de toda síntesis, del cual se generan todos los sonidos.
+donde $A$ representa la \textbf{amplitud} (la altura del sonido, relacionada con el volumen), $f$ es la \textbf{frecuencia} en hercios (que determina el tono, con mayores valores produciendo sonidos más agudos), $t$ es el \textbf{tiempo}, y $\phi$ es la \textbf{fase inicial} en radianes (que define el punto de inicio de la oscilación). Esta onda de seno pura es el elemento básico de toda síntesis.
 
 El \textbf{teorema de Fourier} \citep{fourier} establece que cualquier forma de onda periódica, por compleja que sea, puede descomponerse en una suma de ondas sinusoidales de diferentes frecuencias, amplitudes y fases. Por esta razón, dominar la generación y manipulación de ondas sinusoidales es esencial para comprender cualquier técnica de síntesis sonora.
 
@@ -31,7 +33,7 @@ Esta tecnología se popularizó a nivel mundial en 1983 con el lanzamiento del \
 \label{DX7}
 \end{figure}
 
-Sin embargo, la síntesis FM introdujo un problema grave: su \textbf{programación es notoriamente contraintuitiva}. Un cambio mínimo en un solo parámetro puede destruir por completo la estructura del sonido. Esta extrema sensibilidad es, precisamente, el principal desafío que justifica la aplicación de redes neuronales para automatizar la inferencia de sus parámetros.
+Como mencionamos anteriormente, la síntesis FM presenta una alta complejidad, lo que justifica la aplicación de redes neuronales para automatizar la inferencia de sus parámetros. Para entender esta complejidad, es necesario analizar la ecuación que describe su funcionamiento.
 
 Una formulación simple de la síntesis FM se define como:
 
@@ -49,7 +51,19 @@ Donde sus componentes principales son:
     \item $I$: Es el \textbf{índice de modulación}, un factor escalar que controla cuánto se desplaza la fase del portador y, por tanto, la riqueza armónica del sonido resultante.
 \end{itemize}
 
-En nuestro proyecto se implementó una versión más compleja, su ecuación se expande a la siguiente versión, con envolventes\footnote{Una envolvente sirve para controlar la evolución de un sonido en el tiempo \citep{envolvente}} de amplitud y modulación:
+En nuestro proyecto se implementó una versión más compleja, usando envolventes.
+
+Una envolvente es una función que modula un parámetro del sonido a lo largo del tiempo, permitiendo controlar su evolución desde el momento en que se activa hasta que se apaga. En síntesis FM, las envolventes son cruciales para dar forma al carácter dinámico del sonido, afectando tanto su volumen como su textura armónica.
+La envolvente más común es la \textbf{ADSR} (Attack, Decay, Sustain, Release), que define cuatro fases distintas en la evolución del sonido: el ataque (el tiempo que tarda el sonido en alcanzar su máxima amplitud), el decaimiento (el tiempo que tarda en bajar a un nivel de sostenido), el sostenido (el nivel de amplitud mantenido mientras se sostiene la nota) y la liberación (el tiempo que tarda en desaparecer después de soltar la nota).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{./Imagenes/Bitmap/adsr.jpg}
+\caption{Envolvente ADSR. \small{Fuente \citep{adsr}.}}
+\label{adsr}
+\end{figure}
+
+En nuestro proyecto se han implementado dos envolventes: una para la amplitud y otra para la modulación, ligeramente más simplificadas que la ADSR tradicional. Nuestra ecuación de síntesis FM con estas envolventes se expresa de la siguiente manera:
 
 \begin{equation}
 x(t) = A_{env}(t) \sin\left(2\pi f_c t + I \cdot M_{env}(t) \sin(2\pi f_m t)\right)
@@ -123,11 +137,11 @@ Los MFCC son un conjunto de coeficientes que representan la ``huella'' tímbrica
 
 Si bien fueron el estándar en reconocimiento de voz, la tecnología actual prefiere el uso del espectrograma Mel completo. Este cambio se debe a que las redes neuronales convolucionales (CNN) logran mayor precisión al analizar la imagen sonora total, aprovechando detalles y matices que la compresión de la DCT suele eliminar en el proceso. Sin embargo, \textbf{como métrica de evaluación}, los MFCC siguen siendo útiles para comparar la similitud tímbrica entre el sonido original y el resintetizado.
 
-\section{Estado de la cuestión: IA aplicada al audio}
+\section{Inteligencia Artificial aplicada al audio}
 
 \subsection{CNNs en el dominio del audio}
 
-Las \textbf{Redes Neuronales Convolucionales (CNNs)} son un tipo de arquitectura de aprendizaje profundo diseñada para explotar la estructura espacial de los datos, es precisamente por esto que se usan tanto en tareas de imagen. Fueron propuestas originalmente por \citep{lecun1998} para el reconocimiento de caracteres escritos a mano. Su principio fundamental es el uso de filtros convolucionales de pequeño tamaño (\textbf{kernels}), dichos filtros recorren la entrada realizando productos escalares. Esto les permite detectar patrones sin importar dónde estén ubicados y usar muchos menos parámetros que una red tradicional.
+Las \textbf{Redes Neuronales Convolucionales (CNNs)} son un tipo de arquitectura de aprendizaje profundo diseñada para explotar la estructura espacial de los datos. Es precisamente por esto que se usan tanto en tareas de imagen. Fueron propuestas originalmente por \citep{lecun1998} para el reconocimiento de caracteres escritos a mano. Su principio fundamental es el uso de filtros convolucionales de pequeño tamaño (\textbf{kernels}). Dichos filtros recorren la entrada realizando productos escalares. Esto les permite detectar patrones sin importar dónde estén ubicados y usar muchos menos parámetros que una red tradicional.
 
 \begin{figure}[H]
 \centering
@@ -138,14 +152,14 @@ Las \textbf{Redes Neuronales Convolucionales (CNNs)} son un tipo de arquitectura
 
 La arquitectura típica alterna \textbf{capas convolucionales}, que extraen características locales, con \textbf{capas de pooling}, que reducen la dimensionalidad, construyendo así una jerarquía de características que va desde elementos simples, como bordes o gradientes, hacia representaciones abstractas de formas y texturas \citep{krizhevsky2012}.
 
-En el dominio del audio, las CNNs son eficaces son eficaces porque pueden aprender patrones locales en el espectrograma, como la estructura armónica y el ruido de ataque. Se ha demostrado que modelos entrenados con grandes cantidades de datos pueden aplicar su conocimiento general a tareas específicas de síntesis \citep{kong2020}. Al aplicar filtros convolucionales sobre las dimensiones de tiempo y frecuencia, la red identifica texturas tímbricas con una eficiencia muy superior a las redes densas tradicionales.
+En el dominio del audio, las CNNs son eficaces porque pueden aprender patrones locales en el espectrograma, como la estructura armónica y el ruido de ataque. Se ha demostrado que modelos entrenados con grandes cantidades de datos pueden aplicar su conocimiento general a tareas específicas de síntesis \citep{kong2020}. Al aplicar filtros convolucionales sobre las dimensiones de tiempo y frecuencia, la red identifica texturas tímbricas con una eficiencia muy superior a las redes densas tradicionales.
 
 \subsection{Transformers en el dominio del audio (AST)}
 
 El estado del arte en el procesamiento de audio ha evolucionado de las arquitecturas convolucionales (CNN) hacia los \textbf{Transformers}, tras su éxito en el procesamiento de lenguaje natural \citep{vaswani2017}. En el contexto del audio, el modelo de referencia es el Audio Spectrogram Transformer (AST)\citep{gong2021}, que adapta la arquitectura de atención para trabajar directamente con espectrogramas.
 A diferencia de las CNN, que analizan patrones locales mediante filtros, el AST utiliza un mecanismo de auto-atención (\textbf{self-attention}). Este permite al modelo capturar relaciones globales y dependencias de largo alcance en el tiempo y la frecuencia, dividiendo el espectrograma en bloques de datos.
 
-Sin embargo, los Transformers presentan una complejidad computacional cuadrática y requieren volúmenes masivos de datos para superar a las CNN. Por ello, en tareas de sound matching con recursos limitados, como es nuestro caso, \textbf{las arquitecturas convolucionales siguen siendo una opción preferente por su eficiencia}.
+Sin embargo, los Transformers presentan una complejidad computacional cuadrática y requieren volúmenes masivos de datos para superar a las CNN. Por ello, en tareas de aprendizaje automático con recursos limitados, como es nuestro caso, \textbf{las arquitecturas convolucionales siguen siendo una opción preferente por su eficiencia}.
 
 \subsection{Inferencia automática de parámetros en síntesis}
 
@@ -163,7 +177,7 @@ De nuevo, el \textbf{Procesamiento de Señales Digitales Diferenciable (DDSP)}, 
 
 \subsection{Datasets}
 
-Para entrenar modelos de inferencia eficaces, se requieren bases de datos masivas y rigurosamente etiquetadas. Además, en el contexto del aprendizaje profundo aplicado al audio, la calidad de la muestra es un factor crítico; en representaciones bidimensionales como el espectrograma, la presencia de ruido o artefactos puede provocar que la \textbf{Red Neuronal Convolucional (CNN)} asimile patrones erróneos durante el entrenamiento.
+Para entrenar modelos de inferencia eficaces, se requieren bases de datos masivas y rigurosamente etiquetadas. Además, en el contexto del aprendizaje profundo aplicado al audio, la calidad de la muestra es un factor crítico; en representaciones bidimensionales como el espectrograma, la presencia de ruido o artefactos puede provocar que la CNN asimile patrones erróneos durante el entrenamiento.
 
 En el ámbito general del análisis musical, el \textit{dataset} \textbf{NSynth} se ha consolidado como el estándar actual, proporcionando más de 300 000 notas individuales de diversos instrumentos con etiquetas detalladas sobre sus cualidades acústicas \citep{engel2017}. Sin embargo, para proyectos centrados específicamente en síntesis FM, es habitual recurrir a la \textbf{generación sintética masiva} utilizando emuladores por \textit{software} como \textit{Dexed} (un clon digital del \textbf{Yamaha DX7}). Este enfoque garantiza una correspondencia matemáticamente exacta entre el audio exportado y los parámetros internos del sintetizador \citep{yee2018}.
 
