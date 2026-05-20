@@ -133,11 +133,10 @@ Con el fin de experimentar con distintos modelos en el entrenamiento, se propone
     no se garantiza que el \textit{Encoder} esté extrayendo de manera acertada la estructura del espectrograma, prediciendo únicamente los valores numéricos de los parámetros.
     \begin{figure}[H] 
         \centering
-        \includegraphics[width=1\textwidth]{Imagenes/Bitmap/DiagramaCNNRegresorSimple}
+        \includegraphics[width=1\textwidth]{Imagenes/Bitmap/DiagramaCNNRegressorSimple}
         \caption{Representación de la estructura interna de CNNRegressorSimple.}
-        \label{fig:DiagramaCNNRegresorSimple}
+        \label{fig:DiagramaCNNRegressorSimple}
     \end{figure}
-    \textcolor{red}{DIAGRAMA}
 
     \item \textbf{CNNRegressor5: }Se trata de una expansión del modelo anterior, incorporando una segunda cabeza de predicción. Se añade la fase de Reconstrucción (\textbf{Decoder}), la cual se encarga de reconstruir 
     el espectrograma original a partir de la representación comprimida del \textbf{Bottleneck}. 
@@ -152,9 +151,14 @@ Con el fin de experimentar con distintos modelos en el entrenamiento, se propone
     del sonido.
 
     Esta representación es más costosa computacionalmente pero a priori debería funcionar mejor que la simple.
-
    
-    \textcolor{red}{DIAGRAMA}
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=1\textwidth]{Imagenes/Bitmap/DiagramaCNNRegressor5}
+        \caption{Representación de la estructura interna de CNNRegressor5.}
+        \label{fig:DiagramaCNNRegresor5}
+    \end{figure}
+
 \end{itemize}
 
 \section{Funciones de Pérdida}
