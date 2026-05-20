@@ -6,7 +6,7 @@
 \section{Motivación}
 \label{sec:motivacion}
 
-La producción musical moderna ha experimentado una transformación radical en las últimas décadas, consolidando al ordenador y al \textit{software} como los ejes centrales del proceso creativo. En este paradigma digital, la generación de señales de audio artificiales mediante sintetizadores se ha convertido en una herramienta indispensable para artistas, productores y diseñadores de sonido. Históricamente, los primeros sintetizadores analógicos, basados en métodos de síntesis aditiva\footnote{La síntesis aditiva busca la construcción de sonidos combinando (sumando, es decir, ‘por adición’) elementos más simples que el sonido original. \citep{sintesis_aditiva}.} y sustractiva\footnote{Es un método de síntesis donde una señal es generada por un oscilador y después filtrada \citep{sintesis_sustractiva}.}, ofrecían un flujo de trabajo relativamente accesible; su interfaz física y visual, controlada a través de potenciómetros y filtros, permitía a los músicos esculpir el sonido de una manera intuitiva y directa.
+La producción musical moderna ha experimentado una transformación radical en las últimas décadas, consolidando al ordenador y al \textit{software} como los ejes centrales del proceso creativo. En este paradigma digital, la generación de señales de audio artificiales mediante sintetizadores se ha convertido en una herramienta indispensable para artistas, productores y diseñadores de sonido. Históricamente, los primeros sintetizadores analógicos, basados en métodos de síntesis aditiva\footnote{La síntesis aditiva busca la construcción de sonidos combinando (sumando, es decir, ‘por adición’) elementos más simples que el sonido original. \citep{sintesis_aditiva}.} y sustractiva\footnote{Es un método de síntesis donde una señal es generada por un oscilador y después filtrada \citep{sintesis_sustractiva}.}, ofrecían un flujo de trabajo relativamente accesible; su interfaz física y visual, controlada a través de potenciómetros y filtros, permitía a los músicos esculpir el sonido. A pesar de seguir siendo un proceso complejo, era algo accesible para aquel que estudiase el funcionamiento en profundidad.
 
 \begin{figure}[H]
 \centering
@@ -16,12 +16,14 @@ La producción musical moderna ha experimentado una transformación radical en l
 \end{figure}
 
 Sin embargo, el panorama de la síntesis cambió drásticamente a finales de los años sesenta con el descubrimiento de la Síntesis por Modulación de Frecuencia (FM) y, de forma masiva, con la comercialización del emblemático \textbf{Yamaha DX7} en 1983. 
-
-Esta tecnología supuso una revolución en el mercado al permitir la creación de timbres metálicos, eléctricos y campanados, acústicamente imposibles de lograr con la tecnología de la época. 
+Esta tecnología supuso una revolución en el mercado al permitir la creación de timbres metálicos, eléctricos y acampanados, acústicamente imposibles de lograr con la tecnología de la época. 
 
 No obstante, esta innovación trajo consigo un dilema significativo: \textbf{su programación es notoriamente contraintuitiva}. A diferencia de los sistemas tradicionales, en la síntesis FM un cambio mínimo en un solo parámetro (como el índice de modulación o la frecuencia de un operador) puede destruir por completo la estructura armónica del sonido. Esta extrema sensibilidad paramétrica y la pronunciada curva de aprendizaje han alejado históricamente a la mayoría de los creadores del diseño sonoro FM, relegándolos al uso de \textit{presets} preconfigurados.
 
-Este nivel de complejidad técnica manifiesta su mayor obstáculo en el proceso conocido como \textbf{\textit{Sound Matching}} o igualación tímbrica. Es una situación cotidiana en el estudio de grabación que un productor escuche un sonido específico y desee replicarlo. Realizar esta tarea ``a oído'' con un sintetizador FM es un proceso de ensayo y error que puede resultar profundamente frustrante. Desde una perspectiva matemática y acústica, este problema radica en la \textbf{falta de inyectividad} del motor de síntesis: combinaciones de parámetros drásticamente diferentes pueden generar resultados acústicos que el oído humano percibe como idénticos, mientras que ajustes minúsculos pueden derivar en texturas sonoras completamente opuestas. En consecuencia, el diseño manual de sonidos se convierte en una barrera técnica que interrumpe el flujo creativo del artista.
+Desde una perspectiva matemática y acústica, este problema radica en la \textbf{falta de inyectividad} del motor de síntesis: combinaciones de parámetros drásticamente diferentes pueden generar resultados acústicos que el oído humano percibe como idénticos, mientras que ajustes minúsculos pueden derivar en texturas sonoras completamente opuestas. En consecuencia, el diseño manual de sonidos se convierte en una barrera técnica que interrumpe el flujo creativo del artista.
+
+Este nivel de complejidad técnica manifiesta su mayor obstáculo en el proceso conocido como \textbf{\textit{Sound Matching}} o igualación tímbrica. Es una situación cotidiana en el estudio de grabación que un productor escuche un sonido específico y desee replicarlo. Realizar esta tarea ``a oído'' con un sintetizador FM es un proceso de ensayo y error que puede resultar profundamente frustrante. 
+
 
 \begin{figure}[H]
 \centering
@@ -30,50 +32,50 @@ Este nivel de complejidad técnica manifiesta su mayor obstáculo en el proceso 
 \label{fig:aphex_twin}
 \end{figure}
 
-Ante esta problemática, la Inteligencia Artificial y, en concreto, el \textbf{aprendizaje profundo} (\textit{Deep Learning}), se presentan como el puente ideal entre la abstracción creativa del músico y la complejidad matemática del sintetizador. Al delegar la inferencia de parámetros a un modelo computacional, se puede automatizar la búsqueda del sonido objetivo. Para lograrlo, el sistema debe ser capaz de ``escuchar'' y procesar la señal de una forma asimilable por la red. Mediante la transformación del audio unidimensional a un \textbf{espectrograma}, se logra ``fotografiar'' el sonido, adaptando las frecuencias a una escala logarítmica que imita fielmente la percepción del sistema auditivo humano.
+Ante esta problemática, el aprendizaje automático y, en concreto, el \textbf{aprendizaje profundo} (\textit{Deep Learning}), se presentan como el puente ideal entre la abstracción creativa del músico y la complejidad matemática del sintetizador. Al delegar la inferencia de parámetros a un modelo computacional, se puede automatizar la búsqueda del sonido objetivo. Para lograrlo, el sistema debe ser capaz de ``escuchar'' y procesar la señal de una forma asimilable por la red. Mediante la transformación del audio unidimensional a un \textbf{espectrograma}, se logra ``fotografiar'' el sonido, adaptando las frecuencias a una escala logarítmica que imita fielmente la percepción del sistema auditivo humano.
 
 Una vez que el audio se representa como una imagen bidimensional, las \textbf{Redes Neuronales Convolucionales (CNNs)} emergen como la arquitectura idónea para abordar el problema. Estas redes están diseñadas para extraer características espaciales y, en el dominio del espectrograma, son excepcionalmente precisas al ``ver'' y clasificar las densas texturas tímbricas y armónicas del audio. 
 
 \section{Objetivos}
 \label{sec:objetivos}
 
-\textbf{Objetivo General:} \\
-Desarrollar un sistema basado en \textbf{Redes Neuronales Convolucionales (CNNs)} capaz de estimar automáticamente los parámetros de un sintetizador de \textbf{modulación de frecuencia (FM)} a partir de una muestra de audio, con el fin de replicar su timbre (\textit{sound matching}). Además, se estudiará y comparará el uso de distintas representaciones del espectrograma, arquitecturas de red y funciones de pérdida.
 
-\vspace{1em}
-\textbf{Objetivos Específicos:}
+El objetivo principal del proyecto es desarrollar un sistema basado en \textbf{Redes Neuronales Convolucionales (CNNs)} capaz de estimar automáticamente los parámetros de un sintetizador de \textbf{modulación de frecuencia (FM)} a partir de una muestra de audio, con el fin de replicar su timbre (\textit{sound matching}).  
+
+Como objetivos específicos, se tienen los siguientes:
 
 \begin{itemize}
     \item \textbf{Comprensión de la síntesis FM:} Estudiar y comprender la arquitectura paramétrica de la síntesis FM, desde su versión más simple hasta una versión más compleja que involucre envolventes de amplitud y modulación.
     \item \textbf{Revisión bibliográfica:} Investigar y leer la literatura relacionada con el uso de la \textbf{Inteligencia Artificial aplicada al audio} para tomar las decisiones de diseño fundamentales del proyecto.
-    \item \textbf{Generación del dataset:} Diseñar e implementar un motor de síntesis capaz de generar un \textit{dataset} masivo de audios sintéticos (\texttt{.wav}) y sus correspondientes etiquetas (parámetros), así como su conversión a tensores de PyTorch (\texttt{.pt}).
+    \item \textbf{Generación del dataset:} Diseñar e implementar un motor de síntesis capaz de generar un \textit{dataset} masivo de audios sintéticos (\texttt{.wav}) y sus correspondientes etiquetas (parámetros), así como su conversión a tensores (\texttt{.pt}).
     \item \textbf{Procesamiento de señal:} Establecer un \textit{pipeline} de procesamiento de señales para transformar el audio crudo en representaciones visuales (\textbf{espectrogramas}) aptas para la CNN, aplicando las transformaciones y normalizaciones del dato que maximicen su rendimiento.
-    \item \textbf{Desarrollo del modelo:} Diseñar, entrenar y optimizar varias arquitecturas de Redes Neuronales Convolucionales y funciones de pérdida en Python usando \textbf{PyTorch}.
+    \item \textbf{Desarrollo del modelo:} Diseñar, entrenar y optimizar varias arquitecturas de Redes Neuronales Convolucionales y funciones de pérdida en Python usando el framework \textbf{PyTorch}.
     \item \textbf{Evaluación psicoacústica:} Evaluar el rendimiento del modelo mediante métricas de error sobre parámetros y medidas de \textbf{similitud tímbrica} que simulen la percepción del oído humano.
     \item \textbf{Desarrollo de la interfaz:} Desarrollar un sistema con una interfaz funcional que permita acceder a todas las utilidades del proyecto de manera fácil e intuitiva.
+    \item \textbf{Estudio de modelos:} Se estudiará y comparará el uso de distintas representaciones del espectrograma, arquitecturas de red y funciones de pérdida.
 \end{itemize}
 
 \section{Plan de trabajo}
-El desarrollo de este Trabajo de Fin de Grado abarca desde septiembre de 2025 hasta mayo de 2026. La evolución del proyecto a lo largo de estos meses se divide en cinco etapas claramente definidas:
+El desarrollo de este Trabajo de Fin de Grado abarcará desde septiembre de 2025 hasta mayo de 2026. La evolución del proyecto a lo largo de estos meses se estructurará en cinco etapas claramente definidas:
 
 \begin{itemize}
     \item \textbf{Fase 1 (Septiembre - Octubre): Exploración y pruebas de concepto} \\
     \textbf{Hito principal:} Etapa de investigación general sobre Inteligencia Artificial aplicada a la música. \\
-    Durante estos meses, comenzamos a asentar las bases técnicas del aprendizaje profundo y su aplicación al audio leyendo la literatura actual. Empezamos haciendo pruebas muy básicas para ver de qué era capaz la IA. Tras barajar opciones como un asistente inteligente de mezcla o un generador de efectos de sonido, finalmente nos orientamos hacia su aplicación con sintetizadores. Los dos primeros prototipos reflejan nuestro progreso en este campo nuevo para nosotros, experimentando con la predicción de formas de onda y la generación de espectrogramas.
+    Durante estos meses, realizaremos una revisión bibliográfica para asentar las bases técnicas del aprendizaje profundo y su aplicación al audio. Desarrollaremos pruebas de concepto iniciales para evaluar las capacidades de la IA aplicada a sintetizadores, experimentando con la predicción de formas de onda y la generación de espectrogramas mediante la creación de los primeros prototipos de prueba.
 
     \item \textbf{Fase 2 (Noviembre): Definición del proyecto, \textit{Sound Matching} y primeros prototipos funcionales} \\
-    \textbf{Hito principal:} Toma de decisión por el \textit{Sound Matching} FM y logro del primer prototipo real. \\
-    Aquí el proyecto tomó su rumbo definitivo. Nos decantamos por la Síntesis por Modulación de Frecuencia (FM) y comenzamos a generar \textit{datasets} masivos etiquetados. Entrenamos un primer modelo de regresión CNN cuyos resultados iniciales fueron malos, lo que nos llevó a reestructurar el código, así como refactorizarlo a Programación Orientada a Objetos (POO) y a crear una Interfaz Gráfica (GUI) básica. Finalmente, logramos la primera prueba funcional de \textit{sound matching}, aunque todavía con problemas en las frecuencias graves y falta de consistencia.
+    \textbf{Hito principal:} Establecimiento del \textit{Sound Matching} FM como eje central y primer prototipo funcional. \\
+    En esta etapa, centraremos el proyecto en la Síntesis por Modulación de Frecuencia (FM) y comenzaremos con la generación de \textit{datasets} masivos etiquetados. Entrenaremos un primer modelo de regresión CNN y diseñaremos la arquitectura del código basándonos en Programación Orientada a Objetos (POO). Además, se programará una Interfaz Gráfica (GUI) básica con el objetivo de lograr una primera prueba funcional sólida de \textit{sound matching}.
 
     \item \textbf{Fase 3 (Diciembre - Febrero): Escalado de complejidad y métricas de evaluación} \\
     \textbf{Hito principal:} Mejora de la síntesis y evaluación del modelo. \\
-    Una vez que la base funcionaba, añadimos complejidad incorporando nuevos parametros de envolventes y logaritmos a la generación de sonido. Reimplementamos la generación del dataset para este nuevo paradigma (de 3 a 8 parámetros), además, unificamos el tratamiento del dato en todo el programa para asegurar consistencia en la obtención de los espectrogramas y la normalización necesaria para el correcto funcionamiento de la red neuronal. También implementamos las primeras métricas de validación, la métrica FAD (\textit{Fréchet Audio Distance}) para evaluar los resultados y las herramientas para visualizar y comparar los espectrogramas.
+    Una vez validada la base del sistema, añadiremos complejidad incorporando nuevos parámetros, como envolventes, a la generación de sonido. Esto requerirá escalar la generación del \textit{dataset} y unificar el tratamiento de los datos para asegurar la consistencia en la obtención de los espectrogramas y su correcta normalización. Finalmente, implementaremos métricas de validación, como la FAD (\textit{Fréchet Audio Distance}), y desarrollaremos herramientas para visualizar y evaluar los resultados del modelo.
 
     \item \textbf{Fase 4 (Febrero - Abril): Optimización arquitectónica y comienzo de la memoria} \\
-    \textbf{Hito principal:} Cambios profundos en la red neuronal e inicio de la redacción. \\
-    Estos fueron los meses en los que más se trabajó en el desarrollo del prototipo final. En esta fase comenzamos a recopilar todo lo anotado y a redactar la memoria. A nivel de código dimos un salto de calidad: implementamos espectrogramas en escala Mel, probamos una arquitectura sin decodificador (\textit{decoder}), creamos una nueva función de pérdida basada en ventaneo (\textit{windowing}) y programamos un \textit{benchmark} FM. A nivel de documentación, redactamos los avances de los prototipos 1 al 3 y comenzamos a escribir la teoría sobre la escala Mel y los coeficientes MFCC.
+    \textbf{Hito principal:} Optimización profunda de la red neuronal e inicio de la redacción. \\
+    Durante estos meses nos enfocaremos en el desarrollo y refinamiento del prototipo final. A nivel de código, probaremos diferentes optimizaciones arquitectónicas en la red neuronal, como el uso de espectrogramas en escala Mel y funciones de pérdida avanzadas, implementando también un \textit{benchmark} FM para su evaluación. En paralelo, comenzaremos la redacción de la memoria del proyecto, documentando los desarrollos previos y la base teórica fundamental (escala Mel, coeficientes MFCC, etc.).
 
     \item \textbf{Fase 5 (Abril - Mayo): Redacción final, entrenamiento de modelos definitivos y cierre} \\
-    \textbf{Hito principal:} Finalización de la memoria y entrenamiento de los modelos de producción (P1 a P6). \\
-    El desarrollo principal de código finalizó; todo lo programado en estos meses fue para cubrir necesidades de la memoria (métricas de evaluación, \textit{early stopping} para la red y registro del historial de entrenamiento). Nos centramos de lleno en redactar la memoria, elaborar diagramas, limpiar el código, recopilar la bibliografía y preparar los \textit{scripts} para Linux y Windows. Para terminar, entrenamos los seis modelos finales utilizando las máquinas proporcionadas por la UCM.
+    \textbf{Hito principal:} Finalización de la memoria y entrenamiento de los modelos de producción. \\
+    Con el código principal estabilizado, las tareas de programación se limitarán a ajustes finales orientados a la evaluación y al registro del historial de entrenamiento. El esfuerzo principal se destinará a concluir la redacción de la memoria, elaborar los diagramas necesarios, limpiar el código y preparar los \textit{scripts} de ejecución para distintos entornos (Linux y Windows). Por último, llevaremos a cabo el entrenamiento de los modelos definitivos utilizando los recursos computacionales proporcionados por la UCM.
 \end{itemize}
