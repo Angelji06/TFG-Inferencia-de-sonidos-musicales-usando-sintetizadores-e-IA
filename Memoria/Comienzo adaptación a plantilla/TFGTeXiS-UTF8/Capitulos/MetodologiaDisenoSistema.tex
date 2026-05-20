@@ -3,28 +3,29 @@
 
 \section{Descripción de los Parámetros del Sistema}
 
-Con el objetivo de lograr un acercamiento a las aplicaciónes reales del \textbf{Sound Matching} con sonidos ricos y con sonoridad, se decide que el sistema debe trabajar con los siguientes parámetros:
+Con el objetivo de lograr un acercamiento a las aplicaciónes reales del \textbf{\textit{Sound Matching}} pero sin sacrificar simplicidad, se valoraron cuáles debían ser los parámetros fundamentales. Finalmente se decidió que el sistema trabajaría con los siguientes parámetros:
 
 \begin{itemize}
-    \item \textbf{Variables Fundamentales: } Estas son la base estructural de la síntesis FM y se componen de la frecuencia portadora (\textit{Carrier}), la relación entre frecuencia portadora y frecuencia moduladora (\textit{Ratio}) y el índice de modulación (\textit{Index}). Definen el timbre del sonido, pudiendo producir desde sonidos similares al de una flauta a ruidos inarmónicos.
+    \item \textbf{Variables Fundamentales: } Estas son la base estructural de la síntesis FM y se componen de la frecuencia portadora (\textbf{\textit{Carrier}}), la relación entre frecuencia portadora y frecuencia moduladora (\textbf{\textit{Ratio}}) y el índice de modulación (\textbf{\textit{Index}}). Definen el timbre del sonido, pudiendo producir desde sonidos similares al de una flauta a ruidos inarmónicos. 
+    Se decidió usar ratio, en vez de frecuencia moduladora, para mantener una relación armónica constante, conservando así el mismo timbre independientemente de la nota reproducida. Es decir, para que en caso de aumentar o reducir la frecuencia portadora, el sonido siga sonando igual pero en una nota diferente.
     
     Por sí solos estos parámetros producen un sonido estático (no evoluciona en el tiempo), sonando poco orgánico. Para solucionar esto, se introducen las envolventes (descritas a continuación).
-    \item \textbf{Envolvente de Amplitud: } se han elegido las variables de \textit{attack}, \textit{sustain} y \textit{decay}, evitando el \textit{release} puesto que no aportaba demasiado al sonido y entrenar un modelo con un parámetro más implica un aumento en complejidad y tiempo significativo. Estos parámetros consiguen modelar el volumen en el tiempo, permitiendo diferenciar un sonido percusivo (con un \textit{attack} muy rápido y sin sustain) de otro largo y equilibrado (de ataque lento y \textit{sustain} duradero).
-    \item \textbf{Envolvente de Modulación: } Aquí se encuentran los parámetros de \textit{attack} y \textit{decay} aplicados sobre el \textbf{índice de modulación}. Añadiendo esta envolvente, se pueden conseguir sonidos cuyo timbre evolucione con el tiempo, siendo así más similares a instrumentos reales. Esto se debe a que al tocar un instrumento, al principio se pueden apreciar todos los armónicos perfectamente, y según el sonido decae, estos van desapareciendo con él.     
+    \item \textbf{Envolvente de Amplitud: } se han elegido las variables de \textbf{\textit{attack}}, \textbf{\textit{sustain}} y \textbf{\textit{decay}}, evitando el \textit{release} puesto que no aportaba demasiado al sonido y entrenar un modelo con un parámetro más implica un aumento en complejidad y tiempo significativo. Estos parámetros consiguen modelar el volumen en el tiempo, permitiendo diferenciar un sonido percusivo (con un \textit{attack} muy rápido y sin sustain) de otro largo y equilibrado (de ataque lento y \textit{sustain} duradero).
+    \item \textbf{Envolvente de Modulación: } Aquí se encuentran los parámetros de \textbf{\textit{attack}} y \textbf{\textit{decay}} aplicados sobre el \textbf{índice de modulación}. Añadiendo esta envolvente, se pueden conseguir sonidos cuyo timbre evolucione con el tiempo, siendo así más similares a instrumentos reales. Esto se debe a que al tocar un instrumento, al principio se pueden apreciar todos los armónicos perfectamente, y según el sonido decae, estos van desapareciendo con él.     
 \end{itemize}
 
 \section{Generación del Dataset}
 \label{sec:GeneracionDataset}
-El sistema genera un número (N) de muestras de audio con valores continuos aleatorios,
-en base a unos rangos de valores específicos para cada parámetro. Para cada uno de ellos 
+El sistema genera un número (N) de muestras de audio con \textbf{valores continuos aleatorios},
+en base a unos rangos de valores específicos para cada parámetro (ver \ref{tab:gen_params}). Para cada uno de ellos 
 se utiliza una distribución uniforme, a excepción de la frecuencia portadora (\textit{Carrier}) que 
-se realiza en escala logarítmica. De esta forma se simula la percepción humana del sonido. 
+se realiza en escala logarítmica. De esta forma se pretende simular la percepción humana del sonido. 
 
-Se sintetizan los N archivos \textit{.wav} mediante la librería \textbf{NumPy} y la formulación matemática de la FM. 
-Se define una frecuencia de muestreo (\textit{sample rate}) de 44100 Hz
-y se incrementa el tiempo de duración de 1 a 2 segundos, con el fin de asegurar un margen temporal
-necesario para analizar y percibir las variaciones en el sonido provocadas por las envolventes. 
-Estas envolventes se generan sobre un vector de tiempo unificado. 
+Se sintetizan los N archivos \textit{.wav} mediante la librería \textbf{NumPy} y la formulación matemática de la FM descrita en la sección \ref{sec:FormulacionFM}. 
+Se define una frecuencia de muestreo de 44100 Hz
+y establece un tiempo de duración de 2 segundos, con el fin de asegurar un margen temporal
+suficiente para analizar y percibir las variaciones en el sonido provocadas por las envolventes. 
+
 \begin{table}[H]
     \centering
     \begin{tabular}{lcc}
@@ -51,17 +52,19 @@ mantuviese unificado en un único programa python. Además, debido a la naturale
 permite modificar el algoritmo de generación rápidamente. Por ejemplo, al principio del proyecto, cuando teníamos solo 3
 parámetros (carrier, ratio, index), aplicabamos un triple bucle for que generaba los parámetros en base a un valor de 
 aumento. Sin embargo esta idea da problemas de \textit{overfitting}\footnote{Suceso que ocurre en \textit{Machine Learning} cuando la red neuronal, en lugar de aprender patrones, "memoriza" los datos de entrenamiento.} al generar una
-rejilla definida que el modelo acababa memorizando, incluso aplicando \textit{jitter}\footnote{Técnica de inyección de ruido de forma aleatoria en los datos.} para solventarlo.
+rejilla definida que el modelo acababa memorizando, incluso aplicando \textit{jitter}\footnote{Técnica de inyección de ruido de forma aleatoria en los datos.} para solventarlo. Es por esto que se optó por la generación aleatoria, que aunque no es tan ordenada, es más efectiva para el aprendizaje de la red.
 
-La generación de envolventes se lleva a cabo de manera puramente matemática con \textbf{NumPy} sobre un vector de tiempo unificado ($t$). Se utiliza el mismo algoritmo geométrico para ambas envolventes, indicando un \textit{sustain} de 0.0 en la de modulación porque carece de él. 
+La generación de envolventes se lleva a cabo de manera puramente matemática con \textbf{NumPy} sobre un vector de tiempo ($t$). Se utiliza el mismo algoritmo geométrico para ambas envolventes, indicando un \textit{sustain} de 0.0 en la de modulación porque carece de él. 
 
-Para el ataque, en el caso de la amplitud, se sube progresivamente el volumen de 0.0 a 1.0, y en el caso de la modulación se sube de 0.0 a 1.0 el valor que multiplica al índice de modulación. Ambos en el tiempo que va desde el segundo 0, al marcado por la variable \textit{attack}, con la fórmula $t / \textit{attack}$. 
+Para el \textbf{ataque}, en el caso de la amplitud, se sube progresivamente el volumen de 0.0 a 1.0, y en el caso de la modulación se sube de 0.0 a 1.0 el valor que multiplica al índice de modulación. Ambos en el tiempo que va desde el segundo 0, al marcado por la variable \textit{attack}, con la fórmula $t / \textit{attack}$. 
 
-En la fase de \textit{sustain} (únicamente necesaria para la envolvente de amplitud), se mantiene el volumen fijo a 1.0 durante el tiempo indicado por la variable \textit{sustain}.
+En la fase de \textbf{\textit{sustain}} (únicamente necesaria para la envolvente de amplitud), se mantiene el volumen fijo a 1.0 durante el tiempo indicado por la variable \textit{sustain}.
 
-En cuanto al \textit{decay}, se hace lo mismo que en el ataque pero, en vez de aumentar, decreciendo linealmente de 1.0 a 0.0.
+En cuanto al \textbf{\textit{decay}}, se hace lo mismo que en el ataque pero, en vez de aumentar, decreciendo linealmente de 1.0 a 0.0.
 
 Los valores de estas envolventes se generan aleatoriamente en la función \texttt{generar\_wavs\_FM()}, donde se comprueba que no sumen más del tiempo total de 2 segundos, y en caso de que esto no se cumpla, se reescalan proporcionalmente para que respeten el tiempo máximo. 
+
+También se genera un registro de etiquetas (\textit{labels.cvs}) que contiene los valores de los 8 parámetros en cada audio.
 
 \section{Preprocesamiento de Datos: normalizaciones y espectrogramas}
 \label{sec:Preprocesamiento}
@@ -77,24 +80,23 @@ evitar chasquidos o ruidos indeseados provocados por las limitaciones de la FFT.
 \item \textbf{Transformaciones principales: }Se transforma el audio a espectrograma usando STFT y después se pasa de amplitud lineal a logarítmica (dB), en ambos casos usando Librosa. 
 
 Para la representación acustica, el programa permite elegir entre dos representaciones del espectrograma, con el fin de llevar a cabo diferentes pruebas de experimentación.
-La diferencia reside en la escala del eje de frecuencias (eje Y en el espectrograma) Por un lado, se encuentran 
-los espectrogramas en formato lineal, mediante \textbf{STFT} con 513  \textit{bins}\footnote{El término \textit{bin} hace referencia los intervalos de la Tranformada de Fourier (FFT). 
+La diferencia reside en la escala del eje de frecuencias (eje Y en el espectrograma). Por un lado, se encuentran 
+los espectrogramas en formato lineal, generados mediante \textbf{STFT} con 513  \textit{bins}\footnote{El término \textit{bin} hace referencia los intervalos de la Tranformada de Fourier (FFT). 
 El tamaño de ventana utilizado para la creación de los espectrogramas es de 1024 ($N_{fft} = 1024$), lo que genera
 $1024 / 2 + 1 = 513$ intervalos o \textit{bins} de frecuencias}de frecuencia. Y por el otro lado, 
-se da lugar a elegir un formato logarítmico-perceptual (\textbf{Mel} con 128 bandas), el cual tiene un mayor potencial para
+se da lugar a elegir un formato logarítmico-perceptual (\textbf{Mel} con 128 \textit{bins}), el cual tiene un mayor potencial para
 la representación del sonido de manera similar a la percibida por el humano.
 
-\item \textbf{Extracción y guardado: }Posteriormente, se extrae la magnitud de la señal, se convierte a decibelios (dB) y se guarda como tensores (formato \textit{.pt}). Además,
-se genera un archivo (spec\_mode.txt) que indica el tipo de espectrograma utilizado.
+\item \textbf{Extracción y guardado: }Posteriormente, se extrae la magnitud de la señal, se convierte a decibelios (dB) y se guarda como tensor bidimensional (formato \textit{.pt}). Además,
+se genera un archivo (spec\_mode.txt) que indica el tipo de espectrograma utilizado. Necesario para el entrenamiento, inferencia y evaluación posteriores.
 
-Para terminar con el tratamiento del dataset, se estructuran los tensores en una clase Dataset de PyTorch
-(\textit{SpectrogramTensorDataset}). Se lee el registro de etiquetas (\textit{labels.cvs}), el cual contiene todos los
-valores de los parámetros de cada audio, y se calcula la media y desviación estándar global de cada uno de ellos. Con estas estadísticas
-se aplica una normalización de puntuación estándar (\textit{Z-score}), nivelando así las diferencias entre las escalas
+Para terminar con el tratamiento del dataset, se estructuran los tensores en una clase propia que hereda de la clase Dataset de PyTorch
+(\textit{SpectrogramTensorDataset}). Se lee el registro de etiquetas (\textit{labels.cvs}), y se calcula la media y desviación estándar global de cada uno de ellos. Con estas estadísticas
+se aplica una \textbf{normalización de puntuación estándar (\textit{Z-score})}, nivelando así las diferencias entre las escalas
 de los parámetros, consiguiendo igualar las importancias de cada uno en el cálculo del gradiente. De no aplicar esta transformación,
 el carrier (parámetro con valores más elevados (ej. 2000Hz)) se llevaría toda la atención de la red al calcular las pérdidas.
 
-Finalmente, el dataset se divide, mediante una semilla fija, en: 70\% para entrenamiento, 15\% para validación (datos que la red no verá en entrenamiento,
+Finalmente, el \textbf{dataset se divide}, mediante una semilla fija, en: 70\% para entrenamiento, 15\% para validación (datos que la red no verá en entrenamiento,
 se usa para asegurar que no hay overfitting) y se guarda otro 15\% como conjunto de pruebas (\textit{Test set}) que se usarán para las métricas finales de evaluación.
 
 \end{enumerate}
