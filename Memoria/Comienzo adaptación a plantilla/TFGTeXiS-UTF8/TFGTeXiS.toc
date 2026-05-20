@@ -25,9 +25,9 @@
 \contentsline {section}{\numberline {3.3}Preprocesamiento de Datos: normalizaciones y espectrogramas}{17}{section.46}%
 \contentsline {section}{\numberline {3.4}Diseño de la Arquitectura CNN}{18}{section.52}%
 \contentsline {section}{\numberline {3.5}Funciones de Pérdida}{20}{section.55}%
-\contentsline {subsection}{\numberline {3.5.1}El problema de la inyectividad}{20}{subsection.56}%
+\contentsline {subsection}{\numberline {3.5.1}El Problema de la Inyectividad}{20}{subsection.56}%
 \contentsline {subsection}{\numberline {3.5.2}Funciones}{21}{subsection.57}%
-\contentsline {subsection}{\numberline {3.5.3}Modelo de Pruebas simplificado}{22}{subsection.58}%
+\contentsline {subsection}{\numberline {3.5.3}Modelo de Pruebas Simplificado}{22}{subsection.58}%
 \contentsline {chapter}{\numberline {4}Implementación}{23}{chapter.59}%
 \contentsline {section}{\numberline {4.1}Herramientas y Librerías: \textit {stack} tecnológico}{23}{section.60}%
 \contentsline {section}{\numberline {4.2}\textit {Pipeline} de Entrenamiento}{23}{section.62}%
