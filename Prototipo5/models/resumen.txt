@@ -10,9 +10,11 @@
 +--------+----------+--------+------------+
 
 RESULTADOS:
-P1 - 
-P2 - 57 epochs - Val Loss: 0.006844
-P3 - 
-P4 - 25 epochs - Val loss: 0.6722766092483033
+P1 - 35 epochs - Val loss: 0.015953
+P2 - 57 epochs - Val Loss: 0.006844  
+
+P3 - 59 epochs - Val Loss: 0.3829658
+P4 - 25 epochs - Val loss: 0.6722766
+
 P5 - 
 P6 - 60 epochs - Val loss: 0.6974
