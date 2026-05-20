@@ -1,6 +1,18 @@
 \chapter{Metodología y Diseño del Sistema}
 \label{cap:MetodologiaDisenoSistema}
 
+\section{Descripción de los Parámetros del Sistema}
+
+Con el objetivo de lograr un acercamiento a las aplicaciónes reales del \textbf{Sound Matching} con sonidos ricos y con sonoridad, se decide que el sistema debe trabajar con los siguientes parámetros:
+
+\begin{itemize}
+    \item \textbf{Variables Fundamentales: } Estas son la base estructural de la síntesis FM y se componen de la frecuencia portadora (\textit{Carrier}), la relación entre frecuencia portadora y frecuencia moduladora (\textit{Ratio}) y el índice de modulación (\textit{Index}). Definen el timbre del sonido, pudiendo producir desde sonidos similares al de una flauta a ruidos inarmónicos.
+    
+    Por sí solos estos parámetros producen un sonido estático (no evoluciona en el tiempo), sonando poco orgánico. Para solucionar esto, se introducen las envolventes (descritas a continuación).
+    \item \textbf{Envolvente de Amplitud: } se han elegido las variables de \textit{attack}, \textit{sustain} y \textit{decay}, evitando el \textit{release} puesto que no aportaba demasiado al sonido y entrenar un modelo con un parámetro más implica un aumento en complejidad y tiempo significativo. Estos parámetros consiguen modelar el volumen en el tiempo, permitiendo diferenciar un sonido percusivo (con un \textit{attack} muy rápido y sin sustain) de otro largo y equilibrado (de ataque lento y \textit{sustain} duradero).
+    \item \textbf{Envolvente de Modulación: } Aquí se encuentran los parámetros de \textit{attack} y \textit{decay} aplicados sobre el \textbf{índice de modulación}. Añadiendo esta envolvente, se pueden conseguir sonidos cuyo timbre evolucione con el tiempo, siendo así más similares a instrumentos reales. Esto se debe a que al tocar un instrumento, al principio se pueden apreciar todos los armónicos perfectamente, y según el sonido decae, estos van desapareciendo con él.     
+\end{itemize}
+
 \section{Generación del Dataset}
 \label{sec:GeneracionDataset}
 El sistema genera un número (N) de muestras de audio con valores continuos aleatorios,
@@ -13,15 +25,14 @@ Se define una frecuencia de muestreo (\textit{sample rate}) de 44100 Hz
 y se incrementa el tiempo de duración de 1 a 2 segundos, con el fin de asegurar un margen temporal
 necesario para analizar y percibir las variaciones en el sonido provocadas por las envolventes. 
 Estas envolventes se generan sobre un vector de tiempo unificado. 
-\textcolor{red}{FALTA mencionar los 8 parámetros (figura) y explicarlos brevemente }
 \textcolor{red}{FALTA mostrar los GEN PARAMS (figura)}
 \textcolor{red}{FALTA mencionar pruebas inciales pyo}... 
 Sin embargo se usó numpy de forma que todo el pipeline se
 mantuviese unificado en un único programa python, además, debido a la naturaleza cambiante del programa, su simplicidad nos
 permitía modificar el algoritmo de generación rápidamente. Por ejemplo, al principio del proyecto, cuando teníamos solo 3
 parámetros (carrier, ratio, index), aplicabamos un triple bucle for que generaba los parámetros en base a un valor de 
-aumento. Sin embargo esta idea nos daba problemas de overfitting \textcolor{red}{FOOTNOTE EXPLICANDO} al generar una
-rejilla definida que el modelo acababa memorizando incluso aplicando jitter\textcolor{red}{FOOTNOTE EXPLICANDO} para solventarlo.
+aumento. Sin embargo esta idea da problemas de \textit{overfitting}\footnote{Suceso que ocurre en \textit{Machine Learning} cuando la red neuronal, en lugar de aprender patrones, "memoriza" los datos de entrenamiento.} al generar una
+rejilla definida que el modelo acababa memorizando, incluso aplicando \textit{jitter}\footnote{Técnica de inyección de ruido de forma aleatoria en los datos.} para solventarlo.
 
 Para la generación de envolventes...
 \textcolor{red}{FALTA explicar algoritmos de generación de envolventes }
@@ -33,12 +44,11 @@ Una vez generado el dataset, este debe ser preprocesado para que la red lo pueda
 Así pues, los audios \textit{.wav} se convierten a tensores nativos de \textit{PyTorch} cargados mediante \textit{torchaudio}.
 Después se le aplica una serie de transformaciones:
 
-\textcolor{red}{Hacer esto una lista}
-1. Se les aplica un suavizado de amplitud en los extremos (\textit{fade-in} y \textit{fade-out}) con el objetivo de 
+\begin{enumerate}
+    \item \textbf{Suavizado de amplitud: }Se les aplica un suavizado de amplitud en los extremos (\textit{fade-in} y \textit{fade-out}) con el objetivo de 
 evitar chasquidos o ruidos indeseados provocados por las limitaciones de la FFT. 
-2. Después, una normalización de pico (peak normalization), para asegurar consistencia de intensidad de volumenes entre muestras.
-3. Luego se aplican las dos transformaciones principales:
-Se transforma el audio a espectrograma usando STFT y después se pasa de amplitud lineal a logarítmica (dB), en ambos casos usando Librosa. 
+\item \textbf{Normalización de pico (\textit{Peak Normalization}): } Mediante una normalización de pico (\textit{Peak Normalization}), se asegura la consistencia de la intensidad de volumenes entre muestras.
+\item \textbf{Transformaciones principales: }Se transforma el audio a espectrograma usando STFT y después se pasa de amplitud lineal a logarítmica (dB), en ambos casos usando Librosa. 
 
 Para la representación acustica, el programa permite elegir entre dos representaciones del espectrograma, con el fin de llevar a cabo diferentes pruebas de experimentación.
 La diferencia reside en la escala del eje de frecuencias (eje Y en el espectrograma) Por un lado, se encuentran 
@@ -48,7 +58,7 @@ $1024 / 2 + 1 = 513$ intervalos o \textit{bins} de frecuencias}de frecuencia. Y 
 se da lugar a elegir un formato logarítmico-perceptual (\textbf{Mel} con 128 bandas), el cual tiene un mayor potencial para
 la representación del sonido de manera similar a la percibida por el humano.
 
-4. Posteriormente, se extrae la magnitud de la señal, se convierte a decibelios (dB) y se guarda como tensores (formato \textit{.pt}). Además,
+\item \textbf{Extracción y guardado: }Posteriormente, se extrae la magnitud de la señal, se convierte a decibelios (dB) y se guarda como tensores (formato \textit{.pt}). Además,
 se genera un archivo (spec\_mode.txt) que indica el tipo de espectrograma utilizado.
 
 Para terminar con el tratamiento del dataset, se estructuran los tensores en una clase Dataset de PyTorch
@@ -60,6 +70,8 @@ el carrier (parámetro con valores más elevados (ej. 2000Hz)) se llevaría toda
 
 Finalmente, el dataset se divide, mediante una semilla fija, en: 70\% para entrenamiento, 15\% para validación (datos que la red no verá en entrenamiento,
 se usa para asegurar que no hay overfitting) y se guarda otro 15\% como conjunto de pruebas (\textit{Test set}) que se usarán para las métricas finales de evaluación.
+
+\end{enumerate}
 
 \section{Diseño de la Arquitectura CNN}
 \label{sec:ArquitecturaCNN}
