@@ -40,19 +40,19 @@ En la Tabla~\ref{tab:stack_tecnologico} se detallan las bibliotecas principales 
 Se adjunta la Figura~\ref{fig:workflow_v5.2} con el objetivo de facilitar la comprensión del modelo 
 del Prototipo 5. El trabajo queda dividido en 4 fases: Generación del dataset, Entrenamiento, Evaluación e Inferencia.
 
-\begin{figure}[hbt!] 
+\begin{figure}[H] 
     \centering
     \includegraphics[width=1\textwidth]{Imagenes/Bitmap/diagrama}
     \caption{Flujo de trabajo completo del programa.}
     \label{fig:workflow_v5.2}
 \end{figure}
 
-Como se muestra en dicho diagrama, en primer lugar se encuentra la generación y tratamiento del dataset. La generación se lleva acabo de la manera especificada en el punto \ref{sec:GeneracionDataset} y se preprocesa (\ref{sec:Preprocesamiento}). Tras esto, el dataset ya está preparado y dividido de tal forma que se tiene un conjunto de entrenamiento que se utilizará en la siguiente fase. 
+Como se muestra en dicho diagrama, en primer lugar se encuentra la generación (véase \ref{sec:GeneracionDataset}) y tratamiento del dataset (véase (\ref{sec:Preprocesamiento})). Tras esto, el dataset ya está preparado y dividido de tal forma que se tiene un conjunto de entrenamiento que se utilizará en la siguiente fase. 
 
 La fase de entrenamiento comienza con la elección de la arquitectura y función de pérdidas (descritas en \ref{sec:ArquitecturaCNN} y \ref{sec:FuncionPerdida} respectivamente). Y, en la etapa final, se encuentra el algoritmo de retropropagación (\textit{Backpropagation}), mediante el cual se actualizan
 los pesos para así minimizar el error en la red, calculando los gradientes del error con respecto a cada nodo. 
-Para la actualización de los pesos se emplea el optimizador \textbf{Adam} (\textit{Adaptive Moment Estimation}). \textcolor{red}{CITA!}. Este se elige frente al descenso de gradiente común (SGD) debido al cálculo que hace 
-de las tasas de aprendizaje adatativas e independientes para cada parámetro. A parte, se guardan los pesos de la época que ha conseguido 
+Para la actualización de los pesos se emplea el optimizador \textbf{Adam} (\textit{Adaptive Moment Estimation} \citep{kingma2015adam}). Este se elige frente al descenso de gradiente común (SGD) debido al cálculo que hace 
+de las tasas de aprendizaje adatativas e independientes para cada parámetro. Aparte, se guardan los pesos de la época que ha conseguido 
 el mínimo histórico con respecto al error sobre el conjunto de validación. 
 
 Estos valores se almacenan en un archivo de punto de control (checkpoint.pth) junto

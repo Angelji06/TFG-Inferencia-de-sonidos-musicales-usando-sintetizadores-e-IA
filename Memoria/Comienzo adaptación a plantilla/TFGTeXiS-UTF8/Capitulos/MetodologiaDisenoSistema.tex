@@ -6,20 +6,20 @@
 Con el objetivo de lograr un acercamiento a las aplicaciónes reales del \textbf{\textit{Sound Matching}} pero sin sacrificar simplicidad, se valoraron cuáles debían ser los parámetros fundamentales. Finalmente se decidió que el sistema trabajaría con los siguientes parámetros:
 
 \begin{itemize}
-    \item \textbf{Variables Fundamentales: } Estas son la base estructural de la síntesis FM y se componen de la frecuencia portadora (\textbf{\textit{Carrier}}), la relación entre frecuencia portadora y frecuencia moduladora (\textbf{\textit{Ratio}}) y el índice de modulación (\textbf{\textit{Index}}). Definen el timbre del sonido, pudiendo producir desde sonidos similares al de una flauta a ruidos inarmónicos. 
+    \item \textbf{Variables Fundamentales: } Estas son la base estructural de la síntesis FM y se componen de la frecuencia portadora (\textit{carrier}), la relación entre frecuencia portadora y frecuencia moduladora (\textit{ratio}) y el índice de modulación (\textit{index}). Definen el timbre del sonido, pudiendo producir desde sonidos similares al de una flauta a ruidos inarmónicos. 
     Se decidió usar ratio, en vez de frecuencia moduladora, para mantener una relación armónica constante, conservando así el mismo timbre independientemente de la nota reproducida. Es decir, para que en caso de aumentar o reducir la frecuencia portadora, el sonido siga sonando igual pero en una nota diferente.
     
     Por sí solos estos parámetros producen un sonido estático (no evoluciona en el tiempo), sonando poco orgánico. Para solucionar esto, se introducen las envolventes (descritas a continuación).
-    \item \textbf{Envolvente de Amplitud: } se han elegido las variables de \textbf{\textit{attack}}, \textbf{\textit{sustain}} y \textbf{\textit{decay}}, evitando el \textit{release} puesto que no aportaba demasiado al sonido y entrenar un modelo con un parámetro más implica un aumento en complejidad y tiempo significativo. Estos parámetros consiguen modelar el volumen en el tiempo, permitiendo diferenciar un sonido percusivo (con un \textit{attack} muy rápido y sin sustain) de otro largo y equilibrado (de ataque lento y \textit{sustain} duradero).
+    \item \textbf{Envolvente de Amplitud: } se han elegido las variables de \textbf{\textit{attack}}, \textbf{\textit{sustain}} y \textbf{\textit{decay}}, evitando el \textit{release} puesto que no aportaba demasiado al timbre y entrenar un modelo con un parámetro más implica un aumento en complejidad y tiempo significativo. Estos parámetros consiguen modelar el volumen en el tiempo, permitiendo diferenciar un sonido percusivo (con un \textit{attack} muy rápido y sin sustain) de otro largo y equilibrado (de ataque lento y \textit{sustain} duradero).
     \item \textbf{Envolvente de Modulación: } Aquí se encuentran los parámetros de \textbf{\textit{attack}} y \textbf{\textit{decay}} aplicados sobre el \textbf{índice de modulación}. Añadiendo esta envolvente, se pueden conseguir sonidos cuyo timbre evolucione con el tiempo, siendo así más similares a instrumentos reales. Esto se debe a que al tocar un instrumento, al principio se pueden apreciar todos los armónicos perfectamente, y según el sonido decae, estos van desapareciendo con él.     
 \end{itemize}
 
 \section{Generación del Dataset}
 \label{sec:GeneracionDataset}
-El sistema genera un número (N) de muestras de audio con \textbf{valores continuos aleatorios},
-en base a unos rangos de valores específicos para cada parámetro (ver \ref{tab:gen_params}). Para cada uno de ellos 
-se utiliza una distribución uniforme, a excepción de la frecuencia portadora (\textit{Carrier}) que 
-se realiza en escala logarítmica. De esta forma se pretende simular la percepción humana del sonido. 
+El sistema genera un número (N) de muestras de audio con valores aleatorios,
+dentro de unos rangos de valores específicos para cada parámetro (ver \ref{tab:gen_params}). Para cada uno de ellos 
+se utiliza una distribución uniforme, a excepción de la frecuencia portadora (\textit{carrier}) que 
+se realiza en escala logarítmica, que es similar a la percepción humana del sonido. 
 
 Se sintetizan los N archivos \textit{.wav} mediante la librería \textbf{NumPy} y la formulación matemática de la FM descrita en la sección \ref{sec:FormulacionFM}. 
 Se define una frecuencia de muestreo de 44100 Hz
@@ -46,15 +46,14 @@ suficiente para analizar y percibir las variaciones en el sonido provocadas por 
     \caption{Rangos de los parámetros (\texttt{GEN\_PARAMS}) utilizados para la generación aleatoria del \textit{dataset}.}
     \label{tab:gen_params}
 \end{table}
-Las pruebas de generación iniciales se llevaron a cabo mediante un barrido de parámetros en un sintetizador FM de \textbf{pyo}. 
-Sin embargo, este método se sustituyó por \textbf{Numpy} de forma que todo el pipeline se
-mantuviese unificado en un único programa python. Además, debido a la naturaleza cambiante del programa, su simplicidad nos
+El modelo definitivo de generación se lleva a cabo mediante \textit{NumPy}, de forma que todo el pipeline se
+mantiene unificado en un único programa python. Además, debido a la naturaleza cambiante del programa, su simplicidad nos
 permite modificar el algoritmo de generación rápidamente. Por ejemplo, al principio del proyecto, cuando teníamos solo 3
 parámetros (carrier, ratio, index), aplicabamos un triple bucle for que generaba los parámetros en base a un valor de 
 aumento. Sin embargo esta idea da problemas de \textit{overfitting}\footnote{Suceso que ocurre en \textit{Machine Learning} cuando la red neuronal, en lugar de aprender patrones, "memoriza" los datos de entrenamiento.} al generar una
 rejilla definida que el modelo acababa memorizando, incluso aplicando \textit{jitter}\footnote{Técnica de inyección de ruido de forma aleatoria en los datos.} para solventarlo. Es por esto que se optó por la generación aleatoria, que aunque no es tan ordenada, es más efectiva para el aprendizaje de la red.
 
-La generación de envolventes se lleva a cabo de manera puramente matemática con \textbf{NumPy} sobre un vector de tiempo ($t$). Se utiliza el mismo algoritmo geométrico para ambas envolventes, indicando un \textit{sustain} de 0.0 en la de modulación porque carece de él. 
+La generación de envolventes se lleva a cabo de manera puramente matemática con \textit{NumPy} sobre un vector de tiempo ($t$). Se utiliza el mismo algoritmo geométrico para ambas envolventes, indicando un \textit{sustain} de 0.0 en la de modulación porque carece de él. 
 
 Para el \textbf{ataque}, en el caso de la amplitud, se sube progresivamente el volumen de 0.0 a 1.0, y en el caso de la modulación se sube de 0.0 a 1.0 el valor que multiplica al índice de modulación. Ambos en el tiempo que va desde el segundo 0, al marcado por la variable \textit{attack}, con la fórmula $t / \textit{attack}$. 
 

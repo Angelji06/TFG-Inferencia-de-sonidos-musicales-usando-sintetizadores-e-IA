@@ -33,7 +33,7 @@
 \contentsline {section}{\numberline {4.2}\textit {Pipeline} de Entrenamiento}{23}{section.62}%
 \contentsline {section}{\numberline {4.3}Inferencia de parámetros}{25}{section.64}%
 \contentsline {section}{\numberline {4.4}Interfaz Gráfica de la aplicación}{26}{section.65}%
-\contentsline {section}{\numberline {4.5}Estructura del Código}{26}{section.66}%
+\contentsline {section}{\numberline {4.5}Estructura del Código}{29}{section.70}%
 \contentsline {chapter}{\numberline {5}Resultados y Evaluación}{31}{chapter.71}%
 \contentsline {section}{\numberline {5.1}Definición de los Pipelines Experimentales}{32}{section.72}%
 \contentsline {section}{\numberline {5.2}Características del \textit {Hardware} empleado en el entrenamiento de los modelos}{33}{section.74}%
