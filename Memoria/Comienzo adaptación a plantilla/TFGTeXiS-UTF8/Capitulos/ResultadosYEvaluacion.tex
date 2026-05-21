@@ -60,7 +60,7 @@ Para la contextualización de los datos de tiempos requeridos en el entrenamient
     \item \textbf{Ordenador Personal David: }NVIDIA GeForce RTX 3050 
 \end{itemize}
 
-En cada apartado se especifica la máquina utilizada para su entrenamiento.
+%En cada apartado se especifica la máquina utilizada para su entrenamiento.
 
 %(TODO) Insertar tabla con las características
 
@@ -107,6 +107,29 @@ Así pues, se llega a la conclusión que hay ciertos audios que la red gestiona 
     \caption{Gráfico obtenido en la evaluación de P1 mediante \textit{benchmark}.}
     \label{fig:benchmarkP1}
 \end{figure}
+
+Uno de los audios que ha obtenido mejores resultados en las métricas ha sido \textit{muy\_agudo}, mientras que \textit{indice\_maximo} ha sido el peor valorado. Analizando estos extremos se espera encontrar las razones detrás de la dispersión de los resultados sobre el conjunto de prueba.
+
+El audio \textit{muy\_agudo}, se caracteriza por tener muy pocos armónicos y que estos estén bastante separados entre sí y en frecuencias muy altas.
+Al analizar su espectrograma original frente al de la predicción del modelo (figura: \ref{fig:esp_muy_agudo_P1}), se aprecia que la red ha conseguido recrear los armónicos, aunque ha metido algunos de más. La forma de la envolvente también la ha gestionado bien, sin embargo no la ha conseguido colocar en el tiempo con demasiada exactitud. Al oído se puede apreciar la similitud entre original y predicción, siendo la segunda más estridente y con menos sonoridad. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/esp_muy_agudo_P1}
+    \caption{Espectrograma resultado de la predicción de P1 del audio de Benchmark: \textit{muy\_agudo}.}
+    \label{fig:esp_muy_agudo_P1}
+\end{figure}
+
+En cuanto a \textit{indice\_maximo}, se trata de un audio con un número de armónicos más elevado que el anterior. Además, tiene armónicos en frecuencias bajas con muy poca energía. Si observamos lo que ha hecho la red (\ref{fig:esp_indice_maximo_P1}), se ve claramente que sigue identificando más armónicos de los que debería y a los que están en frecuencias bajas les da una cantidad de energía desproporcionada. A pesar de esto, se ha desenvuelto positivamente con la envolvente de amplitud.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/esp_indice_maximo_P1}
+    \caption{Espectrograma resultado de la predicción de P1 del audio de Benchmark: \textit{indice\_maximo}.}
+    \label{fig:esp_indice_maximo_P1}
+\end{figure}
+
+Con este análisis, se puede concluir que los audios más complejos (con más armónicos y un timbre más elaborado), el modelo los predice peor que los más simples, justificando así su elevada dispersión. 
 
 \subsection{P2: CNNRegressorSimple: SmoothL1, Mel (log-perceptual)}
 El modelo con estructura de \textit{CNNRegressorSimple}, con función de pérdida \textit{SmoothL1} (explicada en el apartado \ref{sec:FuncionPerdida}) y espectrogramas Mel ha necesitado 57 minutos y 57 épocas para entrenarse, acabando con un error de validación 0.006844. Este resultado indica una desviación en la predicción de parámetros mínima. A pesar de esto, se da la misma situación que en el modelo P1, ya que se sigue sin tener en cuenta la inyectividad nula de la síntesis FM.  
@@ -168,13 +191,46 @@ En contraposición, se hayan los resultados sobre el audio \textit{pad\_lento}, 
 \end{itemize}
 
 \subsection{P3: CNNRegressor5: HybridLoss, STFT lineal}
+El número de épocas de entrenamiento requeridas por el modelo P3 ha sido de 59, después del cual ha sobrepasado el valor de paciencia acabando así su entrenamiento. El error de validación final ha sido, aproximadamente, de 0.383, un valor que parece reducido. Como la función de pérdida híbrida da prioridad a la diferencia media (L1) entre el espectrograma original y el reconstruido (con un peso de 1.0), significa que se está calculando una diferencia media de menos de 0.383 decibelios por pixel, confirmando una gran similitud entre los espectrogramas.
 
 \subsubsection{Evaluación Mediante \textit{Test Set}}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/test_set_p3}
+    \caption{Graficas que muestran los resultados de evaluar el conjunto de tests sobre el modelo P3 con las métricas Mel L1 y MCD.}
+    \label{fig:test_set_p3}
+\end{figure}
+
+A diferencia de otras arquitecturas, P3 no parece tener una dispersión tan elevada, estando la mayoría de los resultados de ambas métricas al rededor de la media.
+
+Aun así combiene identificar qué audios son los que gestiona mejor y peor. Para ello se recurre al \textit{benchmark}.
+
 \subsubsection{Evaluación Mediante \textit{Benchmark} Diverso}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/benchmark_P3}
+    \caption{Gráfico obtenido en la evaluación de P3 mediante \textit{benchmark}.}
+    \label{fig:benchmarkP3}
+\end{figure}
+
+Como se puede apreciar en la gráfica, la mayoría de audios han obtenido puntuaciones similares con las dos métricas. Hay dos casos que están bastante por debajo de la media y son los del sonido \textit{percusivo} y y \textit{muy\_agudo}, que, como hemos podido observar en las pruebas sobre otros modelos, son bastante simples y cortos y las diferentes arquitecturas los gestionan bien. En cuanto al peor resultado, destaca el de \textit{pad\_lento}, superando con creces la media.
+
+Este último destaca por ser largo, por eso es normal que acumule más error que otros, lo que le convierte también en un buen ejemplo para visualizar como la red gestiona la predicción. 
+
+El la figura \ref{fig:esp_pad_lento_P3}, se puede observar que el modelo ha fallado totalmente en la predicción de los armónicos, poniendo de más y colocando mal el resto. Esto nos muestra que la red no está siendo precisa, a excepción de las envolventes. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/esp_pad_lento_P3}
+    \caption{Espectrograma resultado de la predicción del audio de Benchmark: \textit{pad\_lento}.}
+    \label{fig:esp_pad_lento_P3}
+\end{figure}
+
+
 \subsection{P4: CNNRegressor5: HybridLoss, Mel (log-perceptual)}
-La red neuronal con estructura \textit{CNNRegressor5}, función de pérdida híbrida (\textit{HybridLoss}) y espectrogramas Mel, ha requerido de un total de 27 épocas para entrenarse, consiguiendo reducir el error de validación a 0.672. Este valor de error es indicativo de un entrenamiento exitoso. Como la función de pérdida híbrida da prioridad a la diferencia media (L1) entre el espectrograma original y el reconstruido (con un peso de 1.0), significa que se está calculando una diferencia media de menos de 0.672 decibelios por pixel, confirmando una gran similitud entre los espectrogramas. Al tratarse de espectrogramas de Mel, que consiguen una representación similar a la forma de percibir los audios de los humanos, se puede esperar que sean muy similares acústicamente. 
+La red neuronal con estructura \textit{CNNRegressor5}, función de pérdida híbrida (\textit{HybridLoss}) y espectrogramas Mel, ha requerido de un total de 27 épocas para entrenarse, consiguiendo reducir el error de validación a 0.672. Este valor no es tan reducido como el del modelo anterior, pero indica una diferencia media de menos de 0.672 decibelios por pixel, siendo notablemente bajo y hay que tener en cuenta que, en este caso, se hace uso de espectrogramas de Mel, que consiguen una representación similar a la forma de percibir los audios de los humanos, por lo que se puede esperar que sean muy similares acústicamente. 
 
 \subsubsection{Evaluación Mediante \textit{Test Set}}
 
@@ -222,26 +278,105 @@ Por esta última razón, tiene sentido analizar también el siguiente mejor audi
 El peor resultado lo ha obtenido \textit{bajo\_rico}, lo que es coherente con lo mencionado con anterioridad, ya que este audio destaca por sus envolventes muy definidas.  
 
 
-
-
-
 \subsection{P5: CNNRegressor5: MultiScaleSpectralLoss, STFT lineal}
+El número de épocas que ha requerido la red para su entrenamiento es de 35, con un error de validación final de 0.4297. Este error viene de la suma $L_{total} = L_{lin} + \alpha \cdot L_{log} + 0.05 \cdot L_{params}$, lo que indica que apenas se penaliza el fallo en los parámetros (peso de 0.05) y que el grueso del error viene del error en el espectrograma (tanto el linal como el logarítmico). De esta forma la red le da prioridad absoluta a la similitud visual y acústica del original y la predicción.
 
 \subsubsection{Evaluación Mediante \textit{Test Set}} 
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/test_set_p5}
+    \caption{Graficas que muestran los resultados de evaluar el conjunto de tests sobre el modelo P5 con las métricas Mel L1 y MCD.}
+    \label{fig:test_set_p5}
+\end{figure}
+
+La gráfica \ref{fig:test_set_p5} muestra una dispersión menor que otros modelos, conteniendo la mayor parte de los datos cercanos a la media. Esto nos indica que da unos resultados, hasta cierto punto, similares independientemente del audio, lo cual es positivo. 
+
+Se procede a comprobar esta hipótisis sobre los audios del \textit{benchmark}.
+
 \subsubsection{Evaluación Mediante \textit{Benchmark} Diverso}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/benchmark_P5}
+    \caption{Gráfico obtenido en la evaluación de P5 mediante \textit{benchmark}.}
+    \label{fig:bench_p5}
+\end{figure}
+
+Las gráficas de \ref{fig:bench_p5} muestran una distribución considerablemente uniforme para ambas métricas. Los resultados que más destacan serían los de \textit{bajo\_limpio} y \textit{agudo\_ruidoso}, teniendo el primero un resultado desfavorable y el segundo favorable.
+
+La predicción generada por el modelo para \textit{bajo\_limpio} es auditivamente muy distante, siendo el sonido original grave y la predicción aguda. Además, si nos fijamos en los espectrogramas (\ref{fig:bajo_limpio_P5}), se aprecia perfectamente que los armónicos definidos en la predicción son mucho más altos que los del original. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/esp_bajo_limpio_P5}
+    \caption{Espectrograma resultado de la predicción del audio de Benchmark: \textit{bajo\_limpio}.}
+    \label{fig:bajo_limpio_P5}
+\end{figure}
+
+Para entender que es lo que hace mal el modelo, vamos a analizar también lo que hace mejor. 
+
+Al intentar reproducir la predicción de \textit{agudo\_ruidoso}, no suena nada y en el espectrograma tampoco aparece nada, está vacío. La mejor puntación que le está dando a la red, se la está dando a un audio sin sonido. Esto se debe a que este audio en concreto estaba compuesto en su mayor medida por silencio, de ahí la similaridad que ha sacado la red entre predicción y original. 
+
+Para asegurarnos de que la red no está sacando datos poco válidos, vamos a analizar el siguiente audio que mejor procesa: \textit{medio\_armonico}. 
+
+Tanto el sonido como su espectrograma \ref{fig:medio_armonico_P5} difieren mucho del original.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/esp_bajo_limpio_P5}
+    \caption{Espectrograma resultado de la predicción del audio de Benchmark: \textit{medio\_armonico}.}
+    \label{fig:medio_armonico_P5}
+\end{figure}
+
+A partir de todos los datos mencionados, se puede llegar a la conclusión de que P5 no es un modelo funcional. 
+
+
 \subsection{P6: CNNRegressor5: MultiScaleSpectralLoss, Mel (log-perceptual)}
+En último lugar, encontramos el modelo P6, cuyo entrenamiento ha sido de 60 épocas, con un error de validación final de 0.6974 tras alcanzar el valor de paciencia. A pesar de parecer un resultado peor de P5, no se puede comparar directamente debido que P6 utiliza espectrogramas de tipo Mel, que (como ya se ha explicado anteriormente), gestionan la información del sonido de manera similar al oído humano. 
 
 \subsubsection{Evaluación Mediante \textit{Test Set}}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/test_set_p6}
+    \caption{Graficas que muestran los resultados de evaluar el conjunto de tests sobre el modelo P6 con las métricas Mel L1 y MCD.}
+    \label{fig:test_set_p6}
+\end{figure}
+
+En este caso, nos volvemos a encontrar con un gráfico (\ref{fig:test_set_p6}) de que muestra gran dispersión, con una gran cantidad de valores alejados de la media.
+
+
 \subsubsection{Evaluación Mediante \textit{Benchmark} Diverso}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/benchmark_P6}
+    \caption{Gráfico obtenido en la evaluación de P6 mediante \textit{benchmark}.}
+    \label{fig:bench_p6}
+\end{figure}
 
+El diagrama \ref{fig:bench_p6} indica unos valores en su mayoría homogéneos sobre el \textit{benchmark}, destacando los audios de \textit{muy\_agudo} y \textit{bajo\_rico}. 
+
+En el primer caso, se da un error en las dos métricas muy bajo. Al escuchar el original y su predicción, se aprecia un timbre verdaderamente similar, aunque con una diferencia en el \textit{pitch} significativa. Al comparar sus espectrogramas (\ref{fig:muy_agudo_p6}) observamos perfectamente de donde viene la diferencia en el tono, la predicción aplica armónicos inexistentes en el original. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/muy_agudo_P6}
+    \caption{Espectrograma resultado de la predicción del audio de Benchmark: \textit{muy\_agudo}.}
+    \label{fig:muy_agudo_p6}
+\end{figure}
+
+En cuanto a \textit{bajo\_rico}, la diferencia de timbre es mayor y se puede observar que la red no ha, sabido a partir de cierto momento, mantener la energía original (\ref{fig:bajo_rico_p6}).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/bajo_rico_P6}
+    \caption{Espectrograma resultado de la predicción del audio de Benchmark: \textit{bajo\_rico}.}
+    \label{fig:bajo_rico_p6}
+\end{figure}
 
 \section{Comparación de los Resultados Obtenidos}
 
-\begin{table}
+\begin{table}[H]
     \centering
     \resizebox{\textwidth}{!}{ 
     \renewcommand{\arraystretch}{1.2}
