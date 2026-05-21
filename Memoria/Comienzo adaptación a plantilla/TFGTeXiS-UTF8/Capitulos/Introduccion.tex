@@ -40,16 +40,14 @@ Una vez que el audio se representa como una imagen bidimensional, las \textbf{Re
 \label{sec:objetivos}
 
 
-El objetivo principal del proyecto es desarrollar un sistema basado en \textbf{Redes Neuronales Convolucionales (CNNs)} capaz de estimar automáticamente los parámetros de un sintetizador de \textbf{modulación de frecuencia (FM)} a partir de una muestra de audio, con el fin de replicar su timbre (\textit{sound matching}).  
+El objetivo principal del proyecto es desarrollar un sistema basado en \textbf{Redes Neuronales Convolucionales (CNNs)} capaz de estimar automáticamente los parámetros de un sintetizador de \textbf{modulación de frecuencia (FM)} a partir de una muestra de audio, con el fin de replicar su timbre.  
 
 Como objetivos específicos, se tienen los siguientes:
 
 \begin{itemize}
-    \item \textbf{Comprensión de la síntesis FM:} Estudiar y comprender la arquitectura paramétrica de la síntesis FM, desde su versión más simple hasta una versión más compleja que involucre envolventes de amplitud y modulación.
-    \item \textbf{Revisión bibliográfica:} Investigar y leer la literatura relacionada con el uso de la \textbf{Inteligencia Artificial aplicada al audio} para tomar las decisiones de diseño fundamentales del proyecto.
-    \item \textbf{Generación del dataset:} Diseñar e implementar un motor de síntesis capaz de generar un \textit{dataset} masivo de audios sintéticos (\texttt{.wav}) y sus correspondientes etiquetas (parámetros), así como su conversión a tensores (\texttt{.pt}).
+    \item \textbf{Generación del dataset:} Diseñar e implementar un motor de síntesis capaz de generar un \textit{dataset} masivo de audios sintéticos y sus correspondientes etiquetas (parámetros), así como su conversión a tensores.
     \item \textbf{Procesamiento de señal:} Establecer un \textit{pipeline} de procesamiento de señales para transformar el audio crudo en representaciones visuales (\textbf{espectrogramas}) aptas para la CNN, aplicando las transformaciones y normalizaciones del dato que maximicen su rendimiento.
-    \item \textbf{Desarrollo del modelo:} Diseñar, entrenar y optimizar varias arquitecturas de Redes Neuronales Convolucionales y funciones de pérdida en Python usando el framework \textbf{PyTorch}.
+    \item \textbf{Desarrollo del modelo:} Diseñar, entrenar y optimizar varias arquitecturas de Redes Neuronales Convolucionales y funciones de pérdida en Python.
     \item \textbf{Evaluación psicoacústica:} Evaluar el rendimiento del modelo mediante métricas de error sobre parámetros y medidas de \textbf{similitud tímbrica} que simulen la percepción del oído humano.
     \item \textbf{Desarrollo de la interfaz:} Desarrollar un sistema con una interfaz funcional que permita acceder a todas las utilidades del proyecto de manera fácil e intuitiva.
     \item \textbf{Estudio de modelos:} Se estudiará y comparará el uso de distintas representaciones del espectrograma, arquitecturas de red y funciones de pérdida.
