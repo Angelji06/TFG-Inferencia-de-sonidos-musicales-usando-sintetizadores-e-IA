@@ -1,11 +1,9 @@
 \chapter{Implementación}
 \label{cap:Implementacion}
 
-
-
 \section{Herramientas y Librerías: \textit{stack} tecnológico}
 
-La figura XX muestra las librerias.... \textcolor{red}{redactar y ver si falta alguna}
+En la Tabla~\ref{tab:stack_tecnologico} se detallan las bibliotecas principales utilizadas en el desarrollo e implementación de este proyecto. Para cada una de ellas se especifica la versión exacta empleada, con el fin de garantizar la reproducibilidad del entorno, así como el propósito específico y las funcionalidades que aportan al sistema. En nuestro github se ofrece, además, dos instaladores de entorno virtual (Linux/Windows) para poder ejecutarlo en cualquier equipo.
 
 \begin{table}[hbt!]
 \centering
@@ -18,7 +16,7 @@ La figura XX muestra las librerias.... \textcolor{red}{redactar y ver si falta a
 \hline
 \texttt{torchaudio} & 2.5.1 & Carga de WAV, transformadas Spectrogram, MelSpectrogram, AmplitudeToDB. \\
 \hline
-\texttt{librosa} & 0.11.0 & Carga de audio en inferencia, visualización de espectrogramas con eje logarítmico (\texttt{specshow}). \\
+\texttt{librosa} & 0.11.0 & Carga de audio en inferencia, visualización de espectrogramas con eje logarítmico. \\
 \hline
 \texttt{numpy} & 2.2.6 & Síntesis FM, generación de envolventes, operaciones con arrays en evaluación y desnormalización. \\
 \hline
@@ -28,11 +26,9 @@ La figura XX muestra las librerias.... \textcolor{red}{redactar y ver si falta a
 \hline
 \texttt{matplotlib} & 3.10.8 & Gráficas de evaluación y ventana de comparación de espectrogramas. \\
 \hline
-\texttt{scikit-learn} & 1.7.2 & Dependencia transitiva de librosa (no usado directamente en el código principal). \\
-\hline
 \texttt{tkinter} & 8.6.13 & GUI completa: páginas de inicio, entrenamiento y test; sintetizador interactivo. \\
 \hline
-\texttt{ffmpeg} & $\ge$ 8.0 & Backend de torchaudio para decodificación de audio; instalado vía conda para garantizar compatibilidad en Windows. \\
+\texttt{ffmpeg} & $\ge$ 8.0 & Backend de torchaudio para decodificación de audio. \\
 \hline
 \end{tabular}
 \caption{Bibliotecas principales utilizadas en el proyecto.}
@@ -42,111 +38,107 @@ La figura XX muestra las librerias.... \textcolor{red}{redactar y ver si falta a
 \section{\textit{Pipeline} de Entrenamiento}
 
 Se adjunta la Figura~\ref{fig:workflow_v5.2} con el objetivo de facilitar la comprensión del modelo 
-del Prototipo 5. El trabajo queda dividido en 5 fases: generación de audio, conversión a tensores, 
-preparación del dataset, entrenamiento (con múltiples opciones de arquitectura) e inferencia paramétrica.
-\begin{figure}[H] 
+del Prototipo 5. El trabajo queda dividido en 4 fases: Generación del dataset, Entrenamiento, Evaluación e Inferencia.
+
+\begin{figure}[hbt!] 
     \centering
     \includegraphics[width=1\textwidth]{Imagenes/Bitmap/diagrama}
-    \caption{Flujo de trabajo del Modelo: desde la síntesis matemática hasta la inferencia y evaluación del modelo.}
+    \caption{Flujo de trabajo completo del programa.}
     \label{fig:workflow_v5.2}
 \end{figure}
 
-Como se muestra en el diagrama \ref{fig:workflow_v5.2}, en primer lugar se encuentra la generación y tratamiento del dataset. La generación se lleva acabo de la manera especificada en el punto \ref{sec:GeneracionDataset} y se preprocesa (\ref{sec:Preprocesamiento}). Tras esto, el dataset ya está preparado y dividido de tal forma que se tiene un conjunto de entrenamiento que se utilizará en la siguiente fase. 
+Como se muestra en dicho diagrama, en primer lugar se encuentra la generación y tratamiento del dataset. La generación se lleva acabo de la manera especificada en el punto \ref{sec:GeneracionDataset} y se preprocesa (\ref{sec:Preprocesamiento}). Tras esto, el dataset ya está preparado y dividido de tal forma que se tiene un conjunto de entrenamiento que se utilizará en la siguiente fase. 
 
-La fase de entrenamiento (fase 4 del diagrama \ref{fig:workflow_v5.2}) comienza con la elección de la arquitectura y función de pérdidas (descritas en \ref{sec:ArquitecturaCNN} y \ref{sec:FuncionPerdida} respectivamente). Y, en la etapa final, se encuentra el algoritmo de retropropagación (\textit{Backpropagation}), mediante el cual se actualizan
+La fase de entrenamiento comienza con la elección de la arquitectura y función de pérdidas (descritas en \ref{sec:ArquitecturaCNN} y \ref{sec:FuncionPerdida} respectivamente). Y, en la etapa final, se encuentra el algoritmo de retropropagación (\textit{Backpropagation}), mediante el cual se actualizan
 los pesos para así minimizar el error en la red, calculando los gradientes del error con respecto a cada nodo. 
-Para la actualización de los pesos se emplea el optimizador \textbf{Adam} (\textit{Adaptive Moment Estimation}). Este se elige frente al descenso de gradiente común (SGD) debido al cálculo que hace 
+Para la actualización de los pesos se emplea el optimizador \textbf{Adam} (\textit{Adaptive Moment Estimation}). \textcolor{red}{CITA!}. Este se elige frente al descenso de gradiente común (SGD) debido al cálculo que hace 
 de las tasas de aprendizaje adatativas e independientes para cada parámetro. A parte, se guardan los pesos de la época que ha conseguido 
-el mínimo histórico con respecto al error sobre el conjunto de validación. Estos valores se almacenan en un archivo de punto de control (checkpoint.pth) junto
+el mínimo histórico con respecto al error sobre el conjunto de validación. 
+
+Estos valores se almacenan en un archivo de punto de control (checkpoint.pth) junto
 con el resto de información de contexto necesaria: 
-
 \begin{itemize}
-        \item \textbf{Parámetros de Desnormalización: } Contiene las medias y desviaciones estándar obtenidas en la Fase 3 del diagrama
-        sobre los parámetros. Estas son necesarias para poder revertir el Z-score en las futuras predicciones. 
-          
-        \item \textbf{Contexto de Arquitectura: } Son las etiquetas que describen la topología (\textit{arch}: simple o full)
-        y el tipo de espectrogramas (\textit{spec\_mode}: stft o mel) que se han utilizado para el modelo.
+    \item \textbf{Parámetros de Desnormalización: } Contiene las medias y desviaciones estándar obtenidas 
+    sobre los parámetros. Estas son necesarias para poder revertir el Z-score en las futuras predicciones. 
         
-        \item \textbf{Aislamiento de Datos: } Contiene los índices del conjunto de prueba (\textit{test\_indices}), necesario para la evaluación.
-        
-
+    \item \textbf{Contexto de Arquitectura: } Son las etiquetas que describen la topología (\texttt{arch}: simple o full)
+    y el tipo de espectrogramas (\texttt{spec\_mode}: stft o mel) que se han utilizado para el modelo.
+    
+    \item \textbf{Test set: } Contiene los índices del conjunto de prueba (\texttt{test\_indices}), necesario para la evaluación.
 \end{itemize}
 
 Una vez terminados todos estos procesos, el modelo ya se encuentra entrenado y listo para inferir parámetros o ser evaluado.
 
 \section{Inferencia de parámetros} 
-La fase 5 (del diagrama anterior) consiste en la inferencia de parámetros de síntesis FM, mediante el modelo entrenado previamente, a partir
-de audios. 
 
-Al inicio de esta fase, se carga el punto de control que instancia automáticamente el tipo de red. 
+Esta fase consiste en la inferencia de parámetros de síntesis FM a partir de audios, utilizando el modelo previamente entrenado. Esto significa que, una vez la red ha finalizado su aprendizaje y todos sus pesos están calibrados, es capaz de recibir nuevas muestras para realizar predicciones. 
 
-La inferencia comienza cuando se recibe un archivo de audio (\textit{.wav}). En ese momento, se sigue el mismo flujo
-que en la Fase 2, transformando el audio en un tensor de espectrograma (del tipo indicado por \textit{spec\_mode}). Este 
-se introduce en el modelo (\textit{forward pass}), obteniendo así un vector latente de 8 valores, sobre el que se aplica
-una desnormalización (con los valores de Z-score almacenados en el \textit{checkpoint}) que da como resultado la predicción de 
-los parámetros. 
+Al inicio de este proceso, se carga el punto de control (\textit{checkpoint}), el cual instancia automáticamente la arquitectura y configuración de la red. 
 
-En este punto, el sistema te permite llevar a cabo varias acciones diferentes mediante la 
-interfaz gráfica (GUI). Por un lado, se puede realizar una comparación visual del espectrograma del audio
-predicho con el del audio original. Para ello, se sintetizan los parámetros obtenidos y los parametros originales y se 
-calculan sus espectrogramas. También se da la opción de comparar acústicamente el audio original con el sintetizado por los parámetros
-inferidos (mediante \textit{sounddevice}) y de exportar estos a un sintetizador propio, con la opción de modificarlos manualmente. 
+La predicción en sí comienza cuando se recibe un archivo de audio (\textit{.wav}). En ese momento, se sigue el mismo flujo de preprocesamiento que en la fase de entrenamiento, transformando el audio en un tensor de espectrograma (según el tipo indicado por \textit{spec\_mode}). A continuación, este tensor se introduce en el modelo para realizar la pasada hacia adelante (\textit{forward pass}). Es en este paso computacional donde resulta fundamental utilizar el gestor de contexto \texttt{torch.no\_grad()} de PyTorch; dado que la red ya no necesita aprender ni actualizar sus pesos, desactivar el cálculo de derivadas reduce drásticamente el consumo de memoria y acelera el proceso.
+
+Como resultado del modelo, se obtiene un vector latente de 8 valores. Sobre este vector se aplica una desnormalización (utilizando los parámetros de Z-score almacenados en el \textit{checkpoint}), lo que da como resultado la predicción final de los parámetros de síntesis.
+
+Llegados a este punto, el sistema permite al usuario llevar a cabo diversas acciones mediante la interfaz gráfica (GUI). Por un lado, es posible realizar una comparación visual entre el espectrograma del audio predicho y el del audio original (sintetizando ambos grupos de parámetros y calculando sus espectrogramas). Por otro lado, se ofrece la opción de comparar acústicamente ambos audios (empleando la biblioteca \texttt{sounddevice}), así como de exportar los parámetros inferidos a un sintetizador interactivo propio, donde pueden ser modificados manualmente.
 
 \section{Interfaz Gráfica de la aplicación}
+
 Para una mejor experiencia de uso y facilitar el entorno de entrenamientos y pruebas de la aplicación, se ha desarrollado una Interfaz Gráfica. Se trata de una serie de pantallas sencillas, programadas en Python mediante el uso de la librería \textit{Tkinter}.
 
 En la primera pantalla (\ref{fig:pantalla1}), se da la opción de elegir un modelo existente o de entrenarlo. 
 
-En caso de decidir cargar un modelo, se podrá seleccionar mediante el explorador de archivos. A continuación (\ref{fig:pantallaPruebas}), existen dos posibilidades: probar predicciones independientes de audios o realizar una evaluación general. En la primera, se puede cargar un wav y generar una predicción, existiendo la posibilidad de compararlos auditivamente o gráficamente sus espectrogramas (en frecuencia lineal y en logarítmica) y de ejecutar un sintetizador. En la pantalla del sintetizador(\ref{fig:sinte}), aparecen los parámetros de la predicción y los del audio original (en caso de tenerlos), siendo modificables. Además, el teclado hace la función de teclas del sintetizador con el sonido generado por los parámetros seleccionados. 
+La sección del entrenamiento (\ref{fig:pantallaEntrenamiento}) es la dedicada a seleccionar varios aspectos relevantes, tanto para el tiempo y forma de entrenamiento como para la topología del modelo. Por un lado, se permite elegir si entrenar el modelo en CPU o en GPU, lo que afectará directamente a su tiempo de entrenamiento. Por el otro, se selecciona el tipo de espectrograma, arquitectura del modelo y función de pérdida (explorados en el apartado anterior) que definirán el modelo a entrenar. El siguiente campo de la pantalla incluye la opción de crear el dataset (explicado anteriormente) o cargar uno ya generado. En último lugar se encuentra el apartado de \textbf{hiperparámetros} modificables para el entrenamiento, como son las épocas (\textit{epoch}), la tasa de aprendizaje (\textit{Learning Rate}) y los pesos de los parámetros de las funciones de pérdida. 
 
-La sección del entrenamiento (\ref{fig:pantallaEntrenamiento}) es la dedicada a seleccionar varios aspectos relevantes, tanto para el tiempo y forma de entrenamiento como para la topología del modelo. Por un lado, se permite elegir si entrenar el modelo en CPU o en GPU, lo que afectará directamente a su tiempo de entrenamiento. Por el otro, hay que decidir que tipo de espectrograma, arquitectura del modelo y función de pérdida (explorados en el apartado anterior) van a ser los que definan el modelo. El siguiente campo de la pantalla incluye la opción de crear el dataset (explicado anteriormente) o cargar uno personalizado. En último lugar se encuentra el apartado de parámetros modificables para el entrenamiento, como son las épocas (\textit{epoch}), la tasa de aprendizaje (\textit{Learning Rate}) y los pesos de los parámetros de las funciones de pérdida. 
-
-\section{Estructura del Código}
-
-Para asegurar la mantenibilidad y escalabilidad, el código se estructura mediante el principio de Separación de Responsabilidades (\textit{Separation of Concerns}). Se divide así la aplicación en dos módulos diferentes:
-
-\begin{itemize}
-    \item \textbf{Lógica (Backend): } Se encuentra en el archivo {\textit{logica.py}}. Aquí se agrupan las funciones matemáticas para la síntesis, calculo de métricas, generación de espectrogramas, etc. 
-    \item \textbf{Vista y Controlador (Frontend): } Archivo \textit{main.py}. Este implementa la interfaz, recibe los \textit{inputs} del usuario y gestiona el flujo de llamadas a la lógica y los errores.
-\end{itemize}
-
-Adicionalmente, destaca el uso de la Programación Orientada a Objetos (POO) y el encapsulamiento. Estas características se aplican en la aplicación de la siguiente manera:
-
-\begin{itemize}
-    \item \textbf{Clase App (\textit{main.py}): } Se encarga de encapsular el estado global. Evita el uso de variables globales manteniendo las variables necesarias instanciadas en esta clase (\textit{self.dataset\_obj}, \textit{self.pathModelo}, \textit{self.model\_trained}, etc).
-    \item \textbf{Clase SpectrogramTensorDataset (\textit{dataset.py}): } Hereda de la clase base de \textit{Pytorch} de \textit{torch.utils.data.Dataset}, teniendo acceso a métodos como el de procesamiento por lotes (\textit{batching}). Asimismo, esta clase se encarga de los cálculos de estadísticas de normalización y mapeo de los archivos, de forma que desde fuera se obtienen los datos ya preparados mediante el método \textit{\_\_getitem\_\_}. 
-    \item \textbf{Modelos y Funciones de Pérdida: } Como se ha mencionado previamente, existen diferentes arquitecturas y funciones de pérdida y todas ellas heredan de \textit{nn.Modules}. En consecuencia, el código permite que la lógica del entrenamiento sea independiente del modelo exacto que se esté utilizando, lo que se conoce como \textbf{Polimorfismo}. Por otro lado, la clase \textit{HybridLoss} encapsula la lógica de la convergencia espectral y la norma de Frobenius, manteniendo el entrenamiento ajeno a estas fórmulas. 
-    \item \textbf{\textit{FMSynth8Window}: } La pantalla del sintetizador se encuentra totalmente desacoplada del resto de la lógica, siendo una clase independiente. De esta manera, se puede utilizar tanto desde la ejecución normal de la aplicación como de forma aislada, facilitando así su construcción, ampliación y pruebas aisaldas.
-    
-
-\end{itemize}
-
+En caso de decidir cargar un modelo, se podrá seleccionar mediante el explorador de archivos. A continuación (\ref{fig:pantallaPruebas}), existen dos posibilidades: probar predicciones independientes de audios o realizar una evaluación general. 
+En la primera, se puede cargar un wav y generar una predicción, existiendo la posibilidad de compararlos auditivamente o gráficamente sus espectrogramas (en frecuencia lineal y en logarítmica) y de ejecutar un sintetizador. En la pantalla del sintetizador (\ref{fig:sinte}), aparecen los parámetros de la predicción y los del audio original (en caso de tenerlos), siendo modificables. Además, el teclado hace la función de teclas del sintetizador con el sonido generado por los parámetros seleccionados. 
+En la segunda, se implementan unas métricas de evaluacion que se desarrollan más adelante, en el capítulo (\ref{cap:ResultadosYEvaluacion}).
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/pantalla1}
-    \caption{Primera pantalla de la Interfaz Gráfica de la Aplicación, elección uso modelo o entrenamiento.}
+    \includegraphics[width=0.7\textwidth]{Imagenes/Bitmap/pantalla1}
+    \caption{Pestaña principal.}
     \label{fig:pantalla1}
 \end{figure}
 
 \begin{figure}[H]
     \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/pantallaEntrenamiento}
+    \caption{Pestaña de entrenamiento.}
+    \label{fig:pantallaEntrenamiento}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
     \includegraphics[width=1\textwidth]{Imagenes/Bitmap/pantallaPruebas}
-    \caption{Pantalla en la que se pueden hacer pruebas con el modelo seleccionado.}
+    \caption{Pestaña de pruebas.}
     \label{fig:pantallaPruebas}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{Imagenes/Bitmap/sinte}
-    \caption{Sintetizador FM de prueba.}
+    \caption{Sintetizador FM propio.}
     \label{fig:sinte}
 \end{figure}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/pantallaEntrenamiento}
-    \caption{Sintetizador FM de prueba.}
-    \label{fig:pantallaEntrenamiento}
-\end{figure}
+\section{Estructura del Código}
+
+Para asegurar la mantenibilidad y escalabilidad, el código se estructura mediante el principio de Separación de Responsabilidades (\textit{Separation of Concerns}). Se divide así la aplicación en dos módulos diferentes:
+
+\begin{itemize}
+    \item \textbf{Lógica (Backend): } Se encuentra en el archivo {\texttt{logica.py}}. Aquí se agrupan las funciones matemáticas para la síntesis, calculo de métricas, generación de espectrogramas, etc. 
+    \item \textbf{Vista y Controlador (Frontend): } Archivo \texttt{main.py}. Este implementa la interfaz, recibe los \textit{inputs} del usuario y gestiona el flujo de llamadas a la lógica y los errores.
+\end{itemize}
+
+Adicionalmente, destaca el uso de la Programación Orientada a Objetos (POO) y el encapsulamiento. Estas características se aplican en la aplicación de la siguiente manera:
+
+\begin{itemize}
+    \item \textbf{Clase App (\texttt{main.py}): } Se encarga de encapsular el estado global. Evita el uso de variables globales manteniendo las variables necesarias instanciadas en esta clase (\texttt{self.dataset\_obj}, \texttt{self.pathModelo}, \texttt{self.model\_trained}, etc).
+    \item \textbf{Clase SpectrogramTensorDataset (\texttt{dataset.py}): } Hereda de la clase base de \textit{Pytorch} de \texttt{torch.utils.data.Dataset}, teniendo acceso a métodos como el de procesamiento por lotes (\textit{batching}). Asimismo, esta clase se encarga de los cálculos de estadísticas de normalización y mapeo de los archivos, de forma que desde fuera se obtienen los datos ya preparados mediante el método \texttt{\_\_getitem\_\_}. 
+    \item \textbf{Modelos y Funciones de Pérdida: } Como se ha mencionado previamente, existen diferentes arquitecturas y funciones de pérdida y todas ellas heredan de \texttt{nn.Modules}. En consecuencia, el código permite que la lógica del entrenamiento sea independiente del modelo exacto que se esté utilizando, lo que se conoce como \textbf{molimorfismo}. Por otro lado, la clase \texttt{HybridLoss} encapsula la lógica de la convergencia espectral y la norma de Frobenius, manteniendo el entrenamiento ajeno a estas fórmulas. 
+    \item \textbf{\texttt{FMSynth8Window}: } La pantalla del sintetizador se encuentra totalmente desacoplada del resto de la lógica, siendo una clase independiente. De esta manera, se puede utilizar tanto desde la ejecución normal de la aplicación como de forma aislada, facilitando así su construcción, ampliación y pruebas aisaldas. Esta funcionalidad, debido a su complejidad a la hora de gestionar y reproducir el audio a tiempo real, ha sido íntegramente desarrollada con la ayuda de Claude Code (\cite{claude_code}).
+\end{itemize}
+
+
+
 
