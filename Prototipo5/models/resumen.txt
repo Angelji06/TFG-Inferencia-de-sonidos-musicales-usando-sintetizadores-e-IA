@@ -16,5 +16,5 @@ P2 - 57 epochs - Val Loss: 0.006844
 P3 - 59 epochs - Val Loss: 0.3829658
 P4 - 25 epochs - Val loss: 0.6722766
 
-P5 - 
+P5 - 35 epochs - Val loss: 0.429707
 P6 - 60 epochs - Val loss: 0.6974
