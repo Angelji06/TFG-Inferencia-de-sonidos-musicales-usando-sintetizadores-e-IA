@@ -15,14 +15,14 @@ La producción musical moderna ha experimentado una transformación radical en l
 \label{fig:foto_sinte}
 \end{figure}
 
-Sin embargo, el panorama de la síntesis cambió drásticamente a finales de los años sesenta con el descubrimiento de la Síntesis por Modulación de Frecuencia (FM) y, de forma masiva, con la comercialización del emblemático \textbf{Yamaha DX7} en 1983. 
+Sin embargo, el panorama de la síntesis cambió drásticamente a finales de los años sesenta con el descubrimiento de la Síntesis por Modulación de Frecuencia (FM) y, de forma masiva, con la comercialización del emblemático Yamaha DX7 en 1983. 
 Esta tecnología supuso una revolución en el mercado al permitir la creación de timbres metálicos, eléctricos y acampanados, acústicamente imposibles de lograr con la tecnología de la época. 
 
-No obstante, esta innovación trajo consigo un dilema significativo: \textbf{su programación es notoriamente contraintuitiva}. A diferencia de los sistemas tradicionales, en la síntesis FM un cambio mínimo en un solo parámetro (como el índice de modulación o la frecuencia de un operador) puede destruir por completo la estructura armónica del sonido. Esta extrema sensibilidad paramétrica y la pronunciada curva de aprendizaje han alejado históricamente a la mayoría de los creadores del diseño sonoro FM, relegándolos al uso de \textit{presets} preconfigurados.
+No obstante, esta innovación trajo consigo un dilema significativo: su programación es notoriamente contraintuitiva. A diferencia de los sistemas tradicionales, en la síntesis FM un cambio mínimo en un solo parámetro (como el índice de modulación o la frecuencia de un operador) puede destruir por completo la estructura armónica del sonido. Esta extrema sensibilidad paramétrica y la pronunciada curva de aprendizaje han alejado históricamente a la mayoría de los creadores del diseño sonoro FM, relegándolos al uso de \textit{presets} preconfigurados.
 
-Desde una perspectiva matemática y acústica, este problema radica en la \textbf{falta de inyectividad} del motor de síntesis: combinaciones de parámetros drásticamente diferentes pueden generar resultados acústicos que el oído humano percibe como idénticos, mientras que ajustes minúsculos pueden derivar en texturas sonoras completamente opuestas. En consecuencia, el diseño manual de sonidos se convierte en una barrera técnica que interrumpe el flujo creativo del artista.
+Desde una perspectiva matemática y acústica, este problema radica en la falta de inyectividad del motor de síntesis: combinaciones de parámetros drásticamente diferentes pueden generar resultados acústicos que el oído humano percibe como idénticos, mientras que ajustes minúsculos pueden derivar en texturas sonoras completamente opuestas. En consecuencia, el diseño manual de sonidos se convierte en una barrera técnica que interrumpe el flujo creativo del artista.
 
-Este nivel de complejidad técnica manifiesta su mayor obstáculo en el proceso conocido como \textbf{\textit{Sound Matching}} o igualación tímbrica. Es una situación cotidiana en el estudio de grabación que un productor escuche un sonido específico y desee replicarlo. Realizar esta tarea ``a oído'' con un sintetizador FM es un proceso de ensayo y error que puede resultar profundamente frustrante. 
+Este nivel de complejidad técnica manifiesta su mayor obstáculo en el proceso conocido como \textit{Sound Matching} o igualación tímbrica. Es una situación cotidiana en el estudio de grabación que un productor escuche un sonido específico y desee replicarlo. Realizar esta tarea ``a oído'' con un sintetizador FM es un proceso de ensayo y error que puede resultar profundamente frustrante. 
 
 
 \begin{figure}[H]
@@ -32,23 +32,23 @@ Este nivel de complejidad técnica manifiesta su mayor obstáculo en el proceso 
 \label{fig:aphex_twin}
 \end{figure}
 
-Ante esta problemática, el aprendizaje automático y, en concreto, el \textbf{aprendizaje profundo} (\textit{Deep Learning}), se presentan como el puente ideal entre la abstracción creativa del músico y la complejidad matemática del sintetizador. Al delegar la inferencia de parámetros a un modelo computacional, se puede automatizar la búsqueda del sonido objetivo. Para lograrlo, el sistema debe ser capaz de ``escuchar'' y procesar la señal de una forma asimilable por la red. Mediante la transformación del audio unidimensional a un \textbf{espectrograma}, se logra ``fotografiar'' el sonido, adaptando las frecuencias a una escala logarítmica que imita fielmente la percepción del sistema auditivo humano.
+Ante esta problemática, el aprendizaje automático y, en concreto, el aprendizaje profundo (\textit{Deep Learning}), se presentan como el puente ideal entre la abstracción creativa del músico y la complejidad matemática del sintetizador. Al delegar la inferencia de parámetros a un modelo computacional, se puede automatizar la búsqueda del sonido objetivo. Para lograrlo, el sistema debe ser capaz de ``escuchar'' y procesar la señal de una forma asimilable por la red. Mediante la transformación del audio unidimensional a un \textbf{espectrograma}, se logra ``fotografiar'' el sonido, adaptando las frecuencias a una escala logarítmica que imita fielmente la percepción del sistema auditivo humano.
 
-Una vez que el audio se representa como una imagen bidimensional, las \textbf{Redes Neuronales Convolucionales (CNNs)} emergen como la arquitectura idónea para abordar el problema. Estas redes están diseñadas para extraer características espaciales y, en el dominio del espectrograma, son excepcionalmente precisas al ``ver'' y clasificar las densas texturas tímbricas y armónicas del audio. 
+Una vez que el audio se representa como una imagen bidimensional, las CNNs emergen como la arquitectura idónea para abordar el problema. Estas redes están diseñadas para extraer características espaciales y, en el dominio del espectrograma, son excepcionalmente precisas al ``ver'' y clasificar las densas texturas tímbricas y armónicas del audio. 
 
 \section{Objetivos}
 \label{sec:objetivos}
 
 
-El objetivo principal del proyecto es desarrollar un sistema basado en \textbf{Redes Neuronales Convolucionales (CNNs)} capaz de estimar automáticamente los parámetros de un sintetizador de \textbf{modulación de frecuencia (FM)} a partir de una muestra de audio, con el fin de replicar su timbre.  
+El objetivo principal del proyecto es desarrollar un sistema basado en redes neuronales convolucionales capaz de estimar automáticamente los parámetros de un sintetizador de modulación de frecuencia (FM) a partir de una muestra de audio, con el fin de replicar su timbre.  
 
 Como objetivos específicos, se tienen los siguientes:
 
 \begin{itemize}
     \item \textbf{Generación del dataset:} Diseñar e implementar un motor de síntesis capaz de generar un \textit{dataset} masivo de audios sintéticos y sus correspondientes etiquetas (parámetros), así como su conversión a tensores.
-    \item \textbf{Procesamiento de señal:} Establecer un \textit{pipeline} de procesamiento de señales para transformar el audio crudo en representaciones visuales (\textbf{espectrogramas}) aptas para la CNN, aplicando las transformaciones y normalizaciones del dato que maximicen su rendimiento.
+    \item \textbf{Procesamiento de señal:} Establecer un \textit{pipeline} de procesamiento de señales para transformar el audio crudo en representaciones visuales (espectrogramas) aptas para la CNN, aplicando las transformaciones y normalizaciones del dato que maximicen su rendimiento.
     \item \textbf{Desarrollo del modelo:} Diseñar, entrenar y optimizar varias arquitecturas de Redes Neuronales Convolucionales y funciones de pérdida en Python.
-    \item \textbf{Evaluación psicoacústica:} Evaluar el rendimiento del modelo mediante métricas de error sobre parámetros y medidas de \textbf{similitud tímbrica} que simulen la percepción del oído humano.
+    \item \textbf{Evaluación psicoacústica:} Evaluar el rendimiento del modelo mediante métricas de error sobre parámetros y medidas de similitud tímbrica que simulen la percepción del oído humano.
     \item \textbf{Desarrollo de la interfaz:} Desarrollar un sistema con una interfaz funcional que permita acceder a todas las utilidades del proyecto de manera fácil e intuitiva.
     \item \textbf{Estudio de modelos:} Se estudiará y comparará el uso de distintas representaciones del espectrograma, arquitecturas de red y funciones de pérdida.
 \end{itemize}

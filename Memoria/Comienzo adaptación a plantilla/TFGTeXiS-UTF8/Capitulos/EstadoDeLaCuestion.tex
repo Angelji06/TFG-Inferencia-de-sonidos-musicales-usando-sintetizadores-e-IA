@@ -17,15 +17,15 @@ x(t) = A \sin(2\pi f t + \phi)
 
 donde $A$ representa la \textbf{amplitud} (la altura del sonido, relacionada con el volumen), $f$ es la \textbf{frecuencia} en hercios (que determina el tono, con mayores valores produciendo sonidos más agudos), $t$ es el \textbf{tiempo}, y $\phi$ es la \textbf{fase inicial} en radianes (que define el punto de inicio de la oscilación). Esta onda de seno pura es el elemento básico de toda síntesis.
 
-El \textbf{teorema de Fourier} establece que cualquier forma de onda periódica, por compleja que sea, puede descomponerse en una suma de ondas sinusoidales de diferentes frecuencias, amplitudes y fases. Por esta razón, dominar la generación y manipulación de ondas sinusoidales es esencial para comprender cualquier técnica de síntesis sonora.
+El teorema de Fourier establece que cualquier forma de onda periódica, por compleja que sea, puede descomponerse en una suma de ondas sinusoidales de diferentes frecuencias, amplitudes y fases. Por esta razón, dominar la generación y manipulación de ondas sinusoidales es esencial para comprender cualquier técnica de síntesis sonora.
 
-Históricamente, han existido \textbf{diversas aproximaciones a la síntesis}. Las más tradicionales incluyen las ya mencionadas síntesis \textbf{aditiva} y \textbf{sustractiva}. Estas técnicas fundamentales abrieron el camino hacia métodos matemáticamente más complejos, como la \textbf{síntesis FM}.
+Históricamente, han existido diversas aproximaciones a la síntesis. Las más tradicionales incluyen las ya mencionadas síntesis aditiva y sustractiva. Estas técnicas fundamentales abrieron el camino hacia métodos matemáticamente más complejos, como la síntesis FM.
 
 \subsection{Síntesis por Modulación de Frecuencia (FM)}
 \label{sec:FormulacionFM}
-La \textbf{síntesis FM} es un tipo de síntesis descubierta a finales de los años sesenta \citep{chowning1973}. Su funcionamiento se basa en utilizar un oscilador (sistema capaz de generar una señal que se repite de forma periódica), denominado \textbf{modulador} para alterar la frecuencia de otro oscilador, denominado \textbf{portador}. El oído humano interpreta esta interacción como la creación de timbres completamente nuevos y armónicamente ricos.
+La síntesis FM es un tipo de síntesis descubierta a finales de los años sesenta \citep{chowning1973}. Su funcionamiento se basa en utilizar un oscilador (sistema capaz de generar una señal que se repite de forma periódica), denominado \textbf{modulador} para alterar la frecuencia de otro oscilador, denominado \textbf{portador}. El oído humano interpreta esta interacción como la creación de timbres completamente nuevos y armónicamente ricos.
 
-Esta tecnología se popularizó a nivel mundial en 1983 con el lanzamiento del \textbf{Yamaha DX7}, el primer sintetizador digital de éxito comercial masivo. Fue muy relevante debido a su capacidad para generar sonidos metálicos, eléctricos y campanados, completamente novedosos para la época. 
+Esta tecnología se popularizó a nivel mundial en 1983 con el lanzamiento del Yamaha DX7, el primer sintetizador digital de éxito comercial masivo. Fue muy relevante debido a su capacidad para generar sonidos metálicos, eléctricos y campanados, completamente novedosos para la época. 
 
 \begin{figure}[H]
 \centering
@@ -88,7 +88,7 @@ El sonido en el mundo físico es una onda continua producida por variaciones de 
 \label{fig:sampling}
 \end{figure}
 
-Esta representación es uno de los estándares en tareas de \textbf{procesamiento de señales digitales (DSP)}. Sin embargo, existen otras representaciones, como el espectrograma.
+Esta representación es uno de los estándares en tareas de procesamiento de señales digitales (DSP). Sin embargo, existen otras representaciones, como el espectrograma.
 
 
 %En el estado de la cuestión es donde aparecen gran parte de las referencias bibliográficas del trabajo. Una de las formas más cómodas de gestionar la bibliografía en {\LaTeX} es utilizando \textbf{bibtex}. Las entradas bibliográficas deben estar en un fichero con extensión \textit{.bib} (con esta plantilla se proporciona el fichero biblio.bib, donde están las entradas referenciadas más abajo). Cada entrada bibliográfica tiene una clave que permite referenciarla desde cualquier parte del texto con los siguiente comandos:
@@ -106,7 +106,7 @@ Esta representación es uno de los estándares en tareas de \textbf{procesamient
 %Bibtex es un programa separado de latex, pdflatex o cualquier otra cosa que se use para compilar los .tex, de manera que para que se rellene correctamente la sección de bibliografía es necesario compilar primero el trabajo (a veces es necesario compilarlo dos veces), compilar después con bibtex, y volver a compilar otra vez el trabajo (de nuevo, puede ser necesario compilarlo dos veces). 
 
 \subsection{Representación espectral: STFT y Espectrogramas}
-El \textbf{espectrograma} es la representación visual del sonido más utilizada en el aprendizaje profundo, ya que permite tratar el audio como una imagen, donde el eje $X$ es el tiempo, el $Y$ la frecuencia y el color la intensidad. En la síntesis FM, esta representación es fundamental para que los modelos identifiquen texturas tímbricas complejas \citep{yee2018}.
+El espectrograma es la representación visual del sonido más utilizada en el aprendizaje profundo, ya que permite tratar el audio como una imagen, donde el eje $X$ es el tiempo, el $Y$ la frecuencia y el color la intensidad. En la síntesis FM, esta representación es fundamental para que los modelos identifiquen texturas tímbricas complejas \citep{yee2018}.
 
 \begin{figure}[H]
 \centering
@@ -115,7 +115,7 @@ El \textbf{espectrograma} es la representación visual del sonido más utilizada
 \label{fig:espectrograma}
 \end{figure}
 
-En la parte superior de la \textbf{Figura \ref{fig:espectrograma}} puede verse la forma de onda del sonido, que es la representación unidimensional del vector de audio. En la parte inferior se muestra el espectrograma, que es la representación 2D del mismo sonido. 
+En la parte superior de la Figura \ref{fig:espectrograma} puede verse la forma de onda del sonido, que es la representación unidimensional del vector de audio. En la parte inferior se muestra el espectrograma, que es la representación 2D del mismo sonido. 
 
 Esta imagen se genera aplicando la \textbf{Transformada de Fourier de Tiempo Reducido (STFT)} sobre el vector de audio. El proceso consiste en dividir la señal en fragmentos cortos mediante una ventana temporal y extraer el contenido frecuencial de cada uno \citep{allen1977}. De este modo, se transforma una señal unidimensional en una estructura 2D que conserva la evolución temporal de las frecuencias, facilitando el análisis mediante redes neuronales convolucionales.
 
@@ -123,7 +123,7 @@ Esta imagen se genera aplicando la \textbf{Transformada de Fourier de Tiempo Red
 \subsection{Escala de Mel}
 El eje de frecuencias (Y) en los espectrogramas suele tratarse como una escala lineal, donde los saltos entre frecuencias son uniformes. Sin embargo, esto puede generar una representación no intuitiva para la percepción humana, pues nosotros percibimos el sonido de forma no lineal, para ello se utiliza la \textbf{escala Mel}, la cual establece un umbral en una frecuencia específica (700 Hz), a partir de la cual la escala pasa de ser lineal a logarítmica.
 
-Es un sistema de unidades diseñado para que distancias iguales en la escala correspondan a variaciones perceptuales uniformes en el tono \citep{stevens1937}. Su relevancia radica en que el sistema auditivo posee una \textbf{mayor capacidad de percepción en las frecuencias bajas}. 
+Es un sistema de unidades diseñado para que distancias iguales en la escala correspondan a variaciones perceptuales uniformes en el tono \citep{stevens1937}. Su relevancia radica en que el sistema auditivo posee una mayor capacidad de percepción en las frecuencias bajas. 
 
 La fórmula de conversión (\ref{eq:forMel}) es esencial para procesar sonidos de sintetizadores FM, los cuales generan una gran densidad de armónicos superiores que, en una escala lineal, ocuparían la mayor parte del espectro sin aportar información crítica para el oído humano.
 
@@ -134,15 +134,15 @@ m = 2595 \cdot \log_{10}(1 + f/700)
 
 \subsection{\textit{Mel Frequency Cesptral Coefficients} (MFCC)}
 
-Los MFCC son un conjunto de coeficientes que representan la ``huella'' tímbrica de un sonido, es decir, aislan el instrumento de la nota que este interpreta. Se obtienen aplicando la \textbf{Transformada de Coseno Discreta (DCT)} al espectrograma Mel para simplificar y organizar la información de las frecuencias \citep{davis1980}. 
+Los MFCC son un conjunto de coeficientes que representan la ``huella'' tímbrica de un sonido, es decir, aislan el instrumento de la nota que este interpreta. Se obtienen aplicando la Transformada de Coseno Discreta (DCT) al espectrograma Mel para simplificar y organizar la información de las frecuencias \citep{davis1980}. 
 
-Si bien fueron el estándar en reconocimiento de voz, la tecnología actual prefiere el uso del espectrograma Mel completo. Este cambio se debe a que las redes neuronales convolucionales (CNN) logran mayor precisión al analizar la imagen sonora total, aprovechando detalles y matices que la compresión de la DCT suele eliminar en el proceso. Sin embargo, \textbf{como métrica de evaluación}, los MFCC siguen siendo útiles para comparar la similitud tímbrica entre el sonido original y el resintetizado.
+Si bien fueron el estándar en reconocimiento de voz, la tecnología actual prefiere el uso del espectrograma Mel completo. Este cambio se debe a que las redes neuronales convolucionales (CNN) logran mayor precisión al analizar la imagen sonora total, aprovechando detalles y matices que la compresión de la DCT suele eliminar en el proceso. Sin embargo, como métrica de evaluación, los MFCC siguen siendo útiles para comparar la similitud tímbrica entre el sonido original y el resintetizado.
 
 \section{Inteligencia Artificial aplicada al audio}
 
 \subsection{CNNs en el dominio del audio}
 
-Las \textbf{Redes Neuronales Convolucionales (CNNs)} son un tipo de arquitectura de aprendizaje profundo diseñada para explotar la estructura espacial de los datos. Es precisamente por esto que se usan tanto en tareas de imagen. Fueron propuestas originalmente por \citep{lecun1998} para el reconocimiento de caracteres escritos a mano. Su principio fundamental es el uso de filtros convolucionales de pequeño tamaño (\textbf{kernels}). Dichos filtros recorren la entrada realizando productos escalares. Esto les permite detectar patrones sin importar dónde estén ubicados y usar muchos menos parámetros que una red tradicional.
+Las \textbf{Redes Neuronales Convolucionales (CNNs)} son un tipo de arquitectura de aprendizaje profundo diseñada para explotar la estructura espacial de los datos. Es precisamente por esto que se usan tanto en tareas de imagen. Fueron propuestas originalmente por \citep{lecun1998} para el reconocimiento de caracteres escritos a mano. Su principio fundamental es el uso de filtros convolucionales de pequeño tamaño (\textit{kernels}). Dichos filtros recorren la entrada realizando productos escalares. Esto les permite detectar patrones sin importar dónde estén ubicados y usar muchos menos parámetros que una red tradicional.
 
 \begin{figure}[H]
 \centering
@@ -151,38 +151,38 @@ Las \textbf{Redes Neuronales Convolucionales (CNNs)} son un tipo de arquitectura
 \label{fig:cnn}
 \end{figure}
 
-La arquitectura típica alterna \textbf{capas convolucionales}, que extraen características locales, con \textbf{capas de pooling}, que reducen la dimensionalidad, construyendo así una jerarquía de características que va desde elementos simples, como bordes o gradientes, hacia representaciones abstractas de formas y texturas \citep{krizhevsky2012}.
+La arquitectura típica alterna \textbf{capas convolucionales}, que extraen características locales, con \textbf{capas de  \textit{pooling}}, que reducen la dimensionalidad, construyendo así una jerarquía de características que va desde elementos simples, como bordes o gradientes, hacia representaciones abstractas de formas y texturas \citep{krizhevsky2012}.
 
 En el dominio del audio, las CNNs son eficaces porque pueden aprender patrones locales en el espectrograma, como la estructura armónica y el ruido de ataque. Se ha demostrado que modelos entrenados con grandes cantidades de datos pueden aplicar su conocimiento general a tareas específicas de síntesis \citep{kong2020}. Al aplicar filtros convolucionales sobre las dimensiones de tiempo y frecuencia, la red identifica texturas tímbricas con una eficiencia muy superior a las redes densas tradicionales.
 
 \subsection{Transformers en el dominio del audio (AST)}
 
-El estado del arte en el procesamiento de audio ha evolucionado de las arquitecturas convolucionales (CNN) hacia los \textbf{Transformers}, tras su éxito en el procesamiento de lenguaje natural \citep{vaswani2017}. En el contexto del audio, el modelo de referencia es el Audio Spectrogram Transformer (AST)\citep{gong2021}, que adapta la arquitectura de atención para trabajar directamente con espectrogramas.
-A diferencia de las CNN, que analizan patrones locales mediante filtros, el AST utiliza un mecanismo de auto-atención (\textbf{self-attention}). Este permite al modelo capturar relaciones globales y dependencias de largo alcance en el tiempo y la frecuencia, dividiendo el espectrograma en bloques de datos.
+El estado del arte en el procesamiento de audio ha evolucionado de las arquitecturas convolucionales (CNN) hacia los \textit{Transformers}, tras su éxito en el procesamiento de lenguaje natural \citep{vaswani2017}. En el contexto del audio, el modelo de referencia es el Audio Spectrogram Transformer (AST)\citep{gong2021}, que adapta la arquitectura de atención para trabajar directamente con espectrogramas.
+A diferencia de las CNN, que analizan patrones locales mediante filtros, el AST utiliza un mecanismo de auto-atención (\textit{self-attention}). Este permite al modelo capturar relaciones globales y dependencias de largo alcance en el tiempo y la frecuencia, dividiendo el espectrograma en bloques de datos.
 
-Sin embargo, los Transformers presentan una complejidad computacional cuadrática y requieren volúmenes masivos de datos para superar a las CNN. Por ello, en tareas de aprendizaje automático con recursos limitados, como es nuestro caso, \textbf{las arquitecturas convolucionales siguen siendo una opción preferente por su eficiencia}.
+Sin embargo, los Transformers presentan una complejidad computacional cuadrática y requieren volúmenes masivos de datos para superar a las CNN. Por ello, en tareas de aprendizaje automático con recursos limitados, como es nuestro caso, las arquitecturas convolucionales siguen siendo una opción preferente por su eficiencia.
 
 \subsection{Inferencia automática de parámetros en síntesis}
 
-El \textbf{diseño automático de sonido} busca encontrar los parámetros de un sintetizador que repliquen un audio objetivo. Los primeros enfoques exitosos con redes neuronales profundas utilizaron arquitecturas LSTM y CNN para mapear sonidos a las configuraciones de operadores de un Yamaha DX7 \citep{yee2018}. Sin embargo, un hallazgo crítico transformó esta metodología: \textbf{optimizar el modelo basándose exclusivamente en la distancia numérica entre parámetros es ineficiente}.
+El diseño automático de sonido busca encontrar los parámetros de un sintetizador que repliquen un audio objetivo. Los primeros enfoques exitosos con redes neuronales profundas utilizaron arquitecturas LSTM y CNN para mapear sonidos a las configuraciones de operadores de un Yamaha DX7 \citep{yee2018}. Sin embargo, un hallazgo crítico transformó esta metodología: optimizar el modelo basándose exclusivamente en la distancia numérica entre parámetros es ineficiente.
 
-Este fenómeno se debe a la \textbf{falta de inyectividad} del motor de síntesis, donde combinaciones de parámetros drásticamente diferentes pueden generar resultados acústicos idénticos. Para solventar esta ambigüedad, se propuso el uso de funciones de pérdida basadas en la distancia entre los espectrogramas del audio original y el resintetizado (\textbf{pérdida espectral}) \citep{barkan2019}. Esta evolución ha convergido en el uso de decodificadores avanzados, \textbf{sintetizadores diferenciables} como DDSP \citep{engel2020} y arquitecturas basadas en Transformers, que permiten una convergencia mucho más precisa pues priorizan la \textbf{coherencia perceptiva} del sonido sobre la coincidencia de valores numéricos.
+Este fenómeno se debe a la \textbf{falta de inyectividad} del motor de síntesis, donde combinaciones de parámetros drásticamente diferentes pueden generar resultados acústicos idénticos. Para solventar esta ambigüedad, se propuso el uso de funciones de pérdida basadas en la distancia entre los espectrogramas del audio original y el resintetizado (pérdida espectral) \citep{barkan2019}. Esta evolución ha convergido en el uso de decodificadores avanzados, sintetizadores diferenciables como DDSP \citep{engel2020} y arquitecturas basadas en Transformers, que permiten una convergencia mucho más precisa pues priorizan la coherencia perceptiva del sonido sobre la coincidencia de valores numéricos.
 
 En nuestro proyecto, las 2 funciones de pérdida que planteamos están directamente inspiradas por estos papers, una con la convergencia espectral y otra con una simulación del ventaneo de la señal que usan en el paper de DDSP.
 
 \subsection{Representación del audio usada en otros proyectos}
 
-El debate sobre la representación óptima divide a la comunidad entre el uso de \textbf{características extraídas} (como el espectrograma) y el procesamiento directo de la \textbf{onda cruda} (\textit{raw audio}). En el paradigma \textbf{\textit{End-to-End} (E2E)}, se elimina cualquier preprocesamiento analítico, permitiendo que la red reciba la señal unidimensional directamente. Aunque este enfoque exige una enorme capacidad computacional y de memoria debido a la extrema dimensionalidad del audio estándar (por ejemplo, 44 100 muestras por cada segundo), los modelos \textit{End-to-End} son capaces de capturar micro-detalles temporales y relaciones de fase que inevitablemente se pierden al utilizar espectrogramas \citep{oord2016}. 
+El debate sobre la representación óptima divide a la comunidad entre el uso de características extraídas (como el espectrograma) y el procesamiento directo de la onda cruda (\textit{raw audio}). En el paradigma \textbf{\textit{End-to-End} (E2E)}, se elimina cualquier preprocesamiento analítico, permitiendo que la red reciba la señal unidimensional directamente. Aunque este enfoque exige una enorme capacidad computacional y de memoria debido a la extrema dimensionalidad del audio estándar (por ejemplo, 44 100 muestras por cada segundo), los modelos \textit{End-to-End} son capaces de capturar micro-detalles temporales y relaciones de fase que inevitablemente se pierden al utilizar espectrogramas \citep{oord2016}. 
 
-De nuevo, el \textbf{Procesamiento de Señales Digitales Diferenciable (DDSP)}, permitiendo que el modelo controle osciladores y filtros directamente, es un muy buen punto medio \citep{engel2020}.
+De nuevo, el Procesamiento de Señales Digitales Diferenciable (DDSP), permitiendo que el modelo controle osciladores y filtros directamente, es un muy buen punto medio \citep{engel2020}.
 
 \subsection{Datasets}
 
 Para entrenar modelos de inferencia eficaces, se requieren bases de datos masivas y rigurosamente etiquetadas. Además, en el contexto del aprendizaje profundo aplicado al audio, la calidad de la muestra es un factor crítico; en representaciones bidimensionales como el espectrograma, la presencia de ruido o artefactos puede provocar que la CNN asimile patrones erróneos durante el entrenamiento.
 
-En el ámbito general del análisis musical, el \textit{dataset} \textbf{NSynth} se ha consolidado como el estándar actual, proporcionando más de 300 000 notas individuales de diversos instrumentos con etiquetas detalladas sobre sus cualidades acústicas \citep{engel2017}. Sin embargo, para proyectos centrados específicamente en síntesis FM, es habitual recurrir a la \textbf{generación sintética masiva} utilizando emuladores por \textit{software} como \textit{Dexed} (un clon digital del \textbf{Yamaha DX7}). Este enfoque garantiza una correspondencia matemáticamente exacta entre el audio exportado y los parámetros internos del sintetizador \citep{yee2018}.
+En el ámbito general del análisis musical, el \textit{dataset} NSynth se ha consolidado como el estándar actual, proporcionando más de 300 000 notas individuales de diversos instrumentos con etiquetas detalladas sobre sus cualidades acústicas \citep{engel2017}. Sin embargo, para proyectos centrados específicamente en síntesis FM, es habitual recurrir a la generación sintética masiva utilizando emuladores por \textit{software} como \textit{Dexed} (un clon digital del Yamaha DX7). Este enfoque garantiza una correspondencia matemáticamente exacta entre el audio exportado y los parámetros internos del sintetizador \citep{yee2018}.
 
-No obstante, en este proyecto. con el objetivo de acotar el problema, se ha optado por desarrollar un motor de síntesis paramétrico propio, implementado íntegramente mediante la librería \textbf{NumPy}.
+No obstante, en este proyecto. con el objetivo de acotar el problema, se ha optado por desarrollar un motor de síntesis paramétrico propio, implementado íntegramente mediante la librería NumPy.
 
 \begin{figure}[H]
 \centering
