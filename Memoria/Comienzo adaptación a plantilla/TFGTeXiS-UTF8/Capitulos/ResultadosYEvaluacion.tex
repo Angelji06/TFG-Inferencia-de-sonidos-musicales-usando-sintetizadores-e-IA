@@ -383,11 +383,11 @@ En cuanto a \textit{bajo\_rico}, la diferencia de timbre es mayor y se puede obs
     \multirow{2}{*}{\textbf{Pipeline}} & \multicolumn{3}{c||}{\textbf{Métricas Paramétricas (RMSE) $\downarrow$}} & \multicolumn{3}{c|}{\textbf{Métricas Acústicas $\downarrow$}} \\ \cline{2-7} 
     & \textbf{Carrier (Hz)} & \textbf{Ratio} & \textbf{Index} & \textbf{Mel L1 (dB)} & \textbf{MCD} & \textbf{Decoder L1} \\ \hline\hline
     \textbf{P1} & X.XX & X.XX & X.XX & 0.071 & 333.255 & N/A \\ \hline
-    \textbf{P2} & X.XX & X.XX & X.XX & X.XX & X.XX & N/A \\ \hline
-    \textbf{P3} & X.XX & X.XX & X.XX & X.XX & X.XX & X.XX \\ \hline
-    \textbf{P4} & X.XX & X.XX & X.XX & X.XX & X.XX & X.XX \\ \hline
-    \textbf{P5} & X.XX & X.XX & X.XX & X.XX & X.XX & X.XX \\ \hline
-    \textbf{P6} & X.XX & X.XX & X.XX & X.XX & X.XX & X.XX \\ \hline
+    \textbf{P2} & X.XX & X.XX & X.XX & 0.063 & 244.662 & N/A \\ \hline
+    \textbf{P3} & X.XX & X.XX & X.XX & 0.121 & 1189.491 & X.XX \\ \hline
+    \textbf{P4} & X.XX & X.XX & X.XX & 0.088 & 543.758 & X.XX \\ \hline
+    \textbf{P5} & X.XX & X.XX & X.XX & 0.124 & 1283.143 & X.XX \\ \hline
+    \textbf{P6} & X.XX & X.XX & X.XX & 0.085 & 509.565 & X.XX \\ \hline
     \end{tabular}
     }
     \caption{Comparativa de métricas paramétricas y acústicas sobre el Test Set para los 6 pipelines. Las flechas ($\downarrow$) indican que un valor menor representa un mejor rendimiento. El Decoder L1 no aplica (N/A) en las arquitecturas simples.}
@@ -396,3 +396,9 @@ En cuanto a \textit{bajo\_rico}, la diferencia de timbre es mayor y se puede obs
 
 
 % (TODO) Meter comparaciones de los espectrogramas generados por cada uno y compararlos con el original. Justificar esto un poco con que no podemos poner audios en la memoria (obviamente)
+
+La tabla \ref{tab:resultados_cuantitativos} muestra un claro e inesperado ganador, el modelo P2, con la arquitectura simple (\textit{CNNRegressorSimple}), la función de pérdida \textit{SmoothL1} y uso de espectrogramas Mel.
+
+Cabía esperar que fuera un modelo con espectrogramas \textit{Mel (log-perceptual)} el que obtuviera mejores resultados, sin embargo que sea un modelo con arquitectura simple y función de pérdida paramétrica, es cuanto menos inesperado. 
+
+Además, se han comprobado los audios generados por cada modelo y está claro que P2 ha sido el que mejor ha realizado las predicciones. 
