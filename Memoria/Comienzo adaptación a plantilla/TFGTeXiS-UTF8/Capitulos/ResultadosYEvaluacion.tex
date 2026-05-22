@@ -91,13 +91,15 @@ P1 es un modelo con una arquitectura simple (\textit{CNNRegressorSimple}), una f
     \label{fig:test_set_p1}
 \end{figure}
 
-Las gráficas de los resultados de evaluar el modelo mediante el conjunto de prueba (\ref{fig:test_set_p1}) muestran una desviación estándar elevada en relación con la media para ambas métricas, lo que indica unos resultados muy dispersos. 
+En la gráfica \ref{fig:test_set_p1}, se muestran los resultados de la evaluación del modelo con las métricas Mel L1 y MCD, sobre el conjunto de test (\textit{Test Set}) del dataset. Al no tener todavía la referencia de los resultados de los otros modelos, se hace un análisis inicial de la dispersión de los valores obtenidos en las métricas para así evaluar la consistencia del modelo. 
+
+Se observa una desviación estándar elevada en relación con la media para ambas métricas, lo que indica unos resultados muy dispersos. 
 
 En el caso de \textit{Mel L1}, el resultado anterior se debe a que hay una gran cantidad de valores a ambos lados de la media a pesar de que no se alejen demasiado de esta. 
 
-Con \textit{MCD} se puede apreciar que una gran parte de los valores se encuentran a la izquierda de la media (valores mejores que la media), sin embargo hay unos pocos que se alejan de manera exagerada de la media por la derecha, lo que aumenta la desviación estándar y empeora la media. 
+Con \textit{MCD} se puede apreciar que una gran parte de los valores se encuentran a la izquierda de la media (valores mejores que la media), sin embargo hay unos pocos que se alejan considerablemente de esta por la derecha, lo que aumenta la desviación estándar y empeora la media. 
 
-Así pues, se llega a la conclusión que hay ciertos audios que la red gestiona peor que otros, por lo que se pasa a evaluar mediante el \textit{benchmark} de audios variados para analizar este comportamiento. 
+Así pues, se llega a la conclusión de que hay ciertos audios que la red gestiona peor que otros, por lo que se pasa a evaluar mediante el \textit{benchmark} de audios variados para analizar este comportamiento. 
 
 \subsubsection{Evaluación Mediante \textit{Benchmark} Diverso}
 
@@ -111,7 +113,7 @@ Así pues, se llega a la conclusión que hay ciertos audios que la red gestiona 
 Uno de los audios que ha obtenido mejores resultados en las métricas ha sido \textit{muy\_agudo}, mientras que \textit{indice\_maximo} ha sido el peor valorado. Analizando estos extremos se espera encontrar las razones detrás de la dispersión de los resultados sobre el conjunto de prueba.
 
 El audio \textit{muy\_agudo}, se caracteriza por tener muy pocos armónicos y que estos estén bastante separados entre sí y en frecuencias muy altas.
-Al analizar su espectrograma original frente al de la predicción del modelo (figura: \ref{fig:esp_muy_agudo_P1}), se aprecia que la red ha conseguido recrear los armónicos, aunque ha metido algunos de más. La forma de la envolvente también la ha gestionado bien, sin embargo no la ha conseguido colocar en el tiempo con demasiada exactitud. Al oído se puede apreciar la similitud entre original y predicción, siendo la segunda más estridente y con menos sonoridad. 
+Al analizar su espectrograma original frente al de la predicción del modelo (figura: \ref{fig:esp_muy_agudo_P1}), se aprecia que la red ha conseguido recrear los armónicos, aunque ha metido algunos de más. La forma de la envolvente también la ha gestionado bien, sin embargo no la ha colocado en el tiempo con demasiada precisión. Al oído se puede apreciar la similitud entre original y predicción, siendo la segunda más estridente y con menos sonoridad. 
 
 \begin{figure}[H]
     \centering
@@ -132,7 +134,7 @@ En cuanto a \textit{indice\_maximo}, se trata de un audio con un número de arm�
 Con este análisis, se puede concluir que los audios más complejos (con más armónicos y un timbre más elaborado), el modelo los predice peor que los más simples, justificando así su elevada dispersión. 
 
 \subsection{P2: CNNRegressorSimple: SmoothL1, Mel (log-perceptual)}
-El modelo con estructura de \textit{CNNRegressorSimple}, con función de pérdida \textit{SmoothL1} (explicada en el apartado \ref{sec:FuncionPerdida}) y espectrogramas Mel ha necesitado 57 minutos y 57 épocas para entrenarse, acabando con un error de validación 0.006844. Este resultado indica una desviación en la predicción de parámetros mínima. A pesar de esto, se da la misma situación que en el modelo P1, ya que se sigue sin tener en cuenta la inyectividad nula de la síntesis FM.  
+El modelo con estructura de \textit{CNNRegressorSimple}, con función de pérdida \textit{SmoothL1} y espectrogramas Mel ha necesitado 57 minutos y 57 épocas para entrenarse, acabando con un error de validación 0.006844. Este resultado indica una desviación en la predicción de parámetros mínima. A pesar de esto, se da la misma situación que en el modelo P1, ya que se sigue sin tener en cuenta la inyectividad nula de la síntesis FM.  
 
 \subsubsection{Evaluación Mediante \textit{Test Set}}
 
@@ -143,15 +145,11 @@ El modelo con estructura de \textit{CNNRegressorSimple}, con función de pérdid
     \label{fig:test_set_p2}
 \end{figure}
 
-%(TODO) Hablar de la varianza y desviación estándar y así explicar la consistencia del modelo, lo cual puede ser interensante para compararlos también
-
-En la gráfica \ref{fig:test_set_p2}, se muestran los resultados de la evaluación del modelo con las métricas Mel L1 y MCD, sobre el conjunto de test (\textit{Test Set}) del dataset. Al no tener todavía la referencia de los resultados de los otros modelos, se hace un análisis inicial de la dispersión de los valores obtenidos en las métricas para así evaluar la consistencia del modelo. 
-
 Al analizar los resultados obtenidos con \textit{Mel L1}, se pueden observar los siguientes datos: la media es de 0.063 y la \textbf{desviación estándar} es de 0.037. Esto indica una dispersión estadística alta. Lo mismo pasa al interpretar los resultados del \textit{MCD}: la media es de 244.662 y la desviación estándar es de 154.292, un número grande en proporción con la media. 
 
 Estos resultados pueden indicar una consistencia pobre en el modelo, sin embargo, en la gráfica (\ref{fig:test_set_p2}) se visualiza perfectamente la razón de los valores obtenidos. En el caso de \textit{MCD}, el grueso de los valores no se aleja demasiado de la media, pero existen unos pocos valores muy distantes que aumentan la desviación estándar en gran medida.
 
-El caso de \textit{Mel L1} difiere del anterior debido a que la distribución es más uniforme, pero se compensa consiguiendo mejores errores máximos. 
+El caso de \textit{Mel L1} difiere del anterior debido a que gran parte de los valores no cumplen con la media, pero tampoco se alejan demasiado.  
 
 Este comportamiento nos indica que el modelo probablemente gestione mejor unos tipos de audios que otros. Para ello, se pasa a la fase de la evaluación mediante \textit{benchmark}, poniendo a prueba sonidos muy dispares. 
 
