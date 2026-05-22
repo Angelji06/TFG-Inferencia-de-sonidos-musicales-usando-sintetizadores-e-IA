@@ -1,24 +1,37 @@
-\chapter{Experimentación Previa}
+\chapter{Experimentación Paralela}
 \label{cap:ExperimentacionPrevia}
 
 \section{Limitaciones de Fréchet Audio Distance (FAD)}
-Para la primera evaluación del modelo, se seleccionó la métrica \textit{Fréchet Audio Distance} (FAD), descrita en la Sección \ref{cap:EstadoDeLaCuestion}. Su implementacion en el proyecto, se realiza através de la comparación de dos conjuntos de datos: una muestra de 2.000 audios FM generados aleatoriamente
-y sus predicciones con el modelo utilizado en el \textit{Prototipo 4}. El resultado obtenido fue de 0.9999, indica una similitud estadística casi absoluta entre las distribuciones de audio.
+\subsection{Descripción de la Métrica}
+La métrica \textit{Fréchet Audio Distance} (FAD) \citep{kilgour19_interspeech} fue introducida originalmente por investigadores de Google AI y es utilizada actualmente en proyectos muy grandes como 
+MusicLM \citep{agostinelli2023musiclm}, pudiendo considerarse como el estado del arte para medir la calidad objetiva de los audios generados mediante Inteligencia Artificial, adaptando al dominio del audio las métricas utilizadas en la generación de imágenes.
 
+Conceptualmente, el FAD deriva de \textit{Fréchet Inception Distance} (FID), una métrica referente en la evaluación de modelos generativos de imágenes.
+Al igual que su predecesora, esta métrica no realiza comparación muestra a muestra, sino que compara características de alto nivel extraídas por una red neuronal profunda.
 
-A pesar de que el resultado obtenido plantea una evaluación teóricamente óptima, el análisis profundo de los resultados y del funcionamiento de FAD indican una discrepancia. 
+Para la extracción de estas caractarísticas, el FAD utiliza un modelo llamado \textit{VGGish}, un clasificador de audio entrenado con una base de datos 
+de gran envergadura de vídeos de YouTube. Este modelo transforma la señal de audio en \textit{log-mel features} extraídas del espectrograma de magnitud
+
+Finalmente, la métrica se obtiene calculando la \textit{Distancia de Fréchet} entre la música de referencia y la generada. Un valor de FAD reducido indíca una estadística similar entre el audio de referencia y el generado.
+
+\subsection{Limitaciones de la Métrica en el Contexto del \textit{Sound Matching}}
+
+La métrica FAD fue la primera que se seleccionó como forma de evaluación del modelo. Su implementacion en el proyecto, se realiza através de la comparación de dos conjuntos de datos: una muestra de 2.000 audios FM generados aleatoriamente
+y sus predicciones con el modelo de pruebas simplificado (véase \ref{sec:ModeloPruebasSimplificado}). El resultado obtenido fue de 0.9999, indicando una similitud estadística casi absoluta entre las distribuciones de audio.
+
+A pesar de que el resultado obtenido plantea un funcionamiento cercano a la perfección, su análisis y el del funcionamiento de FAD indican una discrepancia. 
 El motivo de la poca validez de la métrica en el proyecto, se atribuye a un error en la interpretación de su 
-utilidad real, ya que el FAD está diseñado para evaluar la calidad global de modelos generativos \cite{kilgour2019}, mientras que este proyecto se centra 
+utilidad real, ya que el FAD está diseñado para evaluar la calidad global de modelos generativos, mientras que este proyecto se centra 
 en la estimación de los parámetros que luego utiliza para generar audio FM. 
 Puesto que tanto el conjunto de referencia como las predicciones se crean mediante síntesis FM, su huella espectral y sus caractarísticas de alto nivel(\textit{embeddings})
-son casi idénticas \cite{kilgour2019}. Por tanto, el FAD evalúa positivamente que el modelo ha aprendido a recrear el timbre o "textura" de 
-la síntesis FM, pero, como se comentaba previamente, resulta una muestra ciega a precisión muestra a muestra. En resumen, se prioriza la 
-verosimilitud estadística del sonido sobre la similitud de las muestras una a una \cite{kilgour2019, agostinelli2023}.
+son casi idénticas. Por tanto, el FAD evalúa positivamente que el modelo ha aprendido a recrear el timbre o "textura" de 
+la síntesis FM, pero, como se comentaba previamente, resulta que no lo hace muestra a muestra. En resumen, se prioriza la 
+verosimilitud estadística del sonido sobre la similitud de las muestras una a una.
 
 \section{Validación por Fuerza Bruta (Grid Search)}
 Una de las cuestiones principales que se plantean en el desarrollo de este proyecto es si el uso de un modelo de Inteligencia Artificial representa
 la aproximación más óptima para el objetivo de la inferencia de parámetros. Esta disyuntiva surge, sobre todo, al analizar los primeros prototipos, 
-como el \textit{Prototipo 4}, en el que se emplean únicamente 3 parámetros para la síntesis FM: \textit{Carrier}, \textit{Index} y \textit{Ratio}.
+como el \textit{Prototipo 4} (modelo de pruebas simplificado), en el que se emplean únicamente 3 parámetros para la síntesis FM: \textit{Carrier}, \textit{Index} y \textit{Ratio}.
 Debido al reducido tamaño de este espacio de parámetros, resulta lógico plantear en la viabilidad de realizar un método de búsqueda exhaustiva 
 (\textit{Grid Search}). Este enfoque consiste en realizar un recorrido iterativo por todas las combinaciones posibles, evaluándolas y registrando 
 aquellas configuraciones que presenten una mayor similitud acústica con
@@ -29,7 +42,7 @@ que simule la percepción de un oído humano experto haría un oído humano expe
 De este modo, se consiguen probar diferentes métricas que evalúen la similitud acústica dentro del algoritmo de \textit{Grid Search}, comprobando
 simultáneamente la viabilidad técnica del enfoque de fuerza bruta frente al modelo predictivo.
 
-Para lograr esta simulación del sistema auditivo humano, la \textbf{Escala Mel} se ha consolidado como el estándar en el procesamiento digital de señales de audio.
+Para lograr esta simulación del sistema auditivo humano, la escala Mel se ha consolidado como el estándar en el procesamiento digital de señales de audio.
 Esta métrica aplica una transformación logarítmica que modela el comportamiento no líneal del oído humano, el cual pierde resolución y sensibilidad con el aumento de
 la frecuencia.
 
@@ -46,18 +59,19 @@ coste computacional, fue el siguiente:
 
 \begin{itemize}
     \item \textbf{Carrier (Frecuencia portadora):} Rango de 100 Hz a 2000 Hz, con incrementos de 100 Hz (20 valores).
-    \item \textbf{Ratio (Frecuencia moduladora):} Rango de 0.05 a 2.0, con incrementos de 0.05 (40 valores).
+    \item \textbf{Ratio (Relación de la Frecuencia Moduladora y la Portadora):} Rango de 0.05 a 2.0, con incrementos de 0.05 (40 valores).
     \item \textbf{Index (Índice de modulación):} Rango de 1.0 a 10.0, con incrementos de 0.5 (19 valores).
 \end{itemize}
 
 Esta configuración genera \textbf{15.200 combinaciones únicas}. Por cada iteración del triple bucle, el algoritmo crea un audio de un segundo de duración mediante síntesis FM. A continuación, se calcula el Error 
 Cuadrático Medio (MSE) respecto a las características del audio original.
 
+Para poner en contexto los datos de tiempo, se especifica que los algoritmos fueron ejecutados en CPU en un ordenador con procesador \textit{Ryzen 5 5500}.
+
 
 \subsection{Espectrograma de Mel}
 La mayor parte de los resultados ejecutados con la métrica Mel en \textit{Grid Search}, muestran valores que difieren
-significativamente de los originales. Debido a la discretización del espacio de búsqueda, el algoritmo tiende a alcanzar mínimos locales manipulando 
-parámetros secundarios para aproximar la distribución de energía evaluada por el Espectrograma Mel.
+significativamente de los originales. Al contar con un espacio de rejilla de tamaño considerable, el algoritmo encuentra mínimos locales en puntos diferentes a los valores originales, ya que estos no existen en el espacio de posibles soluciones.
 
 Un ejemplo claro de este comportamiento se observa al analizar una inferencia donde los parámetros objetivo eran \textit{Carrier} $= 1055.54$ Hz, 
 \textit{Ratio} $= 0.704$ e \textit{Index} $= 9.38$. Los resultados de los tres mejores candidatos del \textit{Grid Search} fueron los siguentes:
@@ -72,17 +86,15 @@ Tiempo total de ejecución: 1 minutos y 5.16 segundos
 #3 -> Error Mel: 148.8820 | Carrier: 400.0, Ratio: 1.85, Index: 10.0
 \end{verbatim}
 
-Aunque la divergencia en la frecuencia portadora (\textit{Carrier}) es superior a 600 Hz, el cálculo de la frecuencia moduladora
-latente ($f_m = Carrier \times Ratio$) explica esta selección. En el audio objetivo, la frecuencia moduladora es de $1055.54 \times 0.704 \approx 743.07$ Hz
-Por otra parte, la frecuencia moduladora en la combinación seleccionada por el algoritmo es de $400.0 \times 1.85 = 740.0$ Hz.
+Aunque la diferencia entre original y predicción en la frecuencia portadora (\textit{Carrier}) es superior a 600 Hz, el cálculo de la frecuencia moduladora
+latente ($f_m = Carrier \times Ratio$) explica esta selección. En el audio objetivo, la frecuencia moduladora es de $1055.54 \times 0.704 \approx 743.07$ Hz y, en la combinación seleccionada por el algoritmo es de $400.0 \times 1.85 = 740.0$ Hz.
 
-Al operar con un índice de modulación elevado ($Index > 9$), la energía espectral de la frecuencia portadora se atenúa severamente,
+Al operar con un índice de modulación elevado ($Index > 9$), la frecuencia portadora deja de ser tan relevante,
 trasladando el peso acústico a las bandas laterales generadas por la modulación. El algoritmo de fuerza bruta, incapaz de seleccionar el tono original por la 
-limitación de la rejilla, optó por anclar el parámetro \textit{Carrier} en 400 Hz para forzar un \textit{Ratio} que replicara con precisión la frecuencia moduladora 
-original (740 Hz). Esto valida empíricamente que, sin un espacio de inferencia continuo como el que proporciona el modelo predictivo de IA, las métricas espectrales 
-son susceptibles a la falsificación de la frecuencia fundamental mediante intermodulación armónica.
+limitación de la rejilla, optó por anclar el parámetro \textit{carrier} en 400 Hz para forzar un \textit{ratio} que replicara con precisión la frecuencia moduladora 
+original (740 Hz). Esto valida empíricamente que, sin un espacio de inferencia continuo como el que proporciona el modelo predictivo de IA, las métricas espectrales falsifican los parámetros encontrando atajos que los acerquen al sonido objetivo, si éxito en gran parte de las ocasiones.
 
-El siguiente ejemplo muestra qué ocurre si esta vez se utiliza un \textit{Carrier} que el algoritmo no pueda seleccionar por la
+El siguiente ejemplo muestra qué ocurre si esta vez se utiliza un \textit{carrier} que el algoritmo no pueda seleccionar por la
 limitación de la rejilla (saltos de 100 Hz) y un índice de modulación bajo.
 
 Parámetros originales:
@@ -104,20 +116,18 @@ Tiempo total de ejecución: 1 minutos y 4.39 segundos
 #3 -> Error Mel: 189.0954 | Carrier: 1700.0, Ratio: 0.65, Index: 1.0
 \end{verbatim}
 
-En este escenario de prueba, el algoritmo dejó en tercera posición a la opción con los valores más parecidos a la original
+En este caso, el algoritmo deja en tercera posición a la opción con los valores más parecidos a la original.
 Mientras que la tercera opción, al oído resulta muy similar pero desafinada, la primera opción difiere excesivamente.
  
 Matemáticamente, al incrementar artificialmente el \textit{Index}, el algoritmo aumenta la anchura de banda del espectro, 
-"difuminando" la energía a lo largo de múltiples bandas laterales. Este espectro ensanchado logra solaparse parcialmente 
-con la frecuencia objetivo (1752 Hz), minimizando el MSE global en la matriz. Sin embargo, acústicamente, el resultado es 
-catastrófico: el algoritmo ha sacrificado un tono puro y definido por un sonido rico en armónicos y percusivo, únicamente 
+dispersando la energía de tal forma que parte se solapa con la frecuencia, objetivo (1752 Hz), minimizando así el MSE. Sin embargo, acústicamente, el resultado es totalmente diferente: el algoritmo ha sacrificado un tono puro y definido por un sonido rico en armónicos y percusivo, únicamente 
 para evadir la penalización de un mínimo local inaccesible.
 
 \subsection{Espectrograma MFCC}
-En contraposición a lo observado con el Espectrograma Mel, la evaluación mediante los Coeficientes Cepstrales en las Frecuencias de Mel (MFCC)
+En contraposición a lo observado con el Espectrograma Mel, la evaluación mediante los MFCC
 obtiene unos resultados lo más cercanos posibles
-a los valores iniciales de los parámetros, teniendo en cuenta que la anchura de la rejilla impide
-que sean más exactos. 
+a los valores iniciales de los parámetros (teniendo en cuenta que la anchura de la rejilla impide
+que sean más exactos). 
 
 Por esta razón, el audio obtenido queda, en la mayoría de ocasiones,
 notablemente desafinado con respecto al original. Sin embargo, se consigue plasmar la \textit{textura} (o timbre)
@@ -165,34 +175,23 @@ Tiempo total de ejecución: 1 minutos y 9.93 segundos
 \end{verbatim}
 
 
-En estos resultados se puede apreciar lo teorizado previamente, el algoritmo encuentra los valores
+En estos resultados se puede apreciar lo explicado previamente, el algoritmo encuentra los valores
 más cercanos a los originales dentro de los saltos de la rejilla. Aun así, cabe mencionar que 
-MFCC no es tan sensible a los cambios de \textit{Pitch} como lo es Mel, lo que implica que, aun teniendo
-unos saltos minúsculos en el \textit{Carrier}, MFCC no conseguiría en todas las ocasiones la nota exacta.
+MFCC no es tan sensible a los cambios de \textit{pitch} como lo es Mel, lo que implica que, aun teniendo
+unos saltos minúsculos en el \textit{carrier}, MFCC no conseguiría en todas las ocasiones la nota exacta.
 
 
 \subsection{Conclusiones}
 El análisis de los datos obtenidos en estas pruebas ha servido, por un lado, para responder a las cuestiones
 iniciales y, por otro, ha planteado nuevas ideas y preguntas.
 
-En cuanto a la viabilidad del método \textit{Grid Search} para la inferencia de parámetros de un sintetizador FM,
+En cuanto a la viabilidad del método \textit{grid search} para la inferencia de parámetros de un sintetizador FM,
 se demuestra con contundencia que los tiempos de ejecución (que aparecen en los resultados anteriores) de dicho algoritmo
 son órdenes de magnitud superiores a los obtenidos en la síntesis realizada por el modelo predictivo. Teniendo el primero 
 una media aproximada de 1 minuto y 5 segundos para Mel y 1 minuto y 10 segundos para MFCC, frente a los 2 o 3 segundos
 que tarda el modelo de inferencia. A esto se le añade el hecho de que se está utilizando un tamaño de rejilla bajo 
 de únicamente 15200 iteraciones, si se ampliasen estos números los tiempos aumentarían también.
 
-Aparte de los tiempos de ejecución, cabe destacar la precisión. Mientras que el método \textit{Grid Search} realiza una 
+Aparte de los tiempos de ejecución, cabe destacar la precisión. Mientras que el método \textit{grid search} realiza una 
 búsqueda discreta de valores, que está sujeta al tamaño de rejilla, la red neuronal es capaz de operar en un espacio continuo.
 
-La siguiente cuestión planteada era la búsqueda de un método de evaluación del modelo de inferencia. 
-Con los análisis llevados a cabo se ha podido comparar entre la opción de utilizar \textit{Espectrogramas de Mel} o \textit{Espectrogramas MFCC}.
-Se ha observado que, al utilizar la métrica obtenida con \textit{Mel}, se van a evaluar de manera positiva combinaciones de parámetros con diferente \textit{Index} que mantengan
-una energía espectral similar, sin importar de forma estricta si esta proviene de la frecuencia portadora o de las bandas laterales moduladoras.Esto deriva en cambios significativos
-en el timbre de la predicción frente al audio original. Por otro lado, la métrica obtenida con \textit{MFCC} presenta una gran sensibilidad
-frente a los cambios en el timbre, lo que resulta de gran utilidad para la evaluación del modelo. 
-
-Por último, se deja planteada la idea de utilizar una función de pérdida híbrida que utilice tanto \textit{Mel} como \textit{MFCC}. La razón
-para llevar dicha implementación a cabo es que se ha visto, durante el proceso de investigación para las anteriores pruebas, ambos son el \textit{estado del arte} en lo que a modelos predictivos de audio se refiere
-y se ha considerado que con una implementación híbrida con ellos, se podría extraer la ventaja de encontrar el \textit{Pitch} de \textit{Mel} y 
-la de encontrar el timbre de \textit{MFCC}.

@@ -1,11 +1,5 @@
-\begin{thebibliography}{21}
+\begin{thebibliography}{30}
 \expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
-
-\bibitem[{algfisica()}]{fourier}
-{\sc algfisica}.
-\newblock 10. teorema de fourier.
-\newblock Disponible en
-  \url{https://lalgfisica.readthedocs.io/es/latest/Oscilaciones_Termo/40_Fourier.html}.
 
 \bibitem[{Allen(1977)}]{allen1977}
 {\sc Allen, J.~B.}
@@ -14,6 +8,17 @@
 \newblock {\em IEEE Transactions on Acoustics, Speech, and Signal
   Processing\/}, Disponible en
   \url{https://ieeexplore.ieee.org/document/1162950}.
+
+\bibitem[{Andrea~Agostinelli(2023)}]{agostinelli2023musiclm}
+{\sc Andrea~Agostinelli, Z. B. J. E. M. V. A. C. Q. H. A. J. A. R. M. T. M. S.
+  N. Z. C.~F., Timo~I.Denk}.
+\newblock Musiclm: Generating music from text.
+\newblock Disponible en \url{https://arxiv.org/pdf/2301.11325}.
+
+\bibitem[{{Anthropic}(2026)}]{claude_code}
+{\sc {Anthropic}}.
+\newblock Claude code docs: Descripción general.
+\newblock 2026.
 
 \bibitem[{Barkan et\ al.(2019)Barkan, Tsiris y Koenigstein}]{barkan2019}
 {\sc Barkan, O.}, {\sc Tsiris, D.} y {\sc Koenigstein, N.}
@@ -35,6 +40,19 @@
 \newblock {\em IEEE Transactions on Acoustics, Speech, and Signal
   Processing\/}, 1980.
 
+\bibitem[{{djexpressions}()}]{adsr}
+{\sc {djexpressions}}.
+\newblock Que es el adsr y como podemos aprovecharlo.
+\newblock Disponible en
+  \url{https://djexpressions.net/que-es-el-adsr-y-como-podemos-aprovecharlo/#google_vignette}.
+
+\bibitem[{{Dreamstime}()}]{SinteFutureMusic}
+{\sc {Dreamstime}}.
+\newblock Más trucos para sintes old-school -técnicas de efectos y
+  programación.
+\newblock Disponible en
+  \url{https://www.futuremusic-es.com/mas-trucos-para-sintes-old-school-tecnicas-de-efectos-y-programacion/}.
+
 \bibitem[{Engel et\ al.(2020)Engel, Hantrakul, Gu y Roberts}]{engel2020}
 {\sc Engel, J.}, {\sc Hantrakul, L.}, {\sc Gu, C.} y {\sc Roberts, A.}
 \newblock {DDSP}: Differentiable digital signal processing.
@@ -48,6 +66,12 @@
 \newblock Neural audio synthesis of musical notes with wavenet autoencoders.
 \newblock En {\em Proceedings of the 34th International Conference on Machine
   Learning (ICML)\/}. PMLR, 2017.
+
+\bibitem[{Girshick(2015)}]{girshick2015fast}
+{\sc Girshick, R.}
+\newblock Fast {R-CNN}.
+\newblock En {\em Proceedings of the IEEE international conference on computer
+  vision\/}, p\'aginas 1440--1448. 2015.
 
 \bibitem[{Gong et\ al.(2021)Gong, Chung y Glass}]{gong2021}
 {\sc Gong, Y.}, {\sc Chung, Y.-A.} y {\sc Glass, J.}
@@ -71,6 +95,27 @@
 \newblock Síntesis (5): síntesis aditiva.
 \newblock Disponible en
   \url{https://www.hispasonic.com/tutoriales/sintesis-5-sintesis-aditiva/38297}.
+
+\bibitem[{Huber(1964)}]{huber1964robust}
+{\sc Huber, P.~J.}
+\newblock Robust estimation of a location parameter.
+\newblock {\em The Annals of Mathematical Statistics\/}, vol.\ 35(1), p\'aginas
+  73--101, 1964.
+
+\bibitem[{Kilgour et\ al.(2019)Kilgour, Zuluaga, Roblek y
+  Sharif}]{kilgour19_interspeech}
+{\sc Kilgour, K.}, {\sc Zuluaga, M.}, {\sc Roblek, D.} y {\sc Sharif, M.}
+\newblock Fréchet audio distance: A reference-free metric for evaluating music
+  enhancement algorithms.
+\newblock Disponible en
+  \url{https://www.isca-archive.org/interspeech_2019/kilgour19_interspeech.pdf}.
+
+\bibitem[{Kingma y Ba(2015)}]{kingma2015adam}
+{\sc Kingma, D.~P.} y {\sc Ba, J.}
+\newblock Adam: A method for stochastic optimization.
+\newblock En {\em 3rd International Conference on Learning Representations,
+  ICLR 2015, San Diego, CA, USA, May 7-9, 2015, Conference Track
+  Proceedings\/}. 2015.
 
 \bibitem[{Kong et\ al.(2020)Kong, Cao, Iqbal, Wang, Wang y Plumbley}]{kong2020}
 {\sc Kong, Q.}, {\sc Cao, Y.}, {\sc Iqbal, T.}, {\sc Wang, Y.}, {\sc Wang, W.}
@@ -99,6 +144,18 @@
   y {\sc Kavukcuoglu, K.}
 \newblock Wavenet: A generative model for raw audio.
 \newblock {\em arXiv preprint arXiv:1609.03499\/}, 2016.
+
+\bibitem[{{OpenCV}()}]{CNNOpenCV}
+{\sc {OpenCV}}.
+\newblock Convolutional neural network (cnn): A complete guide.
+\newblock Disponible en
+  \url{https://developersbreach.com/convolution-neural-network-deep-learning/}.
+
+\bibitem[{{Reverb Machine}()}]{AphexTwinReverb}
+{\sc {Reverb Machine}}.
+\newblock Aphex twin: Selected ambient works 85-92 synth sounds.
+\newblock Disponible en
+  \url{https://reverbmachine.com/blog/aphex-twin-selected-ambient-works-85-92/}.
 
 \bibitem[{Stevens et\ al.(1937)Stevens, Volkmann y Newman}]{stevens1937}
 {\sc Stevens, S.~S.}, {\sc Volkmann, J.} y {\sc Newman, E.~B.}
@@ -136,6 +193,7 @@
 \newblock Automatic programming of {VST} sound synthesizers using deep networks
   and other techniques.
 \newblock {\em IEEE Transactions on Emerging Topics in Computational
-  Intelligence\/}, 2018.
+  Intelligence\/}, Disponible en
+  \url{https://doi.org/10.1109/TETCI.2017.2785209}.
 
 \end{thebibliography}

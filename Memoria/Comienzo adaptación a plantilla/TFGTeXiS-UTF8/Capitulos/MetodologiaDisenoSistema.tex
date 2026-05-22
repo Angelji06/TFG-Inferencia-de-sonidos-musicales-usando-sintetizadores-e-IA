@@ -187,12 +187,32 @@ Otro ejemplo, más común, ocurre en los casos en los que se trabaja sobre un í
 Manteniendo el objetivo de ampliar el espacio de pruebas, se permite también el uso de diferentes funciones de pérdida. Todas basadas en aplicaciones reales en la literatura actual.
 
 El modelo simple evalua la diferencia paramétrica únicamente mediante
-\textit{SmoothL1 Loss}. Esta se utiliza por su robustez y versatilidad en la regresión numérica: cuando la diferencia 
-entre el valor real y el predicho es muy pequeña, se comporta como un Error Cuadrático (L2), lo que suaviza la convergencia
-de gradientes; y ante desviaciones grandes, se asemeja al Error Absoluto (L1), de forma que los casos aislados que se alejan del resto 
+\textit{SmoothL1 Loss} (\ref{eq:smoothL1}), popularizada por el aprendizaje profundo \citep{girshick2015fast} e inspirada en la función de coste de \cite{huber1964robust}. Esta se utiliza por su robustez y versatilidad en la regresión numérica: cuando la diferencia 
+entre el valor real y el predicho es muy pequeña, se comporta como un Error Cuadrático (L2: \ref{eq:L2}), lo que suaviza la convergencia
+de gradientes; y ante desviaciones grandes, se asemeja al Error Absoluto (L1: \ref{eq:L1}), de forma que los casos aislados que se alejan del resto 
 no desestabilicen la red. Esta función de pérdida tiene la desventaja de no tener en cuenta la no-inyectividad de la síntesis FM.
 
-\textcolor{red}{formula L1 ,L2 y SmoothL1 + citar papers de donde salen}
+\begin{equation}
+\label{eq:L1}
+L_1(y, \hat{y}) = |y - \hat{y}|
+\end{equation}
+
+\begin{equation}
+\label{eq:L2}
+L_2(y, \hat{y}) = (y - \hat{y})^2
+\end{equation}
+
+Siendo $\hat{y}$ una predicción y $y$ un valor real.
+
+\begin{equation}
+\label{eq:smoothL1}
+SmoothL_1(y, \hat{y}) = 
+\begin{cases} 
+0.5 \frac{(y - \hat{y})^2}{\beta} & \text{si } |y - \hat{y}| < \beta \\ 
+|y - \hat{y}| - 0.5 \beta & \text{en caso contrario} 
+\end{cases}
+\end{equation}
+Donde $\beta$ es un hiperparámetro (umbral) que determina el punto exacto de transición entre el comportamiento cuadrático (que suaviza el gradiente) y el comportamiento lineal (que evita la desestabilización por valores atípicos). Por lo general se fija a 1.
 
 En cuanto al modelo CNNRegressor5, se permite la elección de una de las siguientes funciones de pérdida:
 \begin{itemize}
@@ -200,13 +220,17 @@ En cuanto al modelo CNNRegressor5, se permite la elección de una de las siguien
     Es una función de pérdida híbrida, que combina el Error Absoluto Medio (L1) de la reconstrucción del 
     espectrograma, un refuerzo estructural de Convegencia Espectral (SC), y la penalización paramétrica anterior.
     La primera se lleva el peso principal (de 1.0), calcula el Error Absoluto Medio píxel a píxel entre el espectrograma original y el reconstruido (en decibelios).
-    La Convergencia Espectral (SC) se aplica con un peso medio (de 0.5) para evitar los espectros borrosos generados por L1. Esta métrica calcula la norma de Frobenius 
+    La Convergencia Espectral (SC: \ref{eq:spectral_convergence}) se aplica con un peso medio (de 0.5) para evitar los espectros borrosos generados por L1. Esta métrica calcula la norma de Frobenius 
     para evaluar la energía global (relación armónica), regularizando el timbre. A la penalización paramétrica se le da una importancia muy baja (0.05), ya que no es demasiado importante
     debido al carácter no inyectivo de la síntesis FM.
 
-    La idea de buscar una función de pérdida que se base directamente en la diferencia de espectrogramas, y específicamente en métricas de similitud espectral como la SC, intenta ser la solución al problema de la inyectividad. El artículo \textit{Inversynth} \citep{barkan2019} fue nuestra inspiración directa para implementarla.
+    La idea de buscar una función de pérdida que se base directamente en la diferencia de espectrogramas, y específicamente en métricas de similitud espectral como la SC, intenta ser la solución al problema de la inyectividad. El artículo \textit{InverSynth} \citep{barkan2019} fue nuestra inspiración directa para implementarla, con la diferencia de que medimos el error sobre el espectrograma y no sobre los parámetros.
     
-    \textcolor{red}{formula convergencia espectral e indicar diferencias con Inversynth}
+    \begin{equation}
+        \label{eq:spectral_convergence}
+        SC(S, \hat{S}) = \frac{\lVert S - \hat{S} \rVert_F}{\lVert S \rVert_F}
+    \end{equation}
+    Siendo $S$ el espectrograma original y $\hat{S}$ el generado.
 
     \item \textbf{MultiScaleSpectralLoss: } Esta función está inspirada en el modelo de síntesis diferencial DDSP \citep{engel2020}. Al estar utilizando 
     espectrogramas, se simulan los distintos tamaños de ventana de Fourier mediante agrupamientos espaciales temporales (\textit{Average Pooling}).
@@ -221,6 +245,7 @@ En cuanto al modelo CNNRegressor5, se permite la elección de una de las siguien
 
 
 \subsection{Modelo de Pruebas Simplificado}
+\label{sec:ModeloPruebasSimplificado}
 
 Se decide mantener un modelo simplificado, para la realización de pruebas, que infiere únicamente 3 parámetros: frecuencia portadora (\textit{carrier}), frecuencia moduladora (\textit{ratio}) e índice de modulación (\textit{index}). 
 
