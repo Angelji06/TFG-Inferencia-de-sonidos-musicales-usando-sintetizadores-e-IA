@@ -36,43 +36,32 @@
 \contentsline {section}{\numberline {4.5}Estructura del Código}{29}{section.76}%
 \contentsline {chapter}{\numberline {5}Resultados y Evaluación}{31}{chapter.77}%
 \contentsline {section}{\numberline {5.1}Definición de los Pipelines Experimentales}{32}{section.78}%
-\contentsline {section}{\numberline {5.2}Características del \textit {Hardware} empleado en el entrenamiento de los modelos}{33}{section.80}%
-\contentsline {section}{\numberline {5.3}Evaluación de las Diferentes Arquitecturas y Funciones de Pérdida}{33}{section.81}%
-\contentsline {subsection}{\numberline {5.3.1}P1: CNNRegressorSimple: SmoothL1, STFT lineal}{33}{subsection.82}%
-\contentsline {subsubsection}{\numberline {5.3.1.1}Evaluación Mediante \textit {Test Set}}{34}{subsubsection.83}%
-\contentsline {subsubsection}{\numberline {5.3.1.2}Evaluación Mediante \textit {Benchmark} Diverso}{35}{subsubsection.85}%
-\contentsline {subsection}{\numberline {5.3.2}P2: CNNRegressorSimple: SmoothL1, Mel (log-perceptual)}{37}{subsection.89}%
-\contentsline {subsubsection}{\numberline {5.3.2.1}Evaluación Mediante \textit {Test Set}}{38}{subsubsection.90}%
-\contentsline {subsubsection}{\numberline {5.3.2.2}Evaluación Mediante \textit {Benchmark} Diverso}{39}{subsubsection.92}%
-\contentsline {subsection}{\numberline {5.3.3}P3: CNNRegressor5: HybridLoss, STFT lineal}{41}{subsection.96}%
-\contentsline {subsubsection}{\numberline {5.3.3.1}Evaluación Mediante \textit {Test Set}}{42}{subsubsection.97}%
-\contentsline {subsubsection}{\numberline {5.3.3.2}Evaluación Mediante \textit {Benchmark} Diverso}{42}{subsubsection.99}%
-\contentsline {subsection}{\numberline {5.3.4}P4: CNNRegressor5: HybridLoss, Mel (log-perceptual)}{43}{subsection.102}%
-\contentsline {subsubsection}{\numberline {5.3.4.1}Evaluación Mediante \textit {Test Set}}{44}{subsubsection.103}%
-\contentsline {subsubsection}{\numberline {5.3.4.2}Evaluación Mediante \textit {Benchmark} Diverso}{45}{subsubsection.105}%
-\contentsline {subsection}{\numberline {5.3.5}P5: CNNRegressor5: MultiScaleSpectralLoss, STFT lineal}{47}{subsection.109}%
-\contentsline {subsubsection}{\numberline {5.3.5.1}Evaluación Mediante \textit {Test Set}}{48}{subsubsection.110}%
-\contentsline {subsubsection}{\numberline {5.3.5.2}Evaluación Mediante \textit {Benchmark} Diverso}{48}{subsubsection.112}%
-\contentsline {subsection}{\numberline {5.3.6}P6: CNNRegressor5: MultiScaleSpectralLoss, Mel (log-perceptual)}{50}{subsection.116}%
-\contentsline {subsubsection}{\numberline {5.3.6.1}Evaluación Mediante \textit {Test Set}}{51}{subsubsection.117}%
-\contentsline {subsubsection}{\numberline {5.3.6.2}Evaluación Mediante \textit {Benchmark} Diverso}{51}{subsubsection.119}%
-\contentsline {section}{\numberline {5.4}Comparación de los Resultados Obtenidos}{53}{section.123}%
-\contentsline {chapter}{\numberline {6}Experimentación Paralela}{55}{chapter.125}%
-\contentsline {section}{\numberline {6.1}Limitaciones de Fréchet Audio Distance (FAD)}{55}{section.126}%
-\contentsline {subsection}{\numberline {6.1.1}Descripción de la Métrica}{55}{subsection.127}%
-\contentsline {subsection}{\numberline {6.1.2}Limitaciones de la Métrica en el Contexto del \textit {Sound Matching}}{55}{subsection.128}%
-\contentsline {section}{\numberline {6.2}Validación por Fuerza Bruta (Grid Search)}{56}{section.129}%
-\contentsline {subsection}{\numberline {6.2.1}Diseño experimental y parametrización del Grid Search}{57}{subsection.130}%
-\contentsline {subsection}{\numberline {6.2.2}Espectrograma de Mel}{57}{subsection.131}%
-\contentsline {subsection}{\numberline {6.2.3}Espectrograma MFCC}{58}{subsection.132}%
-\contentsline {subsection}{\numberline {6.2.4}Conclusiones}{59}{subsection.133}%
-\contentsline {chapter}{\numberline {7}Conclusiones y Trabajo Futuro}{61}{chapter.134}%
-\contentsline {chapter}{\numberline {8}Introduction}{63}{chapter.140}%
-\contentsline {section}{\numberline {8.1}Motivation}{63}{section.141}%
-\contentsline {section}{\numberline {8.2}Objectives}{64}{section.144}%
-\contentsline {section}{\numberline {8.3}Work Plan}{65}{section.145}%
+\contentsline {section}{\numberline {5.2}Introduccion y Configuración del Entorno}{33}{section.80}%
+\contentsline {subsection}{\numberline {5.2.1}Características del \textit {Hardware} empleado en el entrenamiento de los modelos}{33}{subsection.81}%
+\contentsline {subsection}{\numberline {5.2.2}Configuración de las Pruebas}{33}{subsection.82}%
+\contentsline {subsection}{\numberline {5.2.3}Convergencia y Dinámica del Entrenamiento}{34}{subsection.83}%
+\contentsline {subsection}{\numberline {5.2.4}Análisis Crítico de las Métricas de Evaluación}{34}{subsection.85}%
+\contentsline {section}{\numberline {5.3}Evaluación sobre el Conjunto de Prueba (\textit {Test Set})}{35}{section.86}%
+\contentsline {section}{\numberline {5.4}Evaluación sobre el Banco de Pruebas (\textit {benchmark})}{38}{section.89}%
+\contentsline {subsection}{\numberline {5.4.1}Comportamiento ante sonidos percusivos y cortos}{39}{subsection.91}%
+\contentsline {subsection}{\numberline {5.4.2}Comportamiento ante sonidos graves y armónicos}{39}{subsection.92}%
+\contentsline {subsection}{\numberline {5.4.3}Comportamiento ante sonidos sostenidos complejos}{39}{subsection.93}%
+\contentsline {chapter}{\numberline {6}Experimentación Paralela}{41}{chapter.94}%
+\contentsline {section}{\numberline {6.1}Limitaciones de Fréchet Audio Distance (FAD)}{41}{section.95}%
+\contentsline {subsection}{\numberline {6.1.1}Descripción de la Métrica}{41}{subsection.96}%
+\contentsline {subsection}{\numberline {6.1.2}Limitaciones de la Métrica en el Contexto del \textit {Sound Matching}}{41}{subsection.97}%
+\contentsline {section}{\numberline {6.2}Validación por Fuerza Bruta (Grid Search)}{42}{section.98}%
+\contentsline {subsection}{\numberline {6.2.1}Diseño experimental y parametrización del Grid Search}{43}{subsection.99}%
+\contentsline {subsection}{\numberline {6.2.2}Espectrograma de Mel}{43}{subsection.100}%
+\contentsline {subsection}{\numberline {6.2.3}Espectrograma MFCC}{44}{subsection.101}%
+\contentsline {subsection}{\numberline {6.2.4}Conclusiones}{45}{subsection.102}%
+\contentsline {chapter}{\numberline {7}Conclusiones y Trabajo Futuro}{47}{chapter.103}%
+\contentsline {chapter}{\numberline {8}Introduction}{49}{chapter.109}%
+\contentsline {section}{\numberline {8.1}Motivation}{49}{section.110}%
+\contentsline {section}{\numberline {8.2}Objectives}{51}{section.115}%
+\contentsline {section}{\numberline {8.3}Work Plan}{51}{section.116}%
 \babel@toc {english}{}\relax 
-\contentsline {chapter}{Conclusions and Future Work}{67}{chapter*.146}%
-\contentsline {chapter}{Contribuciones Personales}{69}{chapter*.152}%
+\contentsline {chapter}{Conclusions and Future Work}{53}{chapter*.117}%
+\contentsline {chapter}{Contribuciones Personales}{55}{chapter*.123}%
 \babel@toc {spanish}{}\relax 
-\contentsline {chapter}{Bibliograf\'{\i }a}{71}{chapter*.153}%
+\contentsline {chapter}{Bibliograf\'{\i }a}{57}{chapter*.124}%
