@@ -1,3 +1,5 @@
+# CLASE GENERADA CON CHAUDE CODE, REVISADA Y CORREGIDA POR NOSOTROS
+
 import threading
 import tkinter as tk
 from tkinter import ttk, messagebox

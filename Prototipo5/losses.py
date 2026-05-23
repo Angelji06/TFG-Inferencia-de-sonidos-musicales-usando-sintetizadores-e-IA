@@ -13,13 +13,6 @@ import torch.nn.functional as F
 #
 #   factor=1  → resolución completa (ventana pequeña)
 #   factor=32 → 32 frames colapsados en 1 (ventana grande)
-#
-# Por cada escala s:
-#   L_s = ||mag_pred_s - mag_tgt_s||_1          ← L1 sobre magnitudes lineales (como DDSP)
-#       + alpha * ||dB_pred_s  - dB_tgt_s||_1   ← L1 sobre log-magnitudes   (como DDSP)
-#
-# L_total = media(L_s para todo s)  +  param_weight * SmoothL1(params)
-
 # ──────────────────────────────────────────────────────────────────────────────
 # HYBRID LOSS
 # ──────────────────────────────────────────────────────────────────────────────
@@ -39,11 +32,7 @@ import torch.nn.functional as F
 
 
 class MultiScaleSpectralLoss(nn.Module):
-    def __init__(self,
-                 time_scales=(1, 2, 4, 8, 16, 32),  # factores de pooling temporal (de fino a grueso)
-                 alpha=1.0,                            # peso del término log-magnitud
-                 param_weight=0.05,
-                 eps=1e-8):
+    def __init__(self, time_scales=(1, 2, 4, 8, 16, 32), alpha=1.0, param_weight=0.05, eps=1e-8):
         super().__init__()
         self.time_scales  = time_scales
         self.alpha        = alpha
@@ -52,7 +41,6 @@ class MultiScaleSpectralLoss(nn.Module):
         self.param_loss   = nn.SmoothL1Loss()
 
     def _scale_loss(self, pred_db, tgt_db, pool_factor):
-        """Pérdida a una escala temporal dada."""
         if pool_factor > 1:
             # Colapsar 'pool_factor' frames temporales en uno (dimensión W)
             pred_db = F.avg_pool2d(pred_db, kernel_size=(1, pool_factor), stride=(1, pool_factor))
