@@ -39,29 +39,30 @@
 \contentsline {section}{\numberline {5.2}Introduccion y Configuración del Entorno}{33}{section.80}%
 \contentsline {subsection}{\numberline {5.2.1}Características del \textit {Hardware} empleado en el entrenamiento de los modelos}{33}{subsection.81}%
 \contentsline {subsection}{\numberline {5.2.2}Configuración de las Pruebas}{33}{subsection.82}%
-\contentsline {subsection}{\numberline {5.2.3}Convergencia y Dinámica del Entrenamiento}{34}{subsection.83}%
-\contentsline {subsection}{\numberline {5.2.4}Análisis Crítico de las Métricas de Evaluación}{34}{subsection.85}%
+\contentsline {subsection}{\numberline {5.2.3}Convergencia y Dinámica del Entrenamiento}{33}{subsection.83}%
+\contentsline {subsection}{\numberline {5.2.4}Análisis Crítico de las Métricas de Evaluación}{35}{subsection.85}%
 \contentsline {section}{\numberline {5.3}Evaluación sobre el Conjunto de Prueba (\textit {Test Set})}{35}{section.86}%
 \contentsline {section}{\numberline {5.4}Evaluación sobre el Banco de Pruebas (\textit {benchmark})}{38}{section.89}%
-\contentsline {subsection}{\numberline {5.4.1}Comportamiento ante sonidos percusivos y cortos}{39}{subsection.91}%
-\contentsline {subsection}{\numberline {5.4.2}Comportamiento ante sonidos graves y armónicos}{39}{subsection.92}%
-\contentsline {subsection}{\numberline {5.4.3}Comportamiento ante sonidos sostenidos complejos}{39}{subsection.93}%
-\contentsline {chapter}{\numberline {6}Experimentación Paralela}{41}{chapter.94}%
-\contentsline {section}{\numberline {6.1}Limitaciones de Fréchet Audio Distance (FAD)}{41}{section.95}%
-\contentsline {subsection}{\numberline {6.1.1}Descripción de la Métrica}{41}{subsection.96}%
-\contentsline {subsection}{\numberline {6.1.2}Limitaciones de la Métrica en el Contexto del \textit {Sound Matching}}{41}{subsection.97}%
-\contentsline {section}{\numberline {6.2}Validación por Fuerza Bruta (Grid Search)}{42}{section.98}%
-\contentsline {subsection}{\numberline {6.2.1}Diseño experimental y parametrización del Grid Search}{43}{subsection.99}%
-\contentsline {subsection}{\numberline {6.2.2}Espectrograma de Mel}{43}{subsection.100}%
-\contentsline {subsection}{\numberline {6.2.3}Espectrograma MFCC}{44}{subsection.101}%
-\contentsline {subsection}{\numberline {6.2.4}Conclusiones}{45}{subsection.102}%
-\contentsline {chapter}{\numberline {7}Conclusiones y Trabajo Futuro}{47}{chapter.103}%
-\contentsline {chapter}{\numberline {8}Introduction}{49}{chapter.109}%
-\contentsline {section}{\numberline {8.1}Motivation}{49}{section.110}%
-\contentsline {section}{\numberline {8.2}Objectives}{51}{section.115}%
-\contentsline {section}{\numberline {8.3}Work Plan}{51}{section.116}%
+\contentsline {subsection}{\numberline {5.4.1}Comportamiento ante sonidos percusivos y cortos}{39}{subsection.92}%
+\contentsline {subsection}{\numberline {5.4.2}Comportamiento ante sonidos graves}{40}{subsection.95}%
+\contentsline {subsection}{\numberline {5.4.3}Comportamiento ante sonidos sostenidos complejos}{42}{subsection.98}%
+\contentsline {section}{\numberline {5.5}Conclusiones del Capítulo}{42}{section.100}%
+\contentsline {chapter}{\numberline {6}Experimentación Paralela}{45}{chapter.101}%
+\contentsline {section}{\numberline {6.1}Limitaciones de Fréchet Audio Distance (FAD)}{45}{section.102}%
+\contentsline {subsection}{\numberline {6.1.1}Descripción de la Métrica}{45}{subsection.103}%
+\contentsline {subsection}{\numberline {6.1.2}Limitaciones de la Métrica en el Contexto del \textit {Sound Matching}}{45}{subsection.104}%
+\contentsline {section}{\numberline {6.2}Validación por Fuerza Bruta (Grid Search)}{46}{section.105}%
+\contentsline {subsection}{\numberline {6.2.1}Diseño experimental y parametrización del Grid Search}{47}{subsection.106}%
+\contentsline {subsection}{\numberline {6.2.2}Espectrograma de Mel}{47}{subsection.107}%
+\contentsline {subsection}{\numberline {6.2.3}Espectrograma MFCC}{48}{subsection.108}%
+\contentsline {subsection}{\numberline {6.2.4}Conclusiones}{49}{subsection.109}%
+\contentsline {chapter}{\numberline {7}Conclusiones y Trabajo Futuro}{51}{chapter.110}%
+\contentsline {chapter}{\numberline {8}Introduction}{53}{chapter.116}%
+\contentsline {section}{\numberline {8.1}Motivation}{53}{section.117}%
+\contentsline {section}{\numberline {8.2}Objectives}{55}{section.122}%
+\contentsline {section}{\numberline {8.3}Work Plan}{55}{section.123}%
 \babel@toc {english}{}\relax 
-\contentsline {chapter}{Conclusions and Future Work}{53}{chapter*.117}%
-\contentsline {chapter}{Contribuciones Personales}{55}{chapter*.123}%
+\contentsline {chapter}{Conclusions and Future Work}{57}{chapter*.124}%
+\contentsline {chapter}{Contribuciones Personales}{59}{chapter*.130}%
 \babel@toc {spanish}{}\relax 
-\contentsline {chapter}{Bibliograf\'{\i }a}{57}{chapter*.124}%
+\contentsline {chapter}{Bibliograf\'{\i }a}{61}{chapter*.131}%

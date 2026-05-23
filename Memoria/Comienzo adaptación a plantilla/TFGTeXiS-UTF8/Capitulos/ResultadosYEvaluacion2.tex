@@ -79,11 +79,13 @@ Por otro lado, se ha elegido un \textit{Batch Size} de tamaño 32. Este, aparte 
     \item \textbf{\textit{Batch Size}: }32
 \end{itemize}
 
+%\clearpage
+
 \subsection{Convergencia y Dinámica del Entrenamiento}
 
 \begin{table}[H]
     \centering
-    \renewcommand{\arraystretch}{1.2}
+    \resizebox{\textwidth}{!}{%
     \begin{tabular}{|c|c|c|c|}
     \hline
     \textbf{Modelo} & \textbf{Función de Pérdida (Validación)} & \textbf{Épocas} & \textbf{Error de Validación (Mínimo)} \\ \hline\hline
@@ -93,7 +95,8 @@ Por otro lado, se ha elegido un \textit{Batch Size} de tamaño 32. Este, aparte 
     \textbf{P4} & HybridLoss (Acústica) & 25 & 0.6723 \\ \hline\hline
     \textbf{P5} & MultiScaleSpectralLoss (Acústica) & 35 & 0.4297 \\ \hline
     \textbf{P6} & MultiScaleSpectralLoss (Acústica) & 60 & 0.6974 \\ \hline
-    \end{tabular}
+    \end{tabular}%
+    }
     \caption{Resumen del rendimiento durante la fase de entrenamiento (\textit{Early Stopping} = 10). Cabe destacar que los errores de los modelos que presentan funciones de pérdida diferentes no son comparables.}
     \label{tab:entrenamiento_epochs}
 \end{table}
@@ -101,6 +104,8 @@ Por otro lado, se ha elegido un \textit{Batch Size} de tamaño 32. Este, aparte 
 La Tabla \ref{tab:entrenamiento_epochs} muestra el funcionamiento de \textit{Early Stopping} y cómo cada red tarda un número diferente de épocas en llegar a cumplir con este valor de paciencia. Destaca en la eficiencia de entrenamiento el modelo P4, el cual consigue entrenarse en tan solo 25 \textit{epochs}, mientras que la arquitectura P3, que solo difiere en el tipo de espectrograma, necesitó extenderse hasta las 59 épocas. 
 
 Es importante remarcar que los resultados de los errores de validación de diferentes funciones de pérdida no son comparables, siendo lógico que las pérdidas paramétricas registren errores inferiores en comparación a las pérdidas acústicas, ya que estas miden diferencias de magnitud y energía (en decibelios).
+
+\clearpage
 
 \subsection{Análisis Crítico de las Métricas de Evaluación}
 \label{sec:AnalisisCriticoMetricas}
@@ -111,6 +116,27 @@ Durante la experimentación, se dectectó una relación directa entre la duraci�
 A pesar de este hecho, la experimentación no queda invalidada, simplemente se tiene en cuenta para la interpretación de las gráficas.
 
 \section{Evaluación sobre el Conjunto de Prueba (\textit{Test Set})}
+
+La Figura \ref{fig:comparativa_test_set_global} recoge la distribución visual de los errores de cada arquitectura, marcando dónde se encuentra la media. Por otro lado, la Tabla \ref{tab:metricas_exactas_test} contiene la información exacta de la media y desviación estándar de cada modelo.
+
+Al proceder con la comparación de cada modelo con su contraparte con la misma arquitectura y diferente tipo de espectrograma, se puede apreciar que los modelos con espectrogramas Mel han conseguido resultados que superan significativamente a los obtenidos con STFT. Como indican los datos, P2 consigue errores inferiores a P1, P4 a P3 y P6 a P5. 
+
+Este resultado era esperable, debido a la característica ya comentada de los espectrogramas Mel, que simulan la percepción del oído humano y facilitan la extracción de características a la red neuronal. 
+
+En cuanto al mejor resultado obtenido en la evaluación del conjunto de prueba, sorprende que se trate de P2, puesto que su función de pérdida (\textit{SmoothL1}) es paramétrica, lo cual hemos visto con anterioridad que es arriesgado porque la síntesis FM no es inyectiva y las funciones híbridas (de P3 a P6) surgían del intento de asumir dicha característica. Adicionalmente, cabe destacar que P2 utiliza la arquitectura \textit{CNNRegressorSimple}, de la cual, al ser más simple y carecer de \textit{decoder}, se esperaban peores resultados.
+
+El análisis de los resultados no nos lleva a descartar directamente los últimos modelos y a quedarnos únicamente con P2, sino que encontramos una explicación que justifica los resultados. Las estructuras simples presentan una ventaja inicial en este caso: para la red resulta considerablemente más sencillo comparar números exactos en funciFones de pérdida paramétricas que evaluar imágenes (espectrogramas) en funciones acústicas.
+
+Al añadir un \textit{decoder} y funciones de pérdida acústicas e híbridas, es muy probable que se trate de arquitecturas muy complejas para el tamaño del dataset. En consecuencia, la red neuronal se centra también en la reconstrucción de los detalles visuales en lugar de exclusivamente en aprender los parámetros. 
+
+%Estoy pensando en mover esto a un apartado final de conclusiones del capítulo
+Como conclusión, queda claro que para el tamaño de dataset limitado que hemos utilizado, los modelos simples convergen antes en mejores resultados, pero como línea de trabajo futuro interesaría ampliar los datos y seguir probando los modelos complejos.
+
+En cuanto a la dispersión de los valores de cada modelo (véase Figura \ref{fig:comparativa_test_set_global} y la Tabla \ref{tab:metricas_exactas_test}), se puede apreciar que la dispersión de los modelos es, en general, elevada, sobre todo en modelos como P1 y P2 con desviaciones estándar en la métrica MCD que se acercan considerablemente a la media. En Mel L1 se suelen presentar valores que no se alejan mucho de la media pero los valores que se alejan tienen frecuencias de aparición altas, subiendo  así la desviación estándar. En cuanto a MCD, la mayoría de los valores se congregan alrededor de la media, pero existen unos pocos casos con resultados muy alejados que sesgan la desviación estándar. 
+
+Para entender la escasez de consistencia de los modelos y los casos que se salen de los valores de las medios de las métricas, hace falta tener en cuenta el sesgo de Mel L1 y MCD (véase \ref{sec:AnalisisCriticoMetricas}). En la Figura \ref{fig:comparativa_test_set_global}, los valores de las gráficas que más se alejan de la media, es muy probable que sean audios cortos/percusivos (los que consiguen mejor puntuación) y largos/sostenidos (los que más se alejan por la derecha).
+
+Para comprobar esta hipótesis, en la siguiente sección se analiza cómo cada red gestiona distintos tipos de audio.
 
 \begin{figure}[H]
     \centering
@@ -181,30 +207,11 @@ A pesar de este hecho, la experimentación no queda invalidada, simplemente se t
     \textbf{P5} & $0.124 \pm \text{0.040}$ & $1283.143 \pm \text{440.310}$ \\ \hline
     \textbf{P6} & $0.085 \pm \text{0.038}$ & $509.565 \pm \text{272.509}$ \\ \hline
     \end{tabular}
-    \caption{Resultados (Media $\pm$ Desviación Estándar) de las métricas acústicas sobre el \textit{Test Set} para las seis topologías.}
+    \caption{Resultados (Media $\pm$ Desviación Estándar) de las métricas acústicas sobre el \textit{Test Set} para las seis configuraciones.}
     \label{tab:metricas_exactas_test}
 \end{table}
 
-La Figura \ref{fig:comparativa_test_set_global} recoge la distribución visual de los errores de cada arquitectura, marcando dónde se encuentra la media. Por otro lado, la Tabla \ref{tab:metricas_exactas_test} contiene la información exacta de la media y desviación estándar de cada modelo.
 
-Al proceder con la comparación de cada modelo con su contraparte con la misma arquitectura y diferente tipo de espectrograma, se puede apreciar que los modelos con espectrogramas Mel han conseguido resultados que superan significativamente a los obtenidos con STFT. Como indican los datos, P2 consigue errores inferiores a P1, P4 a P3 y P6 a P5. 
-
-Este resultado era esperable, debido a la característica ya comentada de los espectrogramas Mel, que simulan la percepción del oído humano y facilitan la extracción de características a la red neuronal. 
-
-En cuanto al mejor resultado obtenido en la evaluación del conjunto de prueba, sorprende que se trate de P2, puesto que su función de pérdida (\textit{SmoothL1}) es paramétrica, lo cual hemos visto con anterioridad que es arriesgado porque la síntesis FM no es inyectiva y las funciones híbridas (de P3 a P6) surgían del intento de asumir dicha característica. Adicionalmente, cabe destacar que P2 utiliza la arquitectura \textit{CNNRegressorSimple}, de la cual, al ser más simple y carecer de \textit{decoder}, se esperaban peores resultados.
-
-El análisis de los resultados no nos lleva a descartar directamente los últimos modelos y a quedarnos únicamente con P2, sino que encontramos una explicación que justifica los resultados. Las estructuras simples presentan una ventaja inicial en este caso: para la red resulta considerablemente más sencillo comparar números exactos en funciFones de pérdida paramétricas que evaluar imágenes (espectrogramas) en funciones acústicas.
-
-Al añadir un \textit{decoder} y funciones de pérdida acústicas e híbridas, es muy probable que se trate de arquitecturas muy complejas para el tamaño del dataset. En consecuencia, la red neuronal se centra también en la reconstrucción de los detalles visuales en lugar de exclusivamente en aprender los parámetros. 
-
-%Estoy pensando en mover esto a un apartado final de conclusiones del capítulo
-Como conclusión, queda claro que para el tamaño de dataset limitado que hemos utilizado, los modelos simples convergen antes en mejores resultados, pero como línea de trabajo futuro interesaría ampliar los datos y seguir probando los modelos complejos.
-
-En cuanto a la dispersión de los valores de cada modelo (véase Figura \ref{fig:comparativa_test_set_global} y la Tabla \ref{tab:metricas_exactas_test}), se puede apreciar que la dispersión de los modelos es, en general, elevada, sobre todo en modelos como P1 y P2 con desviaciones estándar en la métrica MCD que se acercan considerablemente a la media. En Mel L1 se suelen presentar valores que no se alejan mucho de la media pero los valores que se alejan tienen frecuencias de aparición altas, subiendo  así la desviación estándar. En cuanto a MCD, la mayoría de los valores se congregan alrededor de la media, pero existen unos pocos casos con resultados muy alejados que sesgan la desviación estándar. 
-
-Para entender la escasez de consistencia de los modelos y los casos que se salen de los valores de las medios de las métricas, hace falta tener en cuenta el sesgo de Mel L1 y MCD (véase \ref{sec:AnalisisCriticoMetricas}). En la Figura \ref{fig:comparativa_test_set_global}, los valores de las gráficas que más se alejan de la media, es muy probable que sean audios cortos/percusivos (los que consiguen mejor puntuación) y largos/sostenidos (los que más se alejan por la derecha).
-
-Para comprobar esta hipótesis, en la siguiente sección se analiza cómo cada red gestiona distintos tipos de audio.
 
 
 
@@ -266,8 +273,99 @@ Para comprobar esta hipótesis, en la siguiente sección se analiza cómo cada r
     \label{fig:comparativa_benchmark_global}
 \end{figure}
 
-\subsection{Comportamiento ante sonidos percusivos y cortos}
+\begin{table}[H]
+    \centering
+    \small
+    %\renewcommand{\arraystretch}{1.3} % Da un poco de aire vertical a las celdas
+    \begin{tabular}{|c||c|c|}
+    \hline
+    \textbf{Pipeline} & \textbf{Mel L1 (dB)} & \textbf{MCD} \\ \hline\hline
+    \textbf{P1} & $0.042$ & $392.724$ \\ \hline
+    \textbf{P2} & $0.028$ & $214.520$ \\ \hline
+    \textbf{P3} & $0.050$ & $702.794$ \\ \hline
+    \textbf{P4} & $0.056$ & $497.223$ \\ \hline
+    \textbf{P5} & $0.076$ & $767.566$ \\ \hline
+    \textbf{P6} & $0.053$ & $491.756 $ \\ \hline
+    \end{tabular}
+    \caption{Medias de las métricas acústicas sobre el \textit{benchmark} para las seis configuraciones.}
+    \label{tab:metricas_exactas_benchmark}
+\end{table}
 
-\subsection{Comportamiento ante sonidos graves y armónicos}
+Se recogen los resultados de la evaluación mediante \textit{benchmark} de los modelos en la Figura \ref{fig:comparativa_benchmark_global}, y se mantiene la Tabla \ref{tab:metricas_exactas_benchmark} con los valores de las medias de cada configuración.
+
+\subsection{Comportamiento ante sonidos percusivos y cortos}
+\label{sec:sonidosPercusivos}
+
+Analizando la Figura \ref{fig:comparativa_benchmark_global}, se puede apreciar que el audio \textit{percusivo} consigue las métricas más bajas de todos los modelos, a excepción de P5, y esto coincide con que es el audio de menor duración. Para entender esto, se observa cómo diferentes redes han gestionado su predicción:
+
+Modelos que no habían conseguido obtener una buena media en la predicción, como es el caso de P3, consiguen un resultado muy bueno con este audio, pero si analizamos su espectrograma frente al original (Figura \ref{fig:percusivo_P3}), se aprecia que la red ha desplazado totalmente las frecuencias generando armónicos más agudos, ha gestionado mal los tiempos y al oído suena completamente diferente. En consecuencia, se puede concluir que este audio ha sido valorado de forma positiva principalmente por su corta duración. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Imagenes/Bitmap/esp_percusivo_P3}
+    \caption{Espectrograma resultado de la predicción de P3 del audio de \textit{Benchmark}: \textit{percusivo}.}
+    \label{fig:percusivo_P3}
+\end{figure}
+
+\clearpage
+
+Si comparamos el resultado anterior de P3 en la Figura \ref{fig:comparativa_benchmark_global} con el resultado del audio \textit{percusivo} en P2, se observa un valor similar en las métricas. Sin embargo, al analizar los espectrogramas en P2 (Figura \ref{fig:percusivo_P3}), se aprecia una representación del audio original significativamente más similar. El modelo representa la forma perfectamente, equivocándose únicamente en la energía excesiva que otorga en frecuencias bajas. Además, al escucharlos, la predicción y el original comparten timbres considerablemente similares. 
+
+Este análisis pone en duda la robustez de las métricas para audios cortos. Por ello, se continúa analizando otros tipos de audios para así corroborar la hipótesis. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Imagenes/Bitmap/esp_percusivo_P2}
+    \caption{Espectrograma resultado de la predicción de P2 del audio de \textit{Benchmark}: \textit{percusivo}.}
+    \label{fig:percusivo_P2}
+\end{figure}
+
+\subsection{Comportamiento ante sonidos graves}
+
+Para este apartado es interesante explorar los resultados sobre sonidos graves, ya que, analizando las gráficas de los resultados sobre \textit{benchmark} de audios (Figura \ref{fig:comparativa_benchmark_global}), se aprecia que los modelos alimentados con espectrogramas STFT lineales tienen peores resultados sobre los audios graves que los que utilizan espectrogramas de Mel.
+
+La razón de esto se puede comprobar mirando por ejemplo P1 y P2. P2 es el modelo que está consiguiendo métricas óptimas y, por lo tanto, predicciones significativamente mejores, y P1 comparte su estructura, a excepción de que utiliza espectrogramas STFT. Si comparamos los resultados obtenidos en las predicciones del audio \textit{muy\_bajo} de ambos modelos (Figuras \ref{fig:muy_bajo_P1} y \ref{fig:muy_bajo_P2}), se puede apreciar que P2 ha conseguido una representación altamente fiel al original, mientras que P1 ha fallado en la envolvente y ha añadido frecuencias más agudas. Adicionalmente, la predicción de P2 produce un timbre más similar al original que P1.
+
+Este hecho valida que los espectrogramas de Mel representan mejor las frecuencias bajas, las cuales son de gran interés en la generación de sonido con sintetizadores y en la música.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Imagenes/Bitmap/esp_muy_bajo_P1}
+    \caption{Espectrograma resultado de la predicción de P1 del audio de \textit{Benchmark}: \textit{muy\_bajo}.}
+    \label{fig:muy_bajo_P1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/esp_muy_bajo_P2}
+    \caption{Espectrograma resultado de la predicción de P2 del audio de \textit{Benchmark}: \textit{muy\_bajo}.}
+    \label{fig:muy_bajo_P2}
+\end{figure}
+
 
 \subsection{Comportamiento ante sonidos sostenidos complejos}
+\label{sec:sonidosSostenidos}
+
+En la Figura \ref{fig:comparativa_benchmark_global}, se distingue el audio \textit{pad\_lento}, el cual obtiene métricas pésimas en cada uno de los modelos. Para entender lo que está ocurriendo se analiza la predicción de P2 ante dicho audio:
+
+En el espectrograma (Figura \ref{fig:pad_lento_P2}) y en la comparación acústica, se refleja un resultado positivo, el modelo P2 consigue replicar el timbre, las envolventes y la mayoría de frecuencias a la perfección, pero falla en lo mismo que fallaba con el audio \textit{percusivo}: aplica energía en exceso a las frecuencias bajas.
+
+Como el audio carece de silencios y dura 2 segundos, cualquier desviación pequeña pero que se mantenga constante, eleva artificialmente la métrica. 
+
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Imagenes/Bitmap/espectrograma_pad_lento_P2}
+    \caption{Espectrograma resultado de la predicción de P2 del audio de \textit{Benchmark}: \textit{pad\_lento}.}
+    \label{fig:pad_lento_P2}
+\end{figure} 
+
+\section{Conclusiones del Capítulo}
+
+El modelo ganador ha sido claramente P2, consiguiendo las mejores métricas y predicciones con timbres notablemente afines. Por otra parte, las configuraciones más complejas (de P3 a P6) han obtenido peores resultados debido al reducido tamaño del dataset (de 50.000 muestras) en comparación con la elevada complejidad de las arquitecturas.
+
+En cuanto a la elección del tipo de espectrograma para la red, queda claro que es una decisión considerablemente relevante y que afecta directamente a los resultados, demostrándose que los espectrogramas de Mel representan las frecuencias más relevantes para el oído humano y, por lo tanto, para el proyecto. 
+
+Por último, queda empíricamente probado que las métricas Mel L1 y MCD, a pesar de representar de manera correcta la similitud acústica de los sonidos, no son fiables para comparar audios de distintas duraciones temporales (véanse \ref{sec:sonidosPercusivos} y \ref{sonidosSostenidos}). En consecuencia, se propone para futuros proyectos diseñar una métrica que no dependa de la duración de los audios. 
+
