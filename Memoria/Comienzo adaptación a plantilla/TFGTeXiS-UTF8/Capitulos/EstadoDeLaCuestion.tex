@@ -1,4 +1,4 @@
-\chapter{Estado de la Cuestión}
+\chapter{Estado de la cuestión}
 \label{cap:estadoDeLaCuestion}
 
 En este apartado se presenta una revisión del estado de la cuestión en relación a los temas centrales de este proyecto: la síntesis sonora, la representación digital del audio, y sus intersecciones con la Inteligencia Artificial. Se abordan tanto los fundamentos teóricos como las aplicaciones prácticas, destacando los avances más relevantes y las metodologías empleadas en investigaciones recientes.
@@ -21,7 +21,7 @@ El teorema de Fourier establece que cualquier forma de onda periódica, por comp
 
 Históricamente, han existido diversas aproximaciones a la síntesis. Las más tradicionales incluyen las ya mencionadas síntesis aditiva y sustractiva. Estas técnicas fundamentales abrieron el camino hacia métodos matemáticamente más complejos, como la síntesis FM.
 
-\subsection{Síntesis por Modulación de Frecuencia (FM)}
+\subsection{Síntesis por modulación de frecuencia (FM)}
 \label{sec:FormulacionFM}
 La síntesis FM es un tipo de síntesis descubierta a finales de los años sesenta \citep{chowning1973}. Su funcionamiento se basa en utilizar un oscilador (sistema capaz de generar una señal que se repite de forma periódica), denominado \textbf{modulador} para alterar la frecuencia de otro oscilador, denominado \textbf{portador}. El oído humano interpreta esta interacción como la creación de timbres completamente nuevos y armónicamente ricos.
 
@@ -105,7 +105,7 @@ Esta representación es uno de los estándares en tareas de procesamiento de se�
 
 %Bibtex es un programa separado de latex, pdflatex o cualquier otra cosa que se use para compilar los .tex, de manera que para que se rellene correctamente la sección de bibliografía es necesario compilar primero el trabajo (a veces es necesario compilarlo dos veces), compilar después con bibtex, y volver a compilar otra vez el trabajo (de nuevo, puede ser necesario compilarlo dos veces). 
 
-\subsection{Representación espectral: STFT y Espectrogramas}
+\subsection{Representación espectral: STFT y espectrogramas}
 El espectrograma es la representación visual del sonido más utilizada en el aprendizaje profundo, ya que permite tratar el audio como una imagen, donde el eje $X$ es el tiempo, el $Y$ la frecuencia y el color la intensidad. En la síntesis FM, esta representación es fundamental para que los modelos identifiquen texturas tímbricas complejas \citep{yee2018}.
 
 \begin{figure}[H]

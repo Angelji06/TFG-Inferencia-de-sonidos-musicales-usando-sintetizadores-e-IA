@@ -1,4 +1,4 @@
-\chapter{Experimentación Paralela}
+\chapter{Experimentación paralela}
 \label{cap:ExperimentacionPrevia}
 
 \section{Limitaciones de Fréchet Audio Distance (FAD)}
@@ -14,10 +14,10 @@ de gran envergadura de vídeos de YouTube. Este modelo transforma la señal de a
 
 Finalmente, la métrica se obtiene calculando la \textit{Distancia de Fréchet} entre la música de referencia y la generada. Un valor de FAD reducido indíca una estadística similar entre el audio de referencia y el generado.
 
-\subsection{Limitaciones de la Métrica en el Contexto del \textit{Sound Matching}}
+\subsection{Limitaciones de la métrica en el contexto del \textit{sound matching}}
 
 La métrica FAD fue la primera que se seleccionó como forma de evaluación del modelo. Su implementacion en el proyecto, se realiza através de la comparación de dos conjuntos de datos: una muestra de 2.000 audios FM generados aleatoriamente
-y sus predicciones con el modelo de pruebas simplificado (véase \ref{sec:ModeloPruebasSimplificado}). El resultado obtenido fue de 0.9999, indicando una similitud estadística casi absoluta entre las distribuciones de audio.
+y sus predicciones con el modelo de pruebas simplificado (véase Sección \ref{sec:ModeloPruebasSimplificado}). El resultado obtenido fue de 0.9999, indicando una similitud estadística casi absoluta entre las distribuciones de audio.
 
 A pesar de que el resultado obtenido plantea un funcionamiento cercano a la perfección, su análisis y el del funcionamiento de FAD indican una discrepancia. 
 El motivo de la poca validez de la métrica en el proyecto, se atribuye a un error en la interpretación de su 
@@ -28,7 +28,7 @@ son casi idénticas. Por tanto, el FAD evalúa positivamente que el modelo ha ap
 la síntesis FM, pero, como se comentaba previamente, resulta que no lo hace muestra a muestra. En resumen, se prioriza la 
 verosimilitud estadística del sonido sobre la similitud de las muestras una a una.
 
-\section{Validación por Fuerza Bruta (Grid Search)}
+\section{Validación por fuerza bruta (\textit{grid search})}
 Una de las cuestiones principales que se plantean en el desarrollo de este proyecto es si el uso de un modelo de Inteligencia Artificial representa
 la aproximación más óptima para el objetivo de la inferencia de parámetros. Esta disyuntiva surge, sobre todo, al analizar los primeros prototipos, 
 como el \textit{Prototipo 4} (modelo de pruebas simplificado), en el que se emplean únicamente 3 parámetros para la síntesis FM: \textit{Carrier}, \textit{Index} y \textit{Ratio}.
@@ -53,14 +53,14 @@ timbre o la textura acústica del audio. Al comprimir la información en un vect
 MFCC permite calcular eficientemente la distancia matemática entre el sonido objetivo y los sonidos conseguidos en las iteraciones
 del \textit{Grid Search}.
 
-\subsection{Diseño experimental y parametrización del Grid Search}
+\subsection{Diseño experimental y parametrización del \textit{grid search}}
 El espacio de parámetros del sintetizador FM seleccionado para el algoritmo de \textit{Grid Search}, buscando un balance entre resolución de la búsqueda y 
 coste computacional, fue el siguiente: 
 
 \begin{itemize}
-    \item \textbf{Carrier (Frecuencia portadora):} Rango de 100 Hz a 2000 Hz, con incrementos de 100 Hz (20 valores).
-    \item \textbf{Ratio (Relación de la Frecuencia Moduladora y la Portadora):} Rango de 0.05 a 2.0, con incrementos de 0.05 (40 valores).
-    \item \textbf{Index (Índice de modulación):} Rango de 1.0 a 10.0, con incrementos de 0.5 (19 valores).
+    \item \textbf{Carrier (frecuencia portadora):} Rango de 100 Hz a 2000 Hz, con incrementos de 100 Hz (20 valores).
+    \item \textbf{Ratio (relación de la frecuencia moduladora y la portadora):} Rango de 0.05 a 2.0, con incrementos de 0.05 (40 valores).
+    \item \textbf{Index (índice de modulación):} Rango de 1.0 a 10.0, con incrementos de 0.5 (19 valores).
 \end{itemize}
 
 Esta configuración genera \textbf{15.200 combinaciones únicas}. Por cada iteración del triple bucle, el algoritmo crea un audio de un segundo de duración mediante síntesis FM. A continuación, se calcula el Error 
@@ -70,11 +70,11 @@ Para poner en contexto los datos de tiempo, se especifica que los algoritmos fue
 
 
 \subsection{Espectrograma de Mel}
-La mayor parte de los resultados ejecutados con la métrica Mel en \textit{Grid Search}, muestran valores que difieren
+La mayor parte de los resultados ejecutados con la métrica Mel en \textit{grid search}, muestran valores que difieren
 significativamente de los originales. Al contar con un espacio de rejilla de tamaño considerable, el algoritmo encuentra mínimos locales en puntos diferentes a los valores originales, ya que estos no existen en el espacio de posibles soluciones.
 
-Un ejemplo claro de este comportamiento se observa al analizar una inferencia donde los parámetros objetivo eran \textit{Carrier} $= 1055.54$ Hz, 
-\textit{Ratio} $= 0.704$ e \textit{Index} $= 9.38$. Los resultados de los tres mejores candidatos del \textit{Grid Search} fueron los siguentes:
+Un ejemplo claro de este comportamiento se observa al analizar una inferencia donde los parámetros objetivo eran \textit{carrier} $= 1055.54$ Hz, 
+\textit{ratio} $= 0.704$ e \textit{index} $= 9.38$. Los resultados de los tres mejores candidatos del \textit{grid search} fueron los siguentes:
 
 \begin{verbatim}
 ==================================================
@@ -86,10 +86,10 @@ Tiempo total de ejecución: 1 minutos y 5.16 segundos
 #3 -> Error Mel: 148.8820 | Carrier: 400.0, Ratio: 1.85, Index: 10.0
 \end{verbatim}
 
-Aunque la diferencia entre original y predicción en la frecuencia portadora (\textit{Carrier}) es superior a 600 Hz, el cálculo de la frecuencia moduladora
-latente ($f_m = Carrier \times Ratio$) explica esta selección. En el audio objetivo, la frecuencia moduladora es de $1055.54 \times 0.704 \approx 743.07$ Hz y, en la combinación seleccionada por el algoritmo es de $400.0 \times 1.85 = 740.0$ Hz.
+Aunque la diferencia entre original y predicción en la frecuencia portadora (\textit{carrier}) es superior a 600 Hz, el cálculo de la frecuencia moduladora
+latente ($f_m = carrier \times ratio$) explica esta selección. En el audio objetivo, la frecuencia moduladora es de $1055.54 \times 0.704 \approx 743.07$ Hz y, en la combinación seleccionada por el algoritmo es de $400.0 \times 1.85 = 740.0$ Hz.
 
-Al operar con un índice de modulación elevado ($Index > 9$), la frecuencia portadora deja de ser tan relevante,
+Al operar con un índice de modulación elevado ($index > 9$), la frecuencia portadora deja de ser tan relevante,
 trasladando el peso acústico a las bandas laterales generadas por la modulación. El algoritmo de fuerza bruta, incapaz de seleccionar el tono original por la 
 limitación de la rejilla, optó por anclar el parámetro \textit{carrier} en 400 Hz para forzar un \textit{ratio} que replicara con precisión la frecuencia moduladora 
 original (740 Hz). Esto valida empíricamente que, sin un espacio de inferencia continuo como el que proporciona el modelo predictivo de IA, las métricas espectrales falsifican los parámetros encontrando atajos que los acerquen al sonido objetivo, si éxito en gran parte de las ocasiones.
@@ -119,7 +119,7 @@ Tiempo total de ejecución: 1 minutos y 4.39 segundos
 En este caso, el algoritmo deja en tercera posición a la opción con los valores más parecidos a la original.
 Mientras que la tercera opción, al oído resulta muy similar pero desafinada, la primera opción difiere excesivamente.
  
-Matemáticamente, al incrementar artificialmente el \textit{Index}, el algoritmo aumenta la anchura de banda del espectro, 
+Matemáticamente, al incrementar artificialmente el \textit{index}, el algoritmo aumenta la anchura de banda del espectro, 
 dispersando la energía de tal forma que parte se solapa con la frecuencia, objetivo (1752 Hz), minimizando así el MSE. Sin embargo, acústicamente, el resultado es totalmente diferente: el algoritmo ha sacrificado un tono puro y definido por un sonido rico en armónicos y percusivo, únicamente 
 para evadir la penalización de un mínimo local inaccesible.
 
@@ -132,7 +132,7 @@ que sean más exactos).
 Por esta razón, el audio obtenido queda, en la mayoría de ocasiones,
 notablemente desafinado con respecto al original. Sin embargo, se consigue plasmar la \textit{textura} (o timbre)
 del sonido de una manera prácticamente idéntica a la original, debido a la precisión en la inferencia
-de los parámetros de \textit{Ratio} e \textit{Index}.
+de los parámetros de \textit{ratio} e \textit{index}.
 
 Los siguientes resultados son los obtenidos con los mismo audios que los utilizados de ejemplo en Mel.
 

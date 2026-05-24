@@ -13,6 +13,36 @@ En lo relativo a la ingeniería de software, he sido el principal responsable de
 
 Finalmente, al disponer del hardware con mayor capacidad de cómputo del equipo, y a su vez el miembro que se conectó vía ssh a las máquinas proporcionadas por la universidad, asumí la responsabilidad técnica del entrenamiento de los modelos usados por mi compañero para realizar las pruebas y comparaciones.
 
+\clearpage
+
 \section*{Ángel Jiménez Izquierdo}
-Al menos dos páginas con las contribuciones del estudiante 2. En caso de que haya más estudiantes, copia y pega una de estas secciones.
+
+Durante el desarrollo del proyecto, los aspectos en los que he aportado han sido principalmente como encargado de validación experimental, responsable del análisis de los rendimientos y como principal redactor de la memoria, produciendo también código relevante en diferentes aspectos de la aplicación final. 
+
+En las fases iniciales del proyecto, diseñé pruebas de concepto como la primera generación de datos (\textit{dataset}) y los espectrogramas iniciales. Estas fueron unas implementaciones fundamentales para comenzar con la comparación de métodos de representación y generación del \textit{dataset} y que han servido como base para los siguientes prototipos. 
+
+Por otro lado, integré el uso de las interfaces gráficas iniciales como método de entrenamiento, prueba y visualización de diferentes aspectos de los modelos, participando también en su evolución hasta la aplicación final. Esto fue de gran utilidad para mejorar la experiencia de uso, acercándonos más a un producto final y usable, permitiéndonos ser más eficientes entrenando los modelos, generando predicciones y, en definitiva, gestionando la aplicación desde la interfaz en lugar de tener que ir ejecutando \textit{scripts} individuales. Adicionalmente, automaticé la gestión de los primeros entornos virtuales de librerías diseñados por mi compañero, centralizándolos y facilitando su uso.
+
+A nivel de desarrollo de \textit{Deep Learning}, diseñé e implementé el bucle de validación en entrenamiento que se ha mantenido hasta el modelo final. De esta forma, proporcioné la lógica necesaria para su monitorización, capturando la información sobre los pesos de la red. 
+
+En lo que a evaluación de los modelos se refiere, realicé las primeras pruebas de concepto, implementando un \textit{pipeline} para la evaluación mediante el método FAD (\textit{Fréchet Audio Distance}). Para ello, programé funciones necesarias en la generación de paquetes de tamaño configurable y para producir sus predicciones, debido a que FAD trabaja con distribuciones grandes de datos. Esta prueba permitió descartar una métrica reconocida como estado del arte en la evaluación del audio generado mediante IA y sentar las bases de cómo se desarrollarían el resto de pruebas de evaluación en la interfaz gráfica.
+
+En la etapa previa al modelo final, exploré una vía experimental con el objetivo de mejorar significativamente los resultados procesando directamente las inferencias. Los modelos frecuentemente generaban predicciones con timbre similar pero distinto tono (\textit{pitch}), así que decidí implementar que la aplicación ofreciera varios resultados con distintos tonos cercanos al original. Sin embargo, decidí descartar esta idea posteriormente porque no tenía en cuenta el índice de modulación, haciendo que no funcionase correctamente en todos los casos.
+
+Como método de validación del uso de \textit{Deep Learning} para el propósito del proyecto, decidí llevar a cabo una prueba para su comparación con un algoritmo de búsqueda exhaustiva (\textit{Grid Search}). Como resultado, conseguí justificar empíricamente la necesidad de usar redes neuronales para este propósito y su eficiencia, aportando respaldo práctico a la idea inicial del proyecto. Además, en este mismo proceso, extraje conclusiones sobre cómo diferentes formas de representar los audios podían influir directamente en el resultado obtenido por los modelos. Todo esto lo representé más tarde en el capítulo 6 de la memoria. 
+
+Para facilitar las explicaciones y justificar la provisión de recursos computacionales (GPUs) en reuniones con profesionales de la materia en la facultad, generé documentación técnica de las características de los modelos y de las pruebas que habíamos llevado a cabo. Adicionalmente, estos informes sentaron las bases estructurales para comenzar con la redacción de la memoria del proyecto, adaptándolos y ampliándolos, resultando así en los primeros borradores. 
+
+Con el objetivo de facilitar la ejecución del entrenamiento de los modelos por parte del profesor de la facultad encargado de ello, mi compañero redactó los pasos necesarios y yo me encargué de probarlos en un entorno virtualizado Linux (Ubuntu) para así comprobar su correcto funcionamiento. De esta manera, detecté problemas que me surgieron en esta tarea y pude dejarlos por escrito en las instrucciones. A pesar de esto, finalmente nos dieron acceso a las máquinas, por lo que no se utilizaron pero quedan registradas y pueden ser de gran utilidad para futuras implementaciones, asegurando la portabilidad multiplataforma. 
+
+Como principal redactor de la memoria, me he encargado de la redacción de los capítulos 3, 4, 5 y 6. Para la traducción rigurosa de código a texto de la metodología y el diseño del sistema en el capítulo 3, tuve que llevar a cabo una documentación exhaustiva y una recopilación profunda de las justificaciones de cada decisión técnica. Adicionalmente, con el fin de proporcionar una representación directa y detallada facilitando así la comprensión de este apartado, creé los diagramas de las dos arquitecturas de la red.
+
+En cuanto al capítulo 4, para la parte destinada a la implementación de lo explicado en el capítulo anterior continué con la labor de documentación. En lo que a la explicación de la arquitectura del código se refiere, me dediqué a abstraer y formalizar la estructura del sistema y justificar el funcionamiento general de la aplicación y cómo estaba implementada. 
+
+El capítulo 5 se centra en el análisis de los modelos. Para ello, redacté el proceso de evaluación pertinente, realicé las diferentes validaciones y en cada modelo llevé a cabo un análisis detallado de los resultados obtenidos, discerniendo los datos relevantes y extrayendo conclusiones. Después, plasmé las ideas más importantes, descubrí un sesgo determinante en las métricas y observé qué características hacen que un modelo consiga resultados óptimos. Además, algunos de los resultados fueron distintos de los esperados, como el hecho de que los modelos complejos no consiguieran mejores resultados, por lo que ejecuté una labor de investigación y análisis minuciosos de las estructuras hasta dar con las respuestas. 
+
+Por último, cabe destacar el rol que adopté en la edición y corrección general de estilos en la memoria, buscando la coherencia visual y la integridad estructural del documento.
+
+En conclusión, mediante las tareas que he llevado a cabo en el proyecto he conseguido complementar la implementación de una arquitectura de \textit{Deep Learning}, aportar en el diseño general de interfaces y flujo de la aplicación, realizar pruebas de modelos, validar la eficacia del método usado frente a alternativas tradicionales y he consolidado una labor de documentación exhaustiva del proyecto.  
+
 

@@ -5,12 +5,12 @@
 \contentsline {section}{\numberline {1.1}Motivación}{1}{section.9}%
 \contentsline {section}{\numberline {1.2}Objetivos}{3}{section.14}%
 \contentsline {section}{\numberline {1.3}Plan de trabajo}{3}{section.15}%
-\contentsline {chapter}{\numberline {2}Estado de la Cuestión}{7}{chapter.16}%
+\contentsline {chapter}{\numberline {2}Estado de la cuestión}{7}{chapter.16}%
 \contentsline {section}{\numberline {2.1}Síntesis sonora y representación del audio}{7}{section.17}%
 \contentsline {subsection}{\numberline {2.1.1}Síntesis sonora}{7}{subsection.18}%
-\contentsline {subsection}{\numberline {2.1.2}Síntesis por Modulación de Frecuencia (FM)}{8}{subsection.20}%
+\contentsline {subsection}{\numberline {2.1.2}Síntesis por modulación de frecuencia (FM)}{8}{subsection.20}%
 \contentsline {subsection}{\numberline {2.1.3}Representación digital del sonido: La onda como vector}{9}{subsection.25}%
-\contentsline {subsection}{\numberline {2.1.4}Representación espectral: STFT y Espectrogramas}{10}{subsection.27}%
+\contentsline {subsection}{\numberline {2.1.4}Representación espectral: STFT y espectrogramas}{10}{subsection.27}%
 \contentsline {subsection}{\numberline {2.1.5}Escala de Mel}{11}{subsection.29}%
 \contentsline {subsection}{\numberline {2.1.6}\textit {Mel Frequency Cesptral Coefficients} (MFCC)}{11}{subsection.31}%
 \contentsline {section}{\numberline {2.2}Inteligencia Artificial aplicada al audio}{12}{section.32}%
@@ -19,50 +19,50 @@
 \contentsline {subsection}{\numberline {2.2.3}Inferencia automática de parámetros en síntesis}{13}{subsection.36}%
 \contentsline {subsection}{\numberline {2.2.4}Representación del audio usada en otros proyectos}{13}{subsection.37}%
 \contentsline {subsection}{\numberline {2.2.5}Datasets}{14}{subsection.38}%
-\contentsline {chapter}{\numberline {3}Metodología y Diseño del Sistema}{15}{chapter.40}%
-\contentsline {section}{\numberline {3.1}Descripción de los Parámetros del Sistema}{15}{section.41}%
-\contentsline {section}{\numberline {3.2}Generación del Dataset}{16}{section.42}%
-\contentsline {section}{\numberline {3.3}Preprocesamiento de Datos: normalizaciones y espectrogramas}{17}{section.48}%
-\contentsline {section}{\numberline {3.4}Diseño de la Arquitectura CNN}{18}{section.54}%
-\contentsline {section}{\numberline {3.5}Funciones de Pérdida}{20}{section.57}%
-\contentsline {subsection}{\numberline {3.5.1}El Problema de la Inyectividad}{20}{subsection.58}%
+\contentsline {chapter}{\numberline {3}Metodología y diseño del sistema}{15}{chapter.40}%
+\contentsline {section}{\numberline {3.1}Descripción de los parámetros del sistema}{15}{section.41}%
+\contentsline {section}{\numberline {3.2}Generación del \textit {dataset}}{16}{section.42}%
+\contentsline {section}{\numberline {3.3}Preprocesamiento de datos: normalizaciones y espectrogramas}{17}{section.48}%
+\contentsline {section}{\numberline {3.4}Diseño de la arquitectura CNN}{18}{section.54}%
+\contentsline {section}{\numberline {3.5}Funciones de pérdida}{20}{section.57}%
+\contentsline {subsection}{\numberline {3.5.1}El Problema de la inyectividad}{20}{subsection.58}%
 \contentsline {subsection}{\numberline {3.5.2}Funciones de pérdida}{21}{subsection.59}%
-\contentsline {subsection}{\numberline {3.5.3}Modelo de Pruebas Simplificado}{22}{subsection.64}%
+\contentsline {subsection}{\numberline {3.5.3}Modelo de pruebas simplificado}{22}{subsection.64}%
 \contentsline {chapter}{\numberline {4}Implementación}{23}{chapter.65}%
-\contentsline {section}{\numberline {4.1}Herramientas y Librerías: \textit {stack} tecnológico}{23}{section.66}%
-\contentsline {section}{\numberline {4.2}\textit {Pipeline} de Entrenamiento}{23}{section.68}%
+\contentsline {section}{\numberline {4.1}Herramientas y librerías: \textit {stack} tecnológico}{23}{section.66}%
+\contentsline {section}{\numberline {4.2}\textit {Pipeline} de entrenamiento}{24}{section.68}%
 \contentsline {section}{\numberline {4.3}Inferencia de parámetros}{25}{section.70}%
-\contentsline {section}{\numberline {4.4}Interfaz Gráfica de la aplicación}{26}{section.71}%
-\contentsline {section}{\numberline {4.5}Estructura del Código}{29}{section.76}%
-\contentsline {chapter}{\numberline {5}Resultados y Evaluación}{31}{chapter.77}%
-\contentsline {section}{\numberline {5.1}Definición de los Pipelines Experimentales}{32}{section.78}%
-\contentsline {section}{\numberline {5.2}Introduccion y Configuración del Entorno}{33}{section.80}%
-\contentsline {subsection}{\numberline {5.2.1}Características del \textit {Hardware} empleado en el entrenamiento de los modelos}{33}{subsection.81}%
-\contentsline {subsection}{\numberline {5.2.2}Configuración de las Pruebas}{33}{subsection.82}%
-\contentsline {subsection}{\numberline {5.2.3}Convergencia y Dinámica del Entrenamiento}{33}{subsection.83}%
-\contentsline {subsection}{\numberline {5.2.4}Análisis Crítico de las Métricas de Evaluación}{35}{subsection.85}%
-\contentsline {section}{\numberline {5.3}Evaluación sobre el Conjunto de Prueba (\textit {Test Set})}{35}{section.86}%
-\contentsline {section}{\numberline {5.4}Evaluación sobre el Banco de Pruebas (\textit {benchmark})}{38}{section.89}%
-\contentsline {subsection}{\numberline {5.4.1}Comportamiento ante sonidos percusivos y cortos}{39}{subsection.92}%
-\contentsline {subsection}{\numberline {5.4.2}Comportamiento ante sonidos graves}{40}{subsection.95}%
-\contentsline {subsection}{\numberline {5.4.3}Comportamiento ante sonidos sostenidos complejos}{42}{subsection.98}%
-\contentsline {section}{\numberline {5.5}Conclusiones del Capítulo}{42}{section.100}%
-\contentsline {chapter}{\numberline {6}Experimentación Paralela}{45}{chapter.101}%
-\contentsline {section}{\numberline {6.1}Limitaciones de Fréchet Audio Distance (FAD)}{45}{section.102}%
-\contentsline {subsection}{\numberline {6.1.1}Descripción de la Métrica}{45}{subsection.103}%
-\contentsline {subsection}{\numberline {6.1.2}Limitaciones de la Métrica en el Contexto del \textit {Sound Matching}}{45}{subsection.104}%
-\contentsline {section}{\numberline {6.2}Validación por Fuerza Bruta (Grid Search)}{46}{section.105}%
-\contentsline {subsection}{\numberline {6.2.1}Diseño experimental y parametrización del Grid Search}{47}{subsection.106}%
-\contentsline {subsection}{\numberline {6.2.2}Espectrograma de Mel}{47}{subsection.107}%
-\contentsline {subsection}{\numberline {6.2.3}Espectrograma MFCC}{48}{subsection.108}%
-\contentsline {subsection}{\numberline {6.2.4}Conclusiones}{49}{subsection.109}%
-\contentsline {chapter}{\numberline {7}Conclusiones y Trabajo Futuro}{51}{chapter.110}%
-\contentsline {chapter}{\numberline {8}Introduction}{53}{chapter.116}%
-\contentsline {section}{\numberline {8.1}Motivation}{53}{section.117}%
-\contentsline {section}{\numberline {8.2}Objectives}{55}{section.122}%
-\contentsline {section}{\numberline {8.3}Work Plan}{55}{section.123}%
+\contentsline {section}{\numberline {4.4}Interfaz gráfica de la aplicación}{25}{section.71}%
+\contentsline {section}{\numberline {4.5}Estructura del código}{28}{section.76}%
+\contentsline {chapter}{\numberline {5}Resultados y evaluación}{31}{chapter.77}%
+\contentsline {section}{\numberline {5.1}Definición de los pipelines experimentales}{32}{section.78}%
+\contentsline {section}{\numberline {5.2}Introduccion y configuración del entorno}{33}{section.80}%
+\contentsline {subsection}{\numberline {5.2.1}Características del \textit {hardware} empleado en el entrenamiento de los modelos}{33}{subsection.81}%
+\contentsline {subsection}{\numberline {5.2.2}Configuración de las pruebas}{33}{subsection.82}%
+\contentsline {subsection}{\numberline {5.2.3}Convergencia y dinámica del entrenamiento}{33}{subsection.83}%
+\contentsline {subsection}{\numberline {5.2.4}Análisis crítico de las métricas de evaluación}{34}{subsection.85}%
+\contentsline {section}{\numberline {5.3}Evaluación sobre el conjunto de prueba (\textit {Test Set})}{34}{section.86}%
+\contentsline {section}{\numberline {5.4}Evaluación sobre el banco de pruebas (\textit {benchmark})}{37}{section.89}%
+\contentsline {subsection}{\numberline {5.4.1}Comportamiento ante sonidos percusivos y cortos}{38}{subsection.92}%
+\contentsline {subsection}{\numberline {5.4.2}Comportamiento ante sonidos graves}{39}{subsection.95}%
+\contentsline {subsection}{\numberline {5.4.3}Comportamiento ante sonidos sostenidos complejos}{41}{subsection.98}%
+\contentsline {section}{\numberline {5.5}Conclusiones del capítulo}{41}{section.100}%
+\contentsline {chapter}{\numberline {6}Experimentación paralela}{43}{chapter.101}%
+\contentsline {section}{\numberline {6.1}Limitaciones de Fréchet Audio Distance (FAD)}{43}{section.102}%
+\contentsline {subsection}{\numberline {6.1.1}Descripción de la Métrica}{43}{subsection.103}%
+\contentsline {subsection}{\numberline {6.1.2}Limitaciones de la métrica en el contexto del \textit {sound matching}}{43}{subsection.104}%
+\contentsline {section}{\numberline {6.2}Validación por fuerza bruta (\textit {grid search})}{44}{section.105}%
+\contentsline {subsection}{\numberline {6.2.1}Diseño experimental y parametrización del \textit {grid search}}{45}{subsection.106}%
+\contentsline {subsection}{\numberline {6.2.2}Espectrograma de Mel}{45}{subsection.107}%
+\contentsline {subsection}{\numberline {6.2.3}Espectrograma MFCC}{46}{subsection.108}%
+\contentsline {subsection}{\numberline {6.2.4}Conclusiones}{47}{subsection.109}%
+\contentsline {chapter}{\numberline {7}Conclusiones y trabajo futuro}{49}{chapter.110}%
+\contentsline {chapter}{\numberline {8}Introduction}{51}{chapter.116}%
+\contentsline {section}{\numberline {8.1}Motivation}{51}{section.117}%
+\contentsline {section}{\numberline {8.2}Objectives}{53}{section.122}%
+\contentsline {section}{\numberline {8.3}Work Plan}{53}{section.123}%
 \babel@toc {english}{}\relax 
-\contentsline {chapter}{Conclusions and Future Work}{57}{chapter*.124}%
-\contentsline {chapter}{Contribuciones Personales}{59}{chapter*.130}%
+\contentsline {chapter}{Conclusions and Future Work}{55}{chapter*.124}%
+\contentsline {chapter}{Contribuciones Personales}{57}{chapter*.130}%
 \babel@toc {spanish}{}\relax 
 \contentsline {chapter}{Bibliograf\'{\i }a}{61}{chapter*.131}%
