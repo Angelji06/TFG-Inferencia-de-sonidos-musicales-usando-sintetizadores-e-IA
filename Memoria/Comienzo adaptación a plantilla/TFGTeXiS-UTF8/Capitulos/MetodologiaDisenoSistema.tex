@@ -220,7 +220,7 @@ En cuanto al modelo CNNRegressor5, se permite la elección de una de las siguien
     Es una función de pérdida híbrida, que combina el Error Absoluto Medio (L1) de la reconstrucción del 
     espectrograma, un refuerzo estructural de Convegencia Espectral (SC), y la penalización paramétrica anterior.
     La primera se lleva el peso principal (de 1.0), calcula el Error Absoluto Medio píxel a píxel entre el espectrograma original y el reconstruido (en decibelios).
-    La Convergencia Espectral (SC: Ecuación \ref{eq:spectral_convergence}) se aplica con un peso medio (de 0.5) para evitar los espectros borrosos generados por L1. Esta métrica calcula la norma de Frobenius 
+    La Convergencia Espectral (SC: Ecuación \ref{eq:spectral_convergence}) se aplica con un peso medio (de 0.5) para evitar los espectros borrosos generados por L1. Esta métrica calcula la norma de Frobenius\footnote{La norma de Frobenius mide la magnitud global de la matriz}
     para evaluar la energía global (relación armónica), regularizando el timbre. A la penalización paramétrica se le da una importancia muy baja (0.05), ya que no es demasiado importante
     debido al carácter no inyectivo de la síntesis FM.
 
