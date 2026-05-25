@@ -11,6 +11,8 @@ Esto se ha corroborado comparándolo con modelos tradicionales como el \textit{g
 
 Adicionalmente, con la experimentación realizada para el Capítulo \ref{cap:ResultadosYEvaluacion}, se han contrastado diferentes opciones de arquitecturas y configuraciones, obteniendo resultados inesperados con los que se ha podido concluir que las arquitecturas complejas no garantizan un aumento del rendimiento ya que requieren de un gran entrenamiento y tamaño del \textit{dataset}.
 
+Además, se ha demostrado que los espectrogramas mel funcionan mejor que los lineales tanto en términos perceptivos, al otorgar mejores resultados, como en términos computacionales, pues se requiere de un menor numero de \textit{bins} para generar su espectrograma.
+
 Por último, cabe destacar la importancia que ha tenido en el proyecto la aplicación de interfaces gráficas y de la automatización del \textit{pipeline}, mediante las cuales ha sido posible gestionar distintas arquitecturas, entrenamientos y pruebas de forma sencilla. 
 
 \section{Trabajo futuro}
@@ -18,7 +20,7 @@ Por último, cabe destacar la importancia que ha tenido en el proyecto la aplica
 Un trabajo de esta naturaleza es fácilmente continuable desde múltiples perspectivas; sin embargo, consideramos relevante destacar las cuatro ramas de investigación y desarrollo más prometedoras:
 
 \begin{enumerate}
-\item \textbf{Implementación de un sintetizador diferenciable:} La integración de librerías como DDSP (\textit{Differentiable Digital Signal Processing}) permitiría integrar el proceso de síntesis directamente en el entrenamiento de la red. Esto posibilitaría un cálculo exacto en el descenso de gradiente (al no tratar el sintetizador como una "caja negra"), optimizando la convergencia del modelo y mejorando notablemente la fidelidad de los resultados.
+\item \textbf{Implementación de un sintetizador diferenciable:} Cambiar el enfoque del proyecto hacia el uso y adaptación de DDSP (\textit{Differentiable Digital Signal Processing}), que permitiría integrar el proceso de síntesis directamente en el entrenamiento de la red. Esto posibilitaría un cálculo exacto en el descenso de gradiente (al no tratar el sintetizador como una ``caja negra''), optimizando la convergencia del modelo y mejorando notablemente la fidelidad de los resultados.
 
 \item \textbf{Escalabilidad a otros métodos de síntesis:} El flujo de trabajo establecido sienta las bases para expandir el sistema más allá de síntesis por modulación de frecuencia. Sería de gran interés adaptar el modelo para estimar parámetros en síntesis aditiva, sustractiva, de modelado físico o granular.
 
