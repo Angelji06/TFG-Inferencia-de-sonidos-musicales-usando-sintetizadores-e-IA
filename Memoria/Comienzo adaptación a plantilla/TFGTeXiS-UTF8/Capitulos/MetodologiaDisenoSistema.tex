@@ -9,8 +9,8 @@ Con el objetivo de lograr un acercamiento a las aplicaciónes reales del \textit
     \item \textbf{Variables fundamentales: } Estas son la base estructural de la síntesis FM y se componen de la frecuencia portadora (\textit{carrier}), la relación entre frecuencia portadora y frecuencia moduladora (\textit{ratio}) y el índice de modulación (\textit{index}). Definen el timbre del sonido, pudiendo producir desde sonidos similares al de una flauta a ruidos inarmónicos. 
     Se decidió usar ratio, en vez de frecuencia moduladora, para mantener una relación armónica constante, conservando así el mismo timbre independientemente de la nota reproducida. Es decir, para que en caso de aumentar o reducir la frecuencia portadora, el sonido siga sonando igual pero en una nota diferente.
     
-    Por sí solos estos parámetros producen un sonido estático (no evoluciona en el tiempo), sonando poco orgánico. Para solucionar esto, se introducen las envolventes (descritas a continuación).
-    \item \textbf{Envolvente de amplitud: } se han elegido las variables de \textit{attack}, \textit{sustain} y \textit{decay}, evitando el \textit{release} puesto que no aportaba demasiado al timbre y entrenar un modelo con un parámetro más implica un aumento en complejidad y tiempo significativo. Estos parámetros consiguen modelar el volumen en el tiempo, permitiendo diferenciar un sonido percusivo (con un \textit{attack} muy rápido y sin sustain) de otro largo y equilibrado (de ataque lento y \textit{sustain} duradero).
+    Por sí solos estos parámetros producen un sonido estático (no evoluciona en el tiempo), sonando poco orgánico. Para solucionar esto, se introducen las envolventes.
+    \item \textbf{Envolvente de amplitud: } se han elegido las variables de \textit{attack}, \textit{sustain} y \textit{decay}. Estos parámetros consiguen modelar el volumen en el tiempo, permitiendo diferenciar un sonido percusivo (con un \textit{attack} muy rápido y sin sustain) de otro largo y equilibrado (de ataque lento y \textit{sustain} duradero). Se decidió evitar el \textit{release} puesto que no aportaba demasiado al timbre, mientras que entrenar un modelo con un parámetro más implica un aumento en complejidad y tiempo significativo. 
     \item \textbf{Envolvente de modulación: } Aquí se encuentran los parámetros de \textit{attack} y \textit{decay} aplicados sobre el índice de modulación. Añadiendo esta envolvente, se pueden conseguir sonidos cuyo timbre evolucione con el tiempo, siendo así más similares a instrumentos reales. Esto se debe a que al tocar un instrumento, al principio se pueden apreciar todos los armónicos perfectamente, y según el sonido decae, estos van desapareciendo con él.     
 \end{itemize}
 
@@ -212,7 +212,7 @@ SmoothL_1(y, \hat{y}) =
 |y - \hat{y}| - 0.5 \beta & \text{en caso contrario} 
 \end{cases}
 \end{equation}
-Donde $\beta$ es un hiperparámetro (umbral) que determina el punto exacto de transición entre el comportamiento cuadrático (que suaviza el gradiente) y el comportamiento lineal (que evita la desestabilización por valores atípicos). Por lo general se fija a 1.
+Donde $\beta$ es un hiperparámetro (umbral) que determina el punto exacto de transición entre el comportamiento cuadrático (que suaviza el gradiente) y el comportamiento lineal (que evita la desestabilización por valores atípicos). 
 
 En cuanto al modelo CNNRegressor5, se permite la elección de una de las siguientes funciones de pérdida:
 \begin{itemize}
