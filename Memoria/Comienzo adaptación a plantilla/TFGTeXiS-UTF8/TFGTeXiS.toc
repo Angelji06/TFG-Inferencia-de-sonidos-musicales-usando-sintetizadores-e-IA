@@ -57,12 +57,14 @@
 \contentsline {subsection}{\numberline {6.2.3}Espectrograma MFCC}{46}{subsection.108}%
 \contentsline {subsection}{\numberline {6.2.4}Conclusiones}{47}{subsection.109}%
 \contentsline {chapter}{\numberline {7}Conclusiones y trabajo futuro}{49}{chapter.110}%
-\contentsline {chapter}{\numberline {8}Introduction}{51}{chapter.116}%
-\contentsline {section}{\numberline {8.1}Motivation}{51}{section.117}%
-\contentsline {section}{\numberline {8.2}Objectives}{53}{section.122}%
-\contentsline {section}{\numberline {8.3}Work Plan}{53}{section.123}%
+\contentsline {section}{\numberline {7.1}Conclusiones}{49}{section.111}%
+\contentsline {section}{\numberline {7.2}Trabajo futuro}{49}{section.112}%
+\contentsline {chapter}{\numberline {8}Introduction}{51}{chapter.118}%
+\contentsline {section}{\numberline {8.1}Motivation}{51}{section.119}%
+\contentsline {section}{\numberline {8.2}Objectives}{53}{section.124}%
+\contentsline {section}{\numberline {8.3}Work Plan}{53}{section.125}%
 \babel@toc {english}{}\relax 
-\contentsline {chapter}{Conclusions and Future Work}{55}{chapter*.124}%
-\contentsline {chapter}{Contribuciones Personales}{57}{chapter*.130}%
+\contentsline {chapter}{Conclusions and Future Work}{55}{chapter*.126}%
+\contentsline {chapter}{Contribuciones Personales}{57}{chapter*.132}%
 \babel@toc {spanish}{}\relax 
-\contentsline {chapter}{Bibliograf\'{\i }a}{61}{chapter*.131}%
+\contentsline {chapter}{Bibliograf\'{\i }a}{61}{chapter*.133}%

@@ -31,8 +31,9 @@ la síntesis FM, pero, como se comentaba previamente, resulta que no lo hace mue
 verosimilitud estadística del sonido sobre la similitud de las muestras una a una.
 
 \section{Validación por fuerza bruta (\textit{grid search})}
+\label{sec:gridSearch}
 Una de las cuestiones principales que se plantean en el desarrollo de este proyecto es si el uso de un modelo de Inteligencia Artificial representa
-la aproximación óptima para el objetivo de la inferencia de parámetros. La disyuntiva de explorar otras opciones surge, sobre todo, al analizar los primeros prototipos, 
+la aproximación óptima para el objetivo de la estimación de parámetros de síntesis FM. La disyuntiva de explorar otras opciones surge, sobre todo, al analizar los primeros prototipos, 
 como el \texttt{Prototipo 4} (modelo de pruebas simplificado), en el que se emplean únicamente 3 parámetros para la síntesis FM: \textit{carrier}, \textit{index} y \textit{ratio}.
 Debido al reducido tamaño de este espacio de parámetros, resulta lógico plantear en la viabilidad de realizar un método de búsqueda exhaustiva 
 (\textit{grid search}). Este enfoque consiste en realizar un recorrido iterativo por todas las combinaciones posibles, evaluándolas y registrando 
