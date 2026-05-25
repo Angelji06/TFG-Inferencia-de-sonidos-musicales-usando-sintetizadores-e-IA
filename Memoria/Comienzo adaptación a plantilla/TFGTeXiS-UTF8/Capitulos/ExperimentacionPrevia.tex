@@ -11,21 +11,21 @@ MusicLM \citep{agostinelli2023musiclm}, pudiendo considerarse como el estado del
 Conceptualmente, el FAD deriva de \textit{Fréchet Inception Distance} (FID), una métrica referente en la evaluación de modelos generativos de imágenes.
 Al igual que su predecesora, esta métrica no realiza comparación muestra a muestra, sino que compara características de alto nivel extraídas por una red neuronal profunda.
 
-Para la extracción de estas caractarísticas, el FAD utiliza un modelo llamado \textit{VGGish}, un clasificador de audio entrenado con una base de datos 
-de gran envergadura de vídeos de YouTube. Este modelo transforma la señal de audio en \textit{log-mel features} extraídas del espectrograma de magnitud
+Para la extracción de estas características, el FAD utiliza un modelo llamado \textit{VGGish}, un clasificador de audio entrenado con una base de datos 
+de gran envergadura de vídeos de YouTube. Este modelo transforma la señal de audio en \textit{log-mel features} extraídas del espectrograma de magnitud.
 
 Finalmente, la métrica se obtiene calculando la distancia de \textit{Fréchet} entre la música de referencia y la generada. Un valor de FAD reducido indica una estadística similar entre el audio de referencia y el generado.
 
 \subsection{Limitaciones de la métrica en el contexto del \textit{sound matching}}
 
-La métrica FAD fue la primera que se seleccionó como forma de evaluación del modelo. Su implementacion en el proyecto, se realiza através de la comparación de dos conjuntos de datos: una muestra de 2.000 audios FM generados aleatoriamente
+La métrica FAD fue la primera que se seleccionó como forma de evaluación del modelo. Su implementación en el proyecto se realiza a través de la comparación de dos conjuntos de datos: una muestra de 2.000 audios FM generados aleatoriamente
 y sus predicciones con el modelo de pruebas simplificado (véase Sección \ref{sec:ModeloPruebasSimplificado}). El resultado obtenido fue de 0.9999, indicando una similitud estadística casi absoluta entre las distribuciones de audio.
 
 A pesar de que el resultado obtenido plantea un funcionamiento cercano a la perfección, su análisis y el del funcionamiento de FAD indican una discrepancia. 
-El motivo de la poca validez de la métrica en el proyecto, se atribuye a un error en la interpretación de su 
+El motivo de la poca validez de la métrica en el proyecto se atribuye a un error en la interpretación de su 
 utilidad real, ya que el FAD está diseñado para evaluar la calidad global de modelos generativos, mientras que este proyecto se centra 
 en la estimación de los parámetros que luego utiliza para generar audio FM. 
-Puesto que tanto el conjunto de referencia como las predicciones se crean mediante síntesis FM, su huella espectral y sus caractarísticas de alto nivel (\textit{embeddings})
+Puesto que tanto el conjunto de referencia como las predicciones se crean mediante síntesis FM, su huella espectral y sus características de alto nivel (\textit{embeddings})
 son casi idénticas. Por tanto, el FAD evalúa positivamente que el modelo ha aprendido a recrear el timbre o "textura" de 
 la síntesis FM, pero, como se comentaba previamente, resulta que no lo hace muestra a muestra (audio original con audio predicho). En resumen, se prioriza la 
 verosimilitud estadística del sonido sobre la similitud de las muestras una a una.
@@ -35,13 +35,13 @@ verosimilitud estadística del sonido sobre la similitud de las muestras una a u
 Una de las cuestiones principales que se plantean en el desarrollo de este proyecto es si el uso de un modelo de Inteligencia Artificial representa
 la aproximación óptima para el objetivo de la estimación de parámetros de síntesis FM. La disyuntiva de explorar otras opciones surge, sobre todo, al analizar los primeros prototipos, 
 como el \texttt{Prototipo 4} (modelo de pruebas simplificado), en el que se emplean únicamente 3 parámetros para la síntesis FM: \textit{carrier}, \textit{index} y \textit{ratio}.
-Debido al reducido tamaño de este espacio de parámetros, resulta lógico plantear en la viabilidad de realizar un método de búsqueda exhaustiva 
+Debido al reducido tamaño de este espacio de parámetros, resulta lógico plantearse la viabilidad de realizar un método de búsqueda exhaustiva 
 (\textit{grid search}). Este enfoque consiste en realizar un recorrido iterativo por todas las combinaciones posibles, evaluándolas y registrando 
 aquellas configuraciones que presenten una mayor similitud acústica con
 respecto al sonido objetivo.
 
-Por otro lado, surge la necesidad de encontrar un método rubusto para evaluar la fidelidad del modelo de inferencia de parámetros, buscando una métrica
-que simule la percepción de un oído humano experto haría un oído humano experto. Esta necesidad y la cuestión anterior convergen en la fase de experimentación.
+Por otro lado, surge la necesidad de encontrar un método robusto para evaluar la fidelidad del modelo de inferencia de parámetros, buscando una métrica
+que simule la percepción de un oído humano experto. Esta necesidad y la cuestión anterior convergen en la fase de experimentación.
 De este modo, se consiguen probar diferentes métricas que evalúen la similitud acústica dentro del algoritmo de \textit{grid search}, comprobando
 simultáneamente la viabilidad técnica del enfoque de fuerza bruta frente al modelo predictivo.
 
@@ -75,11 +75,11 @@ Para poner en contexto los datos de tiempo, se especifica que los algoritmos fue
 
 
 \subsection{Espectrograma de Mel}
-La mayor parte de los resultados ejecutados con la métrica Mel en \textit{grid search}, muestran valores que difieren
+La mayor parte de los resultados ejecutados con la métrica Mel en \textit{grid search} muestran valores que difieren
 significativamente de los originales. Al contar con un espacio de rejilla de tamaño considerable, el algoritmo encuentra mínimos locales en puntos diferentes a los valores originales, ya que estos no existen en el espacio de posibles soluciones.
 
 Un ejemplo claro de este comportamiento se observa al analizar una inferencia donde los parámetros objetivo eran \textit{carrier} $= 1055.54$ Hz, 
-\textit{ratio} $= 0.704$ e \textit{index} $= 9.38$. Los resultados de los tres mejores candidatos del \textit{grid search} fueron los siguentes:
+\textit{ratio} $= 0.704$ e \textit{index} $= 9.38$. Los resultados de los tres mejores candidatos del \textit{grid search} fueron los siguientes:
 
 \begin{verbatim}
 ==================================================
@@ -97,7 +97,7 @@ latente ($f_m = carrier \times ratio$) explica esta selección. En el audio obje
 Al operar con un índice de modulación elevado ($index > 9$), la frecuencia portadora deja de ser tan relevante,
 trasladando el peso acústico a las bandas laterales generadas por la modulación. El algoritmo de fuerza bruta, incapaz de seleccionar el tono original por la 
 limitación de la rejilla, optó por anclar el parámetro \textit{carrier} en 400 Hz para forzar un \textit{ratio} que replicara con precisión la frecuencia moduladora 
-original (740 Hz). Esto valida empíricamente que, sin un espacio de inferencia continuo como el que proporciona el modelo predictivo de IA, las métricas espectrales falsifican los parámetros encontrando atajos que los acerquen al sonido objetivo, si éxito en gran parte de las ocasiones.
+original (740 Hz). Esto valida empíricamente que, sin un espacio de inferencia continuo como el que proporciona el modelo predictivo de IA, las métricas espectrales falsifican los parámetros encontrando atajos que los acerquen al sonido objetivo, sin éxito en gran parte de las ocasiones.
 
 El siguiente ejemplo muestra qué ocurre si esta vez se utiliza un \textit{carrier} que el algoritmo no pueda seleccionar por la
 limitación de la rejilla (saltos de 100 Hz) y un índice de modulación bajo.
@@ -125,7 +125,7 @@ En este caso, el algoritmo deja en tercera posición a la opción con los valore
 Mientras que la tercera opción, al oído resulta muy similar pero desafinada, la primera opción difiere excesivamente.
  
 Matemáticamente, al incrementar artificialmente el \textit{index}, el algoritmo aumenta la anchura de banda del espectro, 
-dispersando la energía de tal forma que parte se solapa con la frecuencia, objetivo (1752 Hz), minimizando así el MSE. Sin embargo, acústicamente, el resultado es totalmente diferente: el algoritmo ha sacrificado un tono puro y definido por un sonido rico en armónicos y percusivo, únicamente 
+dispersando la energía de tal forma que parte se solapa con la frecuencia objetivo (1752 Hz), minimizando así el MSE. Sin embargo, acústicamente, el resultado es totalmente diferente: el algoritmo ha sacrificado un tono puro y definido por un sonido rico en armónicos y percusivo, únicamente 
 para evadir la penalización de un mínimo local inaccesible.
 
 \subsection{Espectrograma MFCC}
@@ -138,7 +138,7 @@ Por esta razón, el audio obtenido queda, en la mayoría de ocasiones,
 notablemente desafinado con respecto al original. Sin embargo, se consigue plasmar la \textit{textura} (o timbre) con mucha similitud, debido a la precisión en la inferencia
 de los parámetros de \textit{ratio} e \textit{index}.
 
-Los siguientes resultados son los obtenidos con los mismo audios que los utilizados de ejemplo en Mel.
+Los siguientes resultados son los obtenidos con los mismos audios que los utilizados de ejemplo en Mel.
 
 Parámetros originales:
 \begin{verbatim}

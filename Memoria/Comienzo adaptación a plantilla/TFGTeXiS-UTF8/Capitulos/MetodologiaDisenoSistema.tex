@@ -3,7 +3,7 @@
 
 \section{Descripción de los parámetros del sistema}
 
-Con el objetivo de lograr un acercamiento a las aplicaciónes reales del \textit{Sound Matching} pero sin sacrificar simplicidad, se valoran cuáles deben ser los parámetros fundamentales. Finalmente se decide que el sistema trabajará con los siguientes parámetros:
+Con el objetivo de lograr un acercamiento a las aplicaciones reales del \textit{Sound Matching} pero sin sacrificar simplicidad, se valoran cuáles deben ser los parámetros fundamentales. Finalmente se decide que el sistema trabajará con los siguientes parámetros:
 
 \begin{itemize}
     \item \textbf{Variables fundamentales: } Estas son la base estructural de la síntesis FM y se componen de la frecuencia portadora (\textit{carrier}), la relación entre frecuencia portadora y frecuencia moduladora (\textit{ratio}) y el índice de modulación (\textit{index}). Definen el timbre del sonido, pudiendo producir desde sonidos similares al de una flauta a ruidos inarmónicos. 
@@ -175,7 +175,7 @@ Con el fin de experimentar con distintos modelos en el entrenamiento, se propone
 \label{sec:FuncionPerdida}
 
 \subsection{El Problema de la inyectividad}
-La busqueda de una función de pérdida se vio totalmente condicionada por una característica esencial de la síntesis FM: su inyectividad es nula. Esto quiere decir que diferentes combinaciones de parámetros pueden dar lugar a sonidos perceptualmente idénticos. Así como 2 conjuntos de parámetros muy similares entre sí pueden generar sonidos muy distintos.
+La búsqueda de una función de pérdida se vio totalmente condicionada por una característica esencial de la síntesis FM: su inyectividad es nula. Esto quiere decir que diferentes combinaciones de parámetros pueden dar lugar a sonidos perceptualmente idénticos. Así como 2 conjuntos de parámetros muy similares entre sí pueden generar sonidos muy distintos.
 
 Una red implementada con una función de pérdida que trate de predecir los parámetros exactos del audio original, puede verse afectada negativamente por esta característica, cosa que se comprobó en un primer prototipo cuya pérdida se media de esta forma utilizando el Error Cuadrático Medio (\textit{MSELoss}) de los parámetros. Un ejemplo que sufría este modelo, que explica muy bien este resultado, es un caso en el que el índice de modulación sea 0. En ese caso no es verdaderamente relevante el valor del ratio, sin embargo, 
 la función de pérdida, implementada con \textit{MSE}, penaliza gravemente que este difiera del original. 
@@ -218,7 +218,7 @@ En cuanto al modelo CNNRegressor5, se permite la elección de una de las siguien
 \begin{itemize}
     \item \textbf{HybridLoss: }
     Es una función de pérdida híbrida, que combina el Error Absoluto Medio (L1) de la reconstrucción del 
-    espectrograma, un refuerzo estructural de Convegencia Espectral (SC), y la penalización paramétrica anterior.
+    espectrograma, un refuerzo estructural de Convergencia Espectral (SC), y la penalización paramétrica anterior.
     La primera se lleva el peso principal (de 1.0), calcula el Error Absoluto Medio píxel a píxel entre el espectrograma original y el reconstruido (en decibelios).
     La Convergencia Espectral (SC: Ecuación \ref{eq:spectral_convergence}) se aplica con un peso medio (de 0.5) para evitar los espectros borrosos generados por L1. Esta métrica calcula la norma de Frobenius\footnote{La norma de Frobenius mide la magnitud global de la matriz}
     para evaluar la energía global (relación armónica), regularizando el timbre. A la penalización paramétrica se le da una importancia muy baja (0.05), ya que no es demasiado importante
@@ -235,7 +235,7 @@ En cuanto al modelo CNNRegressor5, se permite la elección de una de las siguien
     \item \textbf{MultiScaleSpectralLoss: } Esta función está inspirada en el modelo de síntesis diferencial DDSP \citep{engel2020}. Al estar utilizando 
     espectrogramas, se simulan los distintos tamaños de ventana de Fourier mediante agrupamientos espaciales temporales (\textit{Average Pooling}).
     Se agrupa en seis factores (de 1, 2, 4, 8, 16 y 32) y se mide el error en cada una de esas escalas, siendo la media aritmética de esos errores
-    el valor de pérdida total. El cálculo del error de cada escala primero se calcula la diferencia sobre las magnitudes
+    el valor de pérdida total. Para el cálculo del error de cada escala primero se calcula la diferencia sobre las magnitudes
     lineales, la cual es útil para capturar picos de energía que pueden ser breves. A esto se le suma después la diferencia sobre las magnitudes en decibelios (logarítmico),
     multiplicada por un factor $\alpha$ de 1.0, por lo que se le está danto la misma relevancia que el error lineal, capturando así perfectamente
     la envolvente global y los momentos de baja energía. Mediante esta función, se consigue comparar el sonido obtenido del original
