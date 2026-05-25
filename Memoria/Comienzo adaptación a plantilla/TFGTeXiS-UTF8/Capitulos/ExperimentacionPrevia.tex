@@ -1,6 +1,8 @@
 \chapter{Experimentación paralela}
 \label{cap:ExperimentacionPrevia}
 
+En este capítulo se abordan ciertas pruebas paralelas a la experimentación principal que han sido de gran valor para descartar opciones alternativas a las finalmente implementadas. 
+
 \section{Limitaciones de Fréchet Audio Distance (FAD)}
 \subsection{Descripción de la Métrica}
 La métrica \textit{Fréchet Audio Distance} (FAD) \citep{kilgour19_interspeech} fue introducida originalmente por investigadores de Google AI y es utilizada actualmente en proyectos muy grandes como 
@@ -12,7 +14,7 @@ Al igual que su predecesora, esta métrica no realiza comparación muestra a mue
 Para la extracción de estas caractarísticas, el FAD utiliza un modelo llamado \textit{VGGish}, un clasificador de audio entrenado con una base de datos 
 de gran envergadura de vídeos de YouTube. Este modelo transforma la señal de audio en \textit{log-mel features} extraídas del espectrograma de magnitud
 
-Finalmente, la métrica se obtiene calculando la \textit{Distancia de Fréchet} entre la música de referencia y la generada. Un valor de FAD reducido indíca una estadística similar entre el audio de referencia y el generado.
+Finalmente, la métrica se obtiene calculando la distancia de \textit{Fréchet} entre la música de referencia y la generada. Un valor de FAD reducido indica una estadística similar entre el audio de referencia y el generado.
 
 \subsection{Limitaciones de la métrica en el contexto del \textit{sound matching}}
 
@@ -23,38 +25,40 @@ A pesar de que el resultado obtenido plantea un funcionamiento cercano a la perf
 El motivo de la poca validez de la métrica en el proyecto, se atribuye a un error en la interpretación de su 
 utilidad real, ya que el FAD está diseñado para evaluar la calidad global de modelos generativos, mientras que este proyecto se centra 
 en la estimación de los parámetros que luego utiliza para generar audio FM. 
-Puesto que tanto el conjunto de referencia como las predicciones se crean mediante síntesis FM, su huella espectral y sus caractarísticas de alto nivel(\textit{embeddings})
+Puesto que tanto el conjunto de referencia como las predicciones se crean mediante síntesis FM, su huella espectral y sus caractarísticas de alto nivel (\textit{embeddings})
 son casi idénticas. Por tanto, el FAD evalúa positivamente que el modelo ha aprendido a recrear el timbre o "textura" de 
-la síntesis FM, pero, como se comentaba previamente, resulta que no lo hace muestra a muestra. En resumen, se prioriza la 
+la síntesis FM, pero, como se comentaba previamente, resulta que no lo hace muestra a muestra (audio original con audio predicho). En resumen, se prioriza la 
 verosimilitud estadística del sonido sobre la similitud de las muestras una a una.
 
 \section{Validación por fuerza bruta (\textit{grid search})}
 Una de las cuestiones principales que se plantean en el desarrollo de este proyecto es si el uso de un modelo de Inteligencia Artificial representa
-la aproximación más óptima para el objetivo de la inferencia de parámetros. Esta disyuntiva surge, sobre todo, al analizar los primeros prototipos, 
-como el \textit{Prototipo 4} (modelo de pruebas simplificado), en el que se emplean únicamente 3 parámetros para la síntesis FM: \textit{Carrier}, \textit{Index} y \textit{Ratio}.
+la aproximación óptima para el objetivo de la inferencia de parámetros. La disyuntiva de explorar otras opciones surge, sobre todo, al analizar los primeros prototipos, 
+como el \texttt{Prototipo 4} (modelo de pruebas simplificado), en el que se emplean únicamente 3 parámetros para la síntesis FM: \textit{carrier}, \textit{index} y \textit{ratio}.
 Debido al reducido tamaño de este espacio de parámetros, resulta lógico plantear en la viabilidad de realizar un método de búsqueda exhaustiva 
-(\textit{Grid Search}). Este enfoque consiste en realizar un recorrido iterativo por todas las combinaciones posibles, evaluándolas y registrando 
+(\textit{grid search}). Este enfoque consiste en realizar un recorrido iterativo por todas las combinaciones posibles, evaluándolas y registrando 
 aquellas configuraciones que presenten una mayor similitud acústica con
 respecto al sonido objetivo.
 
 Por otro lado, surge la necesidad de encontrar un método rubusto para evaluar la fidelidad del modelo de inferencia de parámetros, buscando una métrica
 que simule la percepción de un oído humano experto haría un oído humano experto. Esta necesidad y la cuestión anterior convergen en la fase de experimentación.
-De este modo, se consiguen probar diferentes métricas que evalúen la similitud acústica dentro del algoritmo de \textit{Grid Search}, comprobando
+De este modo, se consiguen probar diferentes métricas que evalúen la similitud acústica dentro del algoritmo de \textit{grid search}, comprobando
 simultáneamente la viabilidad técnica del enfoque de fuerza bruta frente al modelo predictivo.
 
-Para lograr esta simulación del sistema auditivo humano, la escala Mel se ha consolidado como el estándar en el procesamiento digital de señales de audio.
-Esta métrica aplica una transformación logarítmica que modela el comportamiento no líneal del oído humano, el cual pierde resolución y sensibilidad con el aumento de
-la frecuencia.
+Para lograr esta simulación del sistema auditivo humano, se decide utilizar la escala Mel y MFCC (véase Sección \ref{sec:EscalaMel} y Sección \ref{sec:MFCC}) para calcular las métricas en las pruebas.
 
-Por otra parte, para este mismo fin también se contempla el uso de los \textit{Mel Frecuency Cepstral Coefficients} (MFCC). Esta métrica aplica una Transformada 
-del Coseno Discreta (DCT) sobre un espectrograma previamente mapeado en la escala Mel. La principal diferencia, donde radica su interés, es 
-la capacidad de aislar la envolvente espectral del sonido, consiguiendo una representación matemática precisa del 
-timbre o la textura acústica del audio. Al comprimir la información en un vector de coeficientes de baja dimensionalidad, 
-MFCC permite calcular eficientemente la distancia matemática entre el sonido objetivo y los sonidos conseguidos en las iteraciones
-del \textit{Grid Search}.
+%Para lograr esta simulación del sistema auditivo humano, la escala Mel se ha consolidado como el estándar en el procesamiento digital de señales de audio.
+%Esta métrica aplica una transformación logarítmica que modela el comportamiento no líneal del oído humano, el cual pierde resolución y sensibilidad con el aumento de
+%la frecuencia.
+
+%Por otra parte, para este mismo fin también se contempla el uso de los \textit{Mel Frecuency Cepstral Coefficients} (MFCC). Esta métrica aplica una Transformada 
+%del Coseno Discreta (DCT) sobre un espectrograma previamente mapeado en la escala Mel. La principal diferencia, donde radica su interés, es 
+%la capacidad de aislar la envolvente espectral del sonido, consiguiendo una representación matemática precisa del 
+%timbre o la textura acústica del audio. Al comprimir la información en un vector de coeficientes de baja dimensionalidad, 
+%MFCC permite calcular eficientemente la distancia matemática entre el sonido objetivo y los sonidos conseguidos en las iteraciones
+%del \textit{grid search}.
 
 \subsection{Diseño experimental y parametrización del \textit{grid search}}
-El espacio de parámetros del sintetizador FM seleccionado para el algoritmo de \textit{Grid Search}, buscando un balance entre resolución de la búsqueda y 
+El espacio de parámetros del sintetizador FM seleccionado para el algoritmo de \textit{grid search}, buscando un balance entre resolución de la búsqueda y 
 coste computacional, fue el siguiente: 
 
 \begin{itemize}
@@ -63,7 +67,7 @@ coste computacional, fue el siguiente:
     \item \textbf{Index (índice de modulación):} Rango de 1.0 a 10.0, con incrementos de 0.5 (19 valores).
 \end{itemize}
 
-Esta configuración genera \textbf{15.200 combinaciones únicas}. Por cada iteración del triple bucle, el algoritmo crea un audio de un segundo de duración mediante síntesis FM. A continuación, se calcula el Error 
+Esta configuración genera 15.200 combinaciones únicas. Por cada iteración del triple bucle, el algoritmo crea un audio de un segundo de duración mediante síntesis FM. A continuación, se calcula el Error 
 Cuadrático Medio (MSE) respecto a las características del audio original.
 
 Para poner en contexto los datos de tiempo, se especifica que los algoritmos fueron ejecutados en CPU en un ordenador con procesador \textit{Ryzen 5 5500}.
@@ -130,8 +134,7 @@ a los valores iniciales de los parámetros (teniendo en cuenta que la anchura de
 que sean más exactos). 
 
 Por esta razón, el audio obtenido queda, en la mayoría de ocasiones,
-notablemente desafinado con respecto al original. Sin embargo, se consigue plasmar la \textit{textura} (o timbre)
-del sonido de una manera prácticamente idéntica a la original, debido a la precisión en la inferencia
+notablemente desafinado con respecto al original. Sin embargo, se consigue plasmar la \textit{textura} (o timbre) con mucha similitud, debido a la precisión en la inferencia
 de los parámetros de \textit{ratio} e \textit{index}.
 
 Los siguientes resultados son los obtenidos con los mismo audios que los utilizados de ejemplo en Mel.

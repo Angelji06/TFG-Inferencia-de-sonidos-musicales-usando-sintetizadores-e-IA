@@ -121,6 +121,7 @@ Esta imagen se genera aplicando la \textbf{Transformada de Fourier de Tiempo Red
 
 
 \subsection{Escala de Mel}
+\label{sec:EscalaMel}
 El eje de frecuencias (Y) en los espectrogramas suele tratarse como una escala lineal, donde los saltos entre frecuencias son uniformes. Sin embargo, esto puede generar una representación no intuitiva para la percepción humana, pues nosotros percibimos el sonido de forma no lineal, para ello se utiliza la \textbf{escala Mel}, la cual establece un umbral en una frecuencia específica (700 Hz), a partir de la cual la escala pasa de ser lineal a logarítmica.
 
 Es un sistema de unidades diseñado para que distancias iguales en la escala correspondan a variaciones perceptuales uniformes en el tono \citep{stevens1937}. Su relevancia radica en que el sistema auditivo posee una mayor capacidad de percepción en las frecuencias bajas. 
@@ -133,6 +134,7 @@ m = 2595 \cdot \log_{10}(1 + f/700)
 \end{equation}
 
 \subsection{\textit{Mel Frequency Cesptral Coefficients} (MFCC)}
+\label{sec:MFCC}
 
 Los MFCC son un conjunto de coeficientes que representan la ``huella'' tímbrica de un sonido, es decir, aislan el instrumento de la nota que este interpreta. Se obtienen aplicando la Transformada de Coseno Discreta (DCT) al espectrograma Mel para simplificar y organizar la información de las frecuencias \citep{davis1980}. 
 
