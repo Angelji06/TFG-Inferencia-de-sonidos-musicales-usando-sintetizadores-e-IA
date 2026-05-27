@@ -16,7 +16,7 @@ Trabajo de Fin de Grado, Universidad Complutense de Madrid
 
 ## Descripción
 
-Este proyecto desarrolla un sistema capaz de inferir los parámetros de un sintetizador FM a partir de una muestra de audio. Dado un sonido de entrada, el modelo predice los 8 parámetros que lo describen: frecuencia portadora, ratio de modulación, índice de modulación y las envolventes de amplitud y modulación (ataque, sustain y decaimiento).
+Este proyecto desarrolla un sistema capaz de inferir los parámetros de un sintetizador FM a partir de una muestra de audio. Dado un sonido de entrada, el modelo predice los 8 parámetros que lo describen: frecuencia portadora, ratio de modulación, índice de modulación y las envolventes de amplitud y modulación (ataque, sustain y decaimiento). Además, pretende investigar distintos tipos de procesamiento del dato, arquitecturas de red y funciones de pérdida.
 
 El pipeline completo abarca tres fases:
 
@@ -30,7 +30,7 @@ El pipeline completo abarca tres fases:
 
 El diagrama general del proyecto es el siguiente:
 
-![Diagrama](<Angelji06/TFG-SoundMatchingFM/Memoria/Comienzo adaptación a plantilla/TFGTeXiS-UTF8/Imagenes/Bitmap/diagrama.png>)
+![Diagrama](diagrama.png)
 
 ---
 
