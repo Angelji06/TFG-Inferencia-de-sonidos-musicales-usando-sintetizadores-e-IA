@@ -18,7 +18,7 @@ Trabajo de Fin de Grado, Universidad Complutense de Madrid
 
 Este proyecto desarrolla un sistema capaz de inferir los parámetros de un sintetizador FM a partir de una muestra de audio. Dado un sonido de entrada, el modelo predice los 8 parámetros que lo describen: frecuencia portadora, ratio de modulación, índice de modulación y las envolventes de amplitud y modulación (ataque, sustain y decaimiento). Además, pretende investigar distintos tipos de procesamiento del dato, arquitecturas de red y funciones de pérdida.
 
-El pipeline completo abarca tres fases:
+El pipeline completo abarca cuatro fases:
 
 1. **Generación del dataset**: se sintetizan miles de sonidos FM con parámetros aleatorios usando una implementación propia del sintetizador. Cada audio se convierte a espectrograma mel y se almacena como tensor de PyTorch.
 
