@@ -24,7 +24,13 @@ El pipeline completo abarca tres fases:
 
 2. **Entrenamiento**: una red neuronal convolucional (CNN) recibe los espectrogramas y aprende a predecir los parámetros del sintetizador. La arquitectura incluye un encoder, un bottleneck, una cabeza de regresión y un decoder que reconstruye el espectrograma como señal de regularización.
 
-3. **Inferencia**: dado un archivo WAV externo, el sistema genera su espectrograma, lo procesa con el modelo entrenado y devuelve los parámetros FM predichos, pudiendo reproducir el audio sintetizado resultante para compararlo con el original.
+3. **Inferencia**: dado un archivo WAV externo, el sistema genera su espectrograma, lo procesa con el modelo entrenado y devuelve los parámetros FM predichos, pudiendo reproducir el audio sintetizado resultante para compararlo con el original. Se proporciona un pequeño sintetizador con el objetivo de poder probar el sonido predicho en contexto.
+
+4. **Evaluación**: Se somete a los modelos a una serie de pruebas para evaluar su rendimiento. Las pruebas son tanto acústicas en base a espectrogramas como numéricas en base a los parámetros predichos.
+
+El diagrama general del proyecto es el siguiente:
+
+![Diagrama](<Angelji06/TFG-SoundMatchingFM/Memoria/Comienzo adaptación a plantilla/TFGTeXiS-UTF8/Imagenes/Bitmap/diagrama.png>)
 
 ---
 
